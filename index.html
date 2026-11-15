@@ -2131,7 +2131,7 @@ function showLogin(err){ MENU.mode='login'; const m=$('menu'); m.style.display='
   m.innerHTML=`<div class="glass"><div class="mt">MULTIVERSO</div><div class="tabs2"><button id="tl" class="on">Ingresar</button><button id="tr">Crear cuenta</button></div>
    <input id="lu" maxlength="16" placeholder="Usuario" autocomplete="username"><input id="lp" type="password" maxlength="64" placeholder="Contraseña" autocomplete="current-password">
    <div class="err">${err?esc(err):''}</div><button class="btn big" id="lgo">Entrar</button><div class="small">Usuario: 3 a 16 letras, números o _ · Contraseña: mínimo 4 caracteres</div>
-   <button class="link" id="lguest">Jugar como invitado (se guarda solo en este dispositivo)</button></div>`;
+   <button class="link" id="lguest">Jugar como invitado (se guarda solo en este dispositivo)</button><a class="link" href="/juegos/" style="text-align:center">🎮 Sala de juegos: más juegos del Multiverso</a></div>`;
   let reg=false; const set=r=>{ reg=r; $('tl').classList.toggle('on',!r); $('tr').classList.toggle('on',r); $('lgo').textContent=r?'Crear cuenta':'Entrar'; uiSnd('hover'); };
   $('tl').onclick=()=>set(false); $('tr').onclick=()=>set(true);
   const ERR={usuario_invalido:'Usuario inválido: usa 3 a 16 letras, números o _',clave_invalida:'La contraseña debe tener al menos 4 caracteres',usuario_existe:'Ese usuario ya existe: elige otro o ingresa',credenciales:'Usuario o contraseña incorrectos',sesion_invalida:'Tu sesión expiró: vuelve a ingresar'};

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multiverso · Sala de Juegos</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Nunito,system-ui,sans-serif;color:#f3eadb;background:radial-gradient(ellipse at 50% 0%,#3a1a6a,#0b0618 65%);padding:28px 16px 40px}
+h1{font-family:Cinzel,serif;font-weight:900;text-align:center;font-size:clamp(30px,7vw,56px);margin:0;background:linear-gradient(100deg,#8a5a10,#ffe9a8 35%,#fff 45%,#f5c542 60%,#8a5a10);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 18px rgba(255,180,60,.45))}
+p.sub{text-align:center;opacity:.8;margin:6px 0 26px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;max-width:1000px;margin:auto}
+a.card{display:block;text-decoration:none;color:inherit;border-radius:18px;overflow:hidden;border:1px solid rgba(255,210,130,.3);background:rgba(20,12,40,.8);box-shadow:0 8px 30px rgba(0,0,0,.5);transition:transform .2s,box-shadow .2s}
+a.card:hover{transform:translateY(-6px);box-shadow:0 14px 40px rgba(0,0,0,.6),0 0 24px rgba(245,197,66,.35)}
+.art{height:140px;display:flex;align-items:center;justify-content:center;font-size:68px;text-shadow:0 6px 18px rgba(0,0,0,.4)}
+.info{padding:12px 14px 16px}.info b{font-family:Cinzel,serif;font-size:18px;color:#f5c542;display:block}.info span{font-size:14px;opacity:.85}
+.tag{display:inline-block;margin-top:8px;font-size:11px;padding:3px 8px;border-radius:10px;background:rgba(255,255,255,.1)}
+.main .art{height:170px}
+</style></head><body>
+<h1>Sala de Juegos</h1>
+<p class="sub">Todos los mundos del Multiverso en un solo lugar</p>
+<div class="grid">
+ <a class="card main" href="/"><div class="art" style="background:linear-gradient(135deg,#2a1450,#7a3cc8,#f5c542)">⚔️</div><div class="info"><b>Multiverso Online</b><span>MMORPG en línea: 7 especies, 24 destinos, mazmorras, jefes y arena PvP.</span><div class="tag">Multijugador · con cuenta</div></div></a>
+ <a class="card" href="/juegos/vuelo/"><div class="art" style="background:linear-gradient(180deg,#5ab8ff,#ffd18a)">🛩️</div><div class="info"><b>Vuelo Libre</b><span>Vuela sobre las Islas del Sol, relájate y aterriza.</span><div class="tag">Un jugador</div></div></a>
+ <a class="card" href="/juegos/mega-robot/"><div class="art" style="background:linear-gradient(135deg,#1b2a6b,#e2483d)">🤖</div><div class="info"><b>Mega Robot Máximo</b><span>Viaje por el Multiverso: plataformas a través de seis mundos.</span><div class="tag">Un jugador</div></div></a>
+ <a class="card" href="/juegos/pompon/"><div class="art" style="background:linear-gradient(135deg,#ffc1dc,#b9e6ff)">🐰</div><div class="info"><b>Juega con Pompón</b><span>Colores, formas, números y animales. Desde 3 años, sin anuncios.</span><div class="tag">Para niños</div></div></a>
+</div>
+</body></html>

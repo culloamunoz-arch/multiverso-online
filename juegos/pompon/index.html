@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Juega con Pompón</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;font-family:'Baloo 2',system-ui,sans-serif;color:#3a3a5a}
+body{background:linear-gradient(#bfe9ff,#e8f7ff 60%,#c8f0d0 60%,#aee6b8)}
+#app{position:fixed;inset:0;display:flex;flex-direction:column}
+#top{height:76px;display:flex;align-items:center;gap:10px;padding:8px 12px;flex:0 0 auto}
+.round{width:60px;height:60px;border-radius:50%;border:none;background:#fff;box-shadow:0 4px 0 rgba(0,0,0,.12);font-size:30px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+#stars{margin-left:auto;font-size:30px;background:#fff;border-radius:30px;padding:4px 16px;box-shadow:0 4px 0 rgba(0,0,0,.12)}
+#stage{flex:1;position:relative}
+#pompon{position:absolute;left:10px;bottom:10px;width:min(26vw,170px);z-index:5;pointer-events:none;transition:transform .3s}
+#bubble{position:absolute;left:50%;transform:translateX(-50%);top:12px;text-align:center;background:#fff;border-radius:22px;padding:10px 16px;font-size:clamp(18px,3.4vw,28px);box-shadow:0 4px 0 rgba(0,0,0,.1);max-width:60vw;z-index:6;pointer-events:none;opacity:0;transition:opacity .3s}
+.menu{position:absolute;inset:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4vmin;padding:4vmin 6vmin 4vmin min(28vw,190px);align-content:center}
+.tile{border:none;border-radius:32px;font-size:clamp(50px,11vmin,110px);background:#fff;box-shadow:0 8px 0 rgba(0,0,0,.12);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:1.4;max-height:34vh;transition:transform .1s}
+.tile span{font-size:clamp(16px,3vmin,26px);color:#6a6a8a}
+.tile:active{transform:scale(.95)}
+.c1{background:#ffd6d6}.c2{background:#d6ecff}.c3{background:#fff2c2}.c4{background:#dff7d8}
+.game{position:absolute;inset:0}
+.balloon{position:absolute;width:clamp(80px,15vmin,140px);height:clamp(100px,19vmin,175px);border-radius:50% 50% 48% 48%;cursor:pointer;box-shadow:inset -10px -14px 0 rgba(0,0,0,.12)}
+.balloon::after{content:'';position:absolute;left:50%;bottom:-40px;width:2px;height:40px;background:#999}
+.balloon::before{content:'';position:absolute;left:24%;top:16%;width:18%;height:22%;border-radius:50%;background:rgba(255,255,255,.55)}
+.pop{animation:pop .35s forwards}@keyframes pop{to{transform:scale(1.6);opacity:0}}
+.wiggle{animation:wig .5s}@keyframes wig{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.hole,.piece{position:absolute;display:flex;align-items:center;justify-content:center}
+.piece{cursor:grab;filter:drop-shadow(0 6px 0 rgba(0,0,0,.15));touch-action:none}
+.board{position:absolute;left:50%;top:6%;transform:translateX(-50%);width:min(70vw,620px);height:42%;background:#c9905a;border-radius:30px;box-shadow:inset 0 -10px 0 rgba(0,0,0,.15)}
+.animal{position:absolute;border:none;background:#fff;border-radius:30px;box-shadow:0 6px 0 rgba(0,0,0,.12);font-size:clamp(56px,13vmin,120px);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.fruit{position:absolute;font-size:clamp(54px,11vmin,96px);cursor:pointer;transition:left .5s,top .5s,transform .2s}
+.basket{position:absolute;font-size:clamp(90px,20vmin,170px)}
+.count{position:absolute;right:6vw;top:6%;font-size:clamp(70px,16vmin,150px);color:#ff7a5a;text-shadow:0 6px 0 rgba(0,0,0,.1)}
+.confetti{position:absolute;width:12px;height:16px;border-radius:3px;pointer-events:none;animation:fall 1.6s linear forwards}@keyframes fall{to{transform:translateY(80vh) rotate(540deg);opacity:0}}
+#rest{position:fixed;inset:0;background:linear-gradient(#2a3a7a,#6a5ab0);display:none;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;z-index:20;padding:20px}
+#rest h1{font-size:clamp(28px,6vw,52px);margin:10px}
+#hold{margin-top:20px;border:none;border-radius:30px;padding:14px 26px;font:inherit;font-size:18px;background:#fff;color:#3a3a5a;position:relative;overflow:hidden}
+#hold i{position:absolute;left:0;top:0;bottom:0;width:0;background:#ffd45a;opacity:.6}
+#start{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:15;background:linear-gradient(#bfe9ff,#e8f7ff)}
+#start h1{font-size:clamp(34px,8vw,72px);color:#ff7a5a;margin:0;text-shadow:0 5px 0 rgba(0,0,0,.08)}
+#start button{margin-top:16px;width:150px;height:150px;border-radius:50%;border:none;background:#7fd88a;font-size:70px;box-shadow:0 10px 0 #4aa85a;cursor:pointer}
+#start p{font-size:15px;max-width:520px;text-align:center;color:#5a5a7a;padding:0 16px}
+</style>
+</head>
+<body>
+<div id="app">
+ <div id="top"><button class="round" id="home" aria-label="Inicio">🏠</button><div id="stars">⭐ 0</div></div>
+ <div id="stage"></div>
+</div>
+<svg id="pompon" viewBox="0 0 200 200" aria-hidden="true">
+ <g id="pbody">
+  <line x1="100" y1="44" x2="108" y2="18" stroke="#6ad8c8" stroke-width="5" stroke-linecap="round"/>
+  <path d="M118 6 a16 16 0 1 0 6 26 a12 12 0 1 1 -6 -26z" fill="#f5c542" stroke="#1b2440" stroke-width="3"/>
+  <g fill="#c8fff4" stroke="#1b2440" stroke-width="4">
+   <circle cx="60" cy="90" r="32"/><circle cx="140" cy="90" r="32"/><circle cx="100" cy="68" r="36"/>
+   <circle cx="48" cy="128" r="28"/><circle cx="152" cy="128" r="28"/>
+  </g>
+  <circle cx="100" cy="115" r="56" fill="#9ff0e0" stroke="#1b2440" stroke-width="4"/>
+  <g fill="#c8fff4"><circle cx="60" cy="90" r="29"/><circle cx="140" cy="90" r="29"/><circle cx="100" cy="68" r="33"/></g>
+  <ellipse id="eyeL" cx="80" cy="112" rx="9" ry="12" fill="#1b2440"/><ellipse id="eyeR" cx="120" cy="112" rx="9" ry="12" fill="#1b2440"/>
+  <circle cx="83" cy="107" r="3.5" fill="#fff"/><circle cx="123" cy="107" r="3.5" fill="#fff"/>
+  <path d="M60 128 l4 -8 l4 8 l-8 -5 h8z" fill="#ffd45a"/><path d="M132 128 l4 -8 l4 8 l-8 -5 h8z" fill="#ffd45a"/>
+  <path id="mouth" d="M90 130 q10 10 20 0" fill="none" stroke="#1b2440" stroke-width="4" stroke-linecap="round"/>
+  <ellipse cx="72" cy="176" rx="18" ry="10" fill="#5ac0b8" stroke="#1b2440" stroke-width="3"/><ellipse cx="128" cy="176" rx="18" ry="10" fill="#5ac0b8" stroke="#1b2440" stroke-width="3"/>
+ </g>
+</svg>
+<div id="bubble"></div>
+<div id="rest"><div style="font-size:90px">🌙😴</div><h1>¡Hora de descansar los ojitos!</h1><div style="font-size:20px;max-width:520px">Pompón se fue a jugar afuera. ¿Vamos a mover el cuerpo, tomar agua o mirar por la ventana?</div><button id="hold">Adulto: mantén presionado 3 segundos para seguir<i></i></button></div>
+<div id="start"><div style="font-size:110px">☁️</div><h1>Juega con Pompón</h1><button id="go" aria-label="Empezar">▶</button><p>Juego para niños desde 3 años: colores, formas, números y animales. Sin anuncios ni enlaces. Sube el volumen (y en iPhone, desactiva el modo silencio).</p></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id); const stage=$('stage');
+const rnd=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)], shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+/* ---------- voz y sonidos ---------- */
+let AC=null, voice=null, stars=0, startT=0, restShown=false;
+function pickVoice(){ const vs=speechSynthesis.getVoices(); voice=vs.find(v=>/es[-_](CL|419|MX|US)/i.test(v.lang))||vs.find(v=>/^es/i.test(v.lang))||null; }
+if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+let gen=0;
+function say(t,cb0){ const my=gen; const cb=cb0?()=>{ if(my===gen) cb0(); }:null; bubble(t); talk(); try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang=voice?voice.lang:'es-ES'; if(voice) u.voice=voice; u.rate=0.88; u.pitch=1.35; u.onend=()=>{ quiet(); cb&&cb(); }; u.onerror=()=>{ quiet(); cb&&cb(); }; speechSynthesis.speak(u); if(!voice&&!speechSynthesis.getVoices().length) setTimeout(()=>{quiet();cb&&cb();},1600); }catch(e){ setTimeout(()=>{quiet();cb&&cb();},1500); } }
+let bubT=0; function bubble(t){ const b=$('bubble'); b.textContent=t; b.style.opacity=1; clearTimeout(bubT); bubT=setTimeout(()=>b.style.opacity=0,4000); }
+let talkI=0; function talk(){ clearInterval(talkI); let o=0; talkI=setInterval(()=>{ o=!o; $('mouth').setAttribute('d',o?'M90 128 q10 16 20 0 q-10 6 -20 0':'M90 130 q10 10 20 0'); },160); }
+function quiet(){ clearInterval(talkI); $('mouth').setAttribute('d','M90 130 q10 10 20 0'); }
+function audio(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state!=='running') AC.resume(); }
+function note(f,t,d,type='sine',v=0.15){ if(!AC) return; const o=AC.createOscillator(),g=AC.createGain(); o.type=type; o.frequency.value=f; g.gain.setValueAtTime(0.0001,AC.currentTime+t); g.gain.linearRampToValueAtTime(v,AC.currentTime+t+0.02); g.gain.exponentialRampToValueAtTime(0.0005,AC.currentTime+t+d); o.connect(g); g.connect(AC.destination); o.start(AC.currentTime+t); o.stop(AC.currentTime+t+d+0.05); }
+const S={ ok:()=>[523,659,784,1047].forEach((f,i)=>note(f,i*0.09,0.35,'triangle')), pop:()=>{ note(900,0,0.08,'square',0.06); note(500,0.03,0.12,'sine',0.12); }, soft:()=>note(330,0,0.25,'sine',0.1), tap:()=>note(700,0,0.1,'triangle',0.1), count:n=>note(392*Math.pow(1.122,n),0,0.3,'triangle',0.14) };
+function cheer(){ S.ok(); stars++; $('stars').textContent='⭐ '+stars; bounce(); for(let i=0;i<26;i++){ const c=document.createElement('div'); c.className='confetti'; c.style.left=rnd(10,90)+'vw'; c.style.top=rnd(-5,15)+'vh'; c.style.background=pick(['#ff7a7a','#ffd45a','#7fd88a','#6ab8ff','#c89aff']); c.style.animationDelay=rnd(0,0.4)+'s'; document.body.appendChild(c); setTimeout(()=>c.remove(),2200); } }
+function bounce(){ const p=$('pompon'); p.style.transform='translateY(-30px) scale(1.08)'; setTimeout(()=>p.style.transform='',300); }
+const PRAISE=['¡Muy bien!','¡Excelente!','¡Lo lograste!','¡Bravo!','¡Qué inteligente!','¡Súper!'];
+const TRY=['¡Casi! Intenta otra vez.','¡Buen intento! Busca otro.','Mmm… ¡prueba otro!'];
+// parpadeo de Pompón
+setInterval(()=>{ for(const id of ['eyeL','eyeR']) $(id).setAttribute('ry',2); setTimeout(()=>{ for(const id of ['eyeL','eyeR']) $(id).setAttribute('ry',12); },140); },3500);
+/* ---------- descanso saludable ---------- */
+const REST_MIN=12;
+setInterval(()=>{ if(startT&&!restShown&&Date.now()-startT>REST_MIN*60000){ restShown=true; $('rest').style.display='flex'; say('¡Hora de descansar los ojitos! Vamos a movernos un poquito.'); } },5000);
+(function(){ const h=$('hold'), bar=h.querySelector('i'); let t=0,iv=0; const st=e=>{ e.preventDefault(); t=0; iv=setInterval(()=>{ t+=50; bar.style.width=(t/3000*100)+'%'; if(t>=3000){ clearInterval(iv); $('rest').style.display='none'; restShown=false; startT=Date.now(); menu(); } },50); }; const en=()=>{ clearInterval(iv); bar.style.width='0'; };
+  h.addEventListener('pointerdown',st); h.addEventListener('pointerup',en); h.addEventListener('pointerleave',en); h.addEventListener('pointercancel',en); })();
+/* ---------- menú ---------- */
+function clear(){ gen++; stage.innerHTML=''; try{ speechSynthesis.cancel(); }catch(e){} }
+function menu(){ clear(); const m=document.createElement('div'); m.className='menu';
+  const items=[['🎈','Colores','c1',colores],['🔺','Formas','c2',formas],['🍎','Contar','c3',contar],['🐮','Animales','c4',animales]];
+  for(const [ic,lb,cl,fn] of items){ const b=document.createElement('button'); b.className='tile '+cl; b.innerHTML=ic+'<span>'+lb+'</span>'; b.onclick=()=>{ S.tap(); fn(); }; m.appendChild(b); }
+  stage.appendChild(m); say('¿A qué quieres jugar?'); }
+$('home').onclick=()=>{ S.tap(); menu(); };
+/* ---------- 1. COLORES: revienta el globo ---------- */
+const COLS=[['rojo','#ff5a5a'],['azul','#4a90ff'],['amarillo','#ffd42a'],['verde','#4cc95a'],['naranjo','#ff9a2a'],['morado','#a86aff']];
+let colRound=0;
+function colores(){ clear(); const g=document.createElement('div'); g.className='game'; stage.appendChild(g); colRound=0; nextColor(g); }
+function nextColor(g){ g.innerHTML=''; const n=colRound<3?3:4; const set=shuffle(COLS).slice(0,n); const target=pick(set);
+  const W=stage.clientWidth,H=stage.clientHeight; const left0=Math.min(W*0.28,190);
+  set.forEach((c,i)=>{ const b=document.createElement('div'); b.className='balloon'; b.style.background=c[1];
+    const span=(W-left0-40)/n; b.style.left=(left0+20+span*i+span/2-60)+'px'; b.style.top=(H*0.18+rnd(-20,30))+'px';
+    b.animate([{transform:'translateY(0)'},{transform:'translateY(-14px)'},{transform:'translateY(0)'}],{duration:2000+i*300,iterations:Infinity});
+    b.onpointerdown=()=>{ if(c===target){ S.pop(); b.classList.add('pop'); cheer(); say(pick(PRAISE)+' ¡Es '+c[0]+'!',()=>{ colRound++; nextColor(g); }); }
+      else { S.soft(); b.classList.remove('wiggle'); void b.offsetWidth; b.classList.add('wiggle'); say('Ese es '+c[0]+'. '+pick(TRY)); } };
+    g.appendChild(b); });
+  { const my=gen; setTimeout(()=>{ if(my===gen) say('Toca el globo '+target[0]); },300); } }
+/* ---------- 2. FORMAS: arrastra a su lugar ---------- */
+const SHAPES={circulo:{n:'círculo',c:'#ff7a5a',svg:'<circle cx="50" cy="50" r="42"/>'},cuadrado:{n:'cuadrado',c:'#4a90ff',svg:'<rect x="10" y="10" width="80" height="80" rx="8"/>'},triangulo:{n:'triángulo',c:'#4cc95a',svg:'<path d="M50 8 L94 88 H6 Z"/>'},estrella:{n:'estrella',c:'#ffc42a',svg:'<path d="M50 6 L62 38 L96 38 L68 58 L79 92 L50 72 L21 92 L32 58 L4 38 L38 38 Z"/>'},corazon:{n:'corazón',c:'#ff6ab0',svg:'<path d="M50 88 C10 60 4 30 26 18 C40 10 50 22 50 30 C50 22 60 10 74 18 C96 30 90 60 50 88 Z"/>'}};
+function formas(){ clear(); const g=document.createElement('div'); g.className='game'; stage.appendChild(g);
+  const keys=shuffle(Object.keys(SHAPES)).slice(0,3); const board=document.createElement('div'); board.className='board'; g.appendChild(board);
+  const sz=Math.min(stage.clientWidth*0.17,stage.clientHeight*0.28,150); let done=0;
+  const holes={}; keys.forEach((k,i)=>{ const h=document.createElement('div'); h.className='hole'; h.style.width=h.style.height=sz+'px'; h.style.left=(board.clientWidth*(i+0.5)/3-sz/2)+'px'; h.style.top=(board.clientHeight/2-sz/2)+'px';
+    h.innerHTML=`<svg viewBox="0 0 100 100" width="100%" height="100%"><g fill="#6a4020" opacity=".55">${SHAPES[k].svg}</g></svg>`; board.appendChild(h); holes[k]=h; });
+  const order=shuffle(keys); order.forEach((k,i)=>{ const p=document.createElement('div'); p.className='piece'; p.style.width=p.style.height=sz+'px';
+    const W=stage.clientWidth, left0=Math.min(W*0.28,190); const span=(W-left0-40)/3; const hx=left0+20+span*i+span/2-sz/2, hy=stage.clientHeight*0.62;
+    p.style.left=hx+'px'; p.style.top=hy+'px'; p.innerHTML=`<svg viewBox="0 0 100 100" width="100%" height="100%"><g fill="${SHAPES[k].c}" stroke="#3a3a5a" stroke-width="3">${SHAPES[k].svg}</g></svg>`; g.appendChild(p);
+    let dx=0,dy=0,drag=false;
+    p.addEventListener('pointerdown',e=>{ drag=true; p.setPointerCapture(e.pointerId); const r=p.getBoundingClientRect(); dx=e.clientX-r.left; dy=e.clientY-r.top; S.tap(); say(SHAPES[k].n); p.style.zIndex=4; });
+    p.addEventListener('pointermove',e=>{ if(!drag) return; const sr=stage.getBoundingClientRect(); p.style.left=(e.clientX-sr.left-dx)+'px'; p.style.top=(e.clientY-sr.top-dy)+'px'; });
+    p.addEventListener('pointerup',()=>{ if(!drag) return; drag=false; const pr=p.getBoundingClientRect(); let hit=null;
+      for(const [hk,h] of Object.entries(holes)){ const hr=h.getBoundingClientRect(); const d=Math.hypot(pr.left-hr.left,pr.top-hr.top); if(d<sz*0.6) hit=hk; }
+      if(hit===k){ const hr=holes[k].getBoundingClientRect(), sr=stage.getBoundingClientRect(); p.style.left=(hr.left-sr.left)+'px'; p.style.top=(hr.top-sr.top)+'px'; p.style.pointerEvents='none'; cheer(); done++;
+        if(done===3){ const my=gen; say('¡Pusiste todas las formas! ¡Muy bien!',()=>setTimeout(()=>{ if(gen===my) formas(); },600)); } else say(pick(PRAISE)+' ¡El '+SHAPES[k].n+'!'); }
+      else { S.soft(); p.style.transition='left .4s,top .4s'; p.style.left=hx+'px'; p.style.top=hy+'px'; setTimeout(()=>p.style.transition='',450); if(hit) say('Ahí va otra forma. '+pick(TRY)); } });
+  });
+  say('Arrastra cada forma a su lugar'); }
+/* ---------- 3. CONTAR: frutas a la canasta ---------- */
+const FRUITS=['🍎','🍌','🍊','🍓','🍐','🍇'], NUM=['cero','uno','dos','tres','cuatro','cinco'];
+function contar(){ clear(); const g=document.createElement('div'); g.className='game'; stage.appendChild(g);
+  const n=1+Math.floor(Math.random()*5), fr=pick(FRUITS); const W=stage.clientWidth,H=stage.clientHeight; const left0=Math.min(W*0.28,190);
+  const basket=document.createElement('div'); basket.className='basket'; basket.textContent='🧺'; basket.style.left=(W*0.62)+'px'; basket.style.top=(H*0.48)+'px'; g.appendChild(basket);
+  const cnt=document.createElement('div'); cnt.className='count'; cnt.textContent=''; g.appendChild(cnt);
+  let k=0; for(let i=0;i<n;i++){ const f=document.createElement('div'); f.className='fruit'; f.textContent=fr; const x=left0+20+(i%3)*Math.min(110,W*0.12), y=H*0.12+Math.floor(i/3)*Math.min(110,H*0.22); f.style.left=x+'px'; f.style.top=y+'px';
+    f.onpointerdown=()=>{ if(f.dataset.in) return; f.dataset.in=1; k++; S.count(k); f.style.left=(W*0.62+rnd(10,60))+'px'; f.style.top=(H*0.45+rnd(0,20))+'px'; f.style.transform='scale(.7)'; cnt.textContent=k; say(NUM[k][0].toUpperCase()+NUM[k].slice(1));
+      if(k===n){ const my=gen; setTimeout(()=>{ if(my!==gen) return; cheer(); say('¡Contaste '+NUM[n]+'! '+pick(PRAISE),()=>setTimeout(()=>{ if(gen===my) contar(); },800)); },700); } };
+    g.appendChild(f); }
+  say(n===1?'Pon la fruta en la canasta. ¡Vamos a contar!':'Pon las frutas en la canasta. ¡Vamos a contar!'); }
+/* ---------- 4. ANIMALES: ¿quién hace...? ---------- */
+const ANIMALS=[['🐮','la vaca','¡Muuuu!'],['🐶','el perro','¡Guau guau!'],['🐱','el gato','¡Miau!'],['🐔','la gallina','¡Cocorocó!'],['🐷','el chancho','¡Oink oink!'],['🐑','la oveja','¡Beee!'],['🦆','el pato','¡Cuac cuac!'],['🐸','la rana','¡Croac!']];
+let aniMode=0;
+function animales(){ clear(); const g=document.createElement('div'); g.className='game'; stage.appendChild(g); aniMode=0; nextAnimal(g); }
+function nextAnimal(g){ g.innerHTML=''; const set=shuffle(ANIMALS).slice(0,aniMode<2?3:4); const target=pick(set); const W=stage.clientWidth,H=stage.clientHeight; const left0=Math.min(W*0.28,190);
+  const sz=Math.min((W-left0-40)/set.length-16,H*0.42,190);
+  set.forEach((a,i)=>{ const b=document.createElement('button'); b.className='animal'; b.style.width=b.style.height=sz+'px'; const span=(W-left0-40)/set.length; b.style.left=(left0+20+span*i+span/2-sz/2)+'px'; b.style.top=(H*0.3)+'px'; b.textContent=a[0];
+    b.onclick=()=>{ if(aniMode===0){ S.tap(); b.classList.remove('wiggle'); void b.offsetWidth; b.classList.add('wiggle'); say(a[1][0].toUpperCase()+a[1].slice(1)+' hace '+a[2]); b.dataset.heard=1; if(g.querySelectorAll('[data-heard]').length===set.length){ const my=gen; setTimeout(()=>{ if(my!==gen) return; aniMode=1; nextAnimal(g); },1800); } return; }
+      if(a===target){ cheer(); say(pick(PRAISE)+' '+a[1][0].toUpperCase()+a[1].slice(1)+' hace '+a[2],()=>{ aniMode++; nextAnimal(g); }); }
+      else { S.soft(); b.classList.remove('wiggle'); void b.offsetWidth; b.classList.add('wiggle'); say('Ese es '+a[1]+'. '+pick(TRY)); } };
+    g.appendChild(b); });
+  { const my=gen; setTimeout(()=>my===gen&&say(aniMode===0?'Toca cada animal para escuchar cómo hace':'¿Quién hace '+target[2]+'?'),300); } }
+/* ---------- inicio ---------- */
+$('go').onclick=()=>{ audio(); try{ speechSynthesis.speak(new SpeechSynthesisUtterance('')); }catch(e){} $('start').style.display='none'; startT=Date.now(); S.ok(); setTimeout(()=>{ say('¡Hola! Soy Pompón. ¡Vamos a jugar!',()=>menu()); },200); };
+addEventListener('pointerdown',audio,{capture:true});
+addEventListener('resize',()=>{ /* re-dibuja la actividad actual de forma simple */ });
+</script>
+</body>
+</html>
