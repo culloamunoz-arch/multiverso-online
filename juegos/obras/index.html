@@ -55,11 +55,11 @@ canvas#gl{position:fixed;inset:0;width:100vw;height:100vh;display:block}
 #mdesc{display:none;max-width:560px;text-align:center;font-size:13px;font-weight:800;background:rgba(0,0,0,.55);padding:6px 12px;border-radius:10px}
 @media (max-width:640px),(max-height:520px){ .mc{flex:1 1 40%;max-width:none;padding:7px 10px} .mc p{display:none} .mc b{font-size:14px} .mrow{gap:6px} #mdesc{display:block} }
 @media (max-height:520px){ #sel h1{font-size:26px;top:6px} #sel h1 small{display:none} #sel{gap:6px;padding:8px} .mc{flex:1 1 20%} .srow input{padding:7px 10px} .go{padding:8px 20px;font-size:17px} #work{grid-template-columns:repeat(4,auto)!important} }
-#obra{margin-top:8px;padding:7px 11px;width:215px;cursor:pointer}#obra .od{display:none}#obra.open .od{display:block}
+#obra{margin-top:8px;padding:7px 11px;width:245px;cursor:pointer}#obra .od{display:none}#obra.open .od{display:block}
 .oh{display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:12.5px;gap:8px}.oh b{font-family:'Archivo Black';color:#f5b301;font-size:17px}
 .ob{height:9px;border-radius:5px;background:#333;overflow:hidden;margin-top:4px;border:1px solid #555}.ob i{display:block;height:100%;background:repeating-linear-gradient(-45deg,#f5b301 0 8px,#ffd23a 8px 16px);transition:width .6s}
-.ob.s{height:5px;margin:2px 0 5px}.od{font-size:11.5px;margin-top:6px}.od small{opacity:.7;float:right}
-#obraSel{width:min(420px,100%);padding:8px 14px}#obraSel .od{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.ob.s{height:5px;margin:2px 0 5px}.od{font-size:11.5px;margin-top:6px}.oy{margin-top:4px;font-size:12px}.ot{margin-top:6px;border-top:1px solid #444;padding-top:5px;font-size:12px;line-height:1.45}.ot b{color:#f5b301}.od small{opacity:.7;float:right}
+#obraSel{width:min(420px,100%);padding:8px 14px}#obraSel .od{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}#obraSel .oy,#obraSel .ot{grid-column:1/-1}#obraSel .ot{display:none}
 @media (max-width:640px){ #obra{width:150px;padding:5px 8px} .oh{font-size:11px} .oh b{font-size:14px} }
 @media (max-height:520px){ #obraSel .od{display:none} #obraSel{padding:5px 12px} }
 #rear{position:absolute;left:50%;top:118px;transform:translateX(-50%);width:min(340px,44vw);aspect-ratio:16/9;border:3px solid #f5b301;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.6);display:none;opacity:0;overflow:hidden}
@@ -439,18 +439,37 @@ $('goB').onclick=()=>{ auInit(); const n=$('nm').value.trim(); if(n.length<2){ $
 
 /* ================= AVANCE DE LA OBRA MAESTRA ================= */
 const OBRA_T={tolva:{n:'Rellenos',ic:'🚛',t:20},retro:{n:'Excavación',ic:'🦾',t:50},grua:{n:'Bodega',ic:'📦',t:30},topa:{n:'Explanada',ic:'🚜',t:40}};
-if(!SAVE.prog) SAVE.prog={tolva:0,retro:0,grua:0,topa:0}; if(!SAVE.obra) SAVE.obra=1;
+if(!SAVE.prog) SAVE.prog={tolva:0,retro:0,grua:0,topa:0}; if(!SAVE.obra) SAVE.obra=1; if(!SAVE.aportes) SAVE.aportes=0;
+// estado de la OBRA COMUNITARIA (compartida por todos los operadores); sin conexión se usa el avance local
+let COM=null, COMQ=[], comBusy=false, lastObra=null;
 const obraMul=()=>1+(SAVE.obra-1)*0.5;
-function obraPct(){ let s=0; for(const k in OBRA_T) s+=Math.min(1,(SAVE.prog[k]||0)/(OBRA_T[k].t*obraMul())); return s/4*100; }
-function addProg(k){ const before=obraPct(); SAVE.prog[k]=(SAVE.prog[k]||0)+1; const p=obraPct(); saveLocal(); updObraUI(); setBuilding(p);
-  const st=[10,25,40,60,85]; for(const x of st) if(before<x&&p>=x) setTimeout(()=>msg('🏗️ Obra al '+x+'%',STAGE_MSG[x]),1200);
-  if(before<100&&p>=100) setTimeout(obraDone,1500); }
+function comTargets(){ return COM?COM.t:Object.fromEntries(Object.entries(OBRA_T).map(([k,T])=>[k,Math.round(T.t*obraMul())])); }
+function comCounts(){ return COM?COM.c:SAVE.prog; }
+function obraNum(){ return COM?COM.obra:SAVE.obra; }
+function obraPct(){ const c=comCounts(), t=comTargets(); let s=0; for(const k in OBRA_T) s+=Math.min(1,(c[k]||0)/t[k]); return s/4*100; }
+function setCom(st,silent){ if(!st||!st.c) return; const prevObra=COM?COM.obra:null, before=COM?obraPct():null; COM=st; const p=obraPct();
+  if(prevObra!=null&&st.obra>prevObra){ communityDone(prevObra); }
+  else if(before!=null&&!silent){ for(const x of [10,25,40,60,85]) if(before<x&&p>=x) setTimeout(()=>msg('🏗️ Obra comunitaria al '+x+'%',STAGE_MSG[x]),900); }
+  updObraUI(); setBuilding(p); }
+async function comFetch(){ const st=await rpc('obras_estado',{}); if(st) setCom(st,true); }
+function addProg(k){ SAVE.prog[k]=(SAVE.prog[k]||0)+1; SAVE.aportes++; saveLocal();
+  if(COM){ COM.c[k]=(COM.c[k]||0)+1; updObraUI(); setBuilding(obraPct()); COMQ.push(k); comFlush(); if(NET.ok) NET.ch.send({type:'broadcast',event:'fx',payload:{id:NET.id,t:'ap',k,n:SAVE.name}}).catch(()=>{}); }
+  else { const before=obraPct(); updObraUI(); setBuilding(obraPct()); if(before<100&&obraPct()>=100) setTimeout(obraDone,1500); } }
+async function comFlush(){ if(comBusy||!COMQ.length) return; comBusy=true; const k=COMQ[0];
+  const r=await rpc('obras_aporte',{p_vid:VID,p_name:SAVE.name||'Operador',p_kind:k});
+  if(r&&r.ok){ COMQ.shift(); if(r.done){ COM.obra=r.done; } setCom(r.estado); }
+  comBusy=false; if(COMQ.length) setTimeout(comFlush,r?2200:6000); }
+function communityDone(n){ msg('🎉 ¡LA COMUNIDAD TERMINÓ LA OBRA MAESTRA Nº'+n+'!','+500 créditos para cada operador presente'); sfx('pay'); SAVE.credits+=500; saveLocal(); pushBoard(); $('crv').textContent=SAVE.credits.toLocaleString('es-CL'); setBuilding(100); fireworks(); setTimeout(()=>setBuilding(obraPct()),9000); }
 const STAGE_MSG={10:'Terreno trazado y despejado',25:'Fundaciones listas',40:'Se levantan las columnas',60:'Pisos terminados, vienen los muros',85:'Últimos detalles: techo y terminaciones'};
 function obraDone(){ msg('🎉 ¡OBRA MAESTRA Nº'+SAVE.obra+' TERMINADA!','+1000 créditos · comienza una obra nueva'); sfx('pay'); SAVE.credits+=1000; $('crv').textContent=SAVE.credits.toLocaleString('es-CL'); fireworks();
   setTimeout(()=>{ SAVE.obra++; SAVE.prog={tolva:0,retro:0,grua:0,topa:0}; saveLocal(); pushBoard(); updObraUI(); setBuilding(0); },9000); }
-function updObraUI(){ const p=obraPct(); const pr=SAVE.prog; const h=`<div class="oh"><span>🏗️ Obra Maestra Nº${SAVE.obra}</span><b>${p.toFixed(1)}%</b></div><div class="ob"><i style="width:${p}%"></i></div>`
-  +`<div class="od">${Object.entries(OBRA_T).map(([k,T])=>{ const t=Math.round(T.t*obraMul()), v=Math.min(t,pr[k]||0); return `<div title="${T.n}">${T.ic} ${T.n} <small>${v}/${t}</small><div class="ob s"><i style="width:${v/t*100}%"></i></div></div>`; }).join('')}</div>`;
+function updObraUI(){ const p=obraPct(), c=comCounts(), t=comTargets(); const tit=COM?`🏗️ Obra comunitaria Nº${COM.obra}`:`🏗️ Obra Maestra Nº${SAVE.obra}`;
+  const top=COM&&COM.top&&COM.top.length?`<div class="ot"><b>👷 ${COM.gente} operador${COM.gente==1?'':'es'} aportan</b>${COM.top.map((r,i)=>`<div>${i<3?['🥇','🥈','🥉'][i]:'·'} ${String(r.name).replace(/[<>&]/g,'')} <small>${r.n}</small></div>`).join('')}</div>`:'';
+  const h=`<div class="oh"><span>${tit}</span><b>${p.toFixed(1)}%</b></div><div class="ob"><i style="width:${p}%"></i></div>`
+  +`<div class="od">${Object.entries(OBRA_T).map(([k,T])=>{ const v=Math.min(t[k],c[k]||0); return `<div title="${T.n}">${T.ic} ${T.n} <small>${v}/${t[k]}</small><div class="ob s"><i style="width:${v/t[k]*100}%"></i></div></div>`; }).join('')}`
+  +`<div class="oy">Tus aportes: <b>${SAVE.aportes}</b>${COM?'':' <small>(sin conexión: avance local)</small>'}</div>${top}</div>`;
   $('obra').innerHTML=h; if($('obraSel')) $('obraSel').innerHTML=h; }
+setInterval(()=>{ if(!document.hidden) comFetch(); },25000);
 // el edificio crece con el avance
 const BLD={g:null,parts:[]}; const BX=26, BZ=-16;
 function buildBuilding(){ const g=new THREE.Group(); g.position.set(BX,0,BZ); scene.add(g); BLD.g=g; addObs(BX,BZ,15,11);
@@ -556,13 +575,13 @@ function updPeers(dt){ const k=1-Math.exp(-dt*8);
 function peerObs(){ const L=[]; for(const e of NET.peers.values()) L.push([e.x,e.z,e.k==='grua'?1.1:2.0]); return L; }
 function honk(){ auInit(); playHorn(1); if(NET.ok) NET.ch.send({type:'broadcast',event:'fx',payload:{id:NET.id,t:'horn'}}).catch(()=>{}); }
 function wave(){ if(NET.ok) NET.ch.send({type:'broadcast',event:'fx',payload:{id:NET.id,t:'wave',n:SAVE.name}}).catch(()=>{}); toastNet('👋 Saludaste a la faena'); }
-function onFx(p){ const e=NET.peers.get(p.id); if(!e) return; if(p.t==='horn'){ e.horn=1.2; const d=MC_?Math.hypot(e.x-MC_.x,e.z-MC_.z):30; playHorn(clamp(1-d/120,0.15,1)); } if(p.t==='wave') toastNet(`👋 ${e.n} te saluda`); }
+function onFx(p){ if(p.t==='ap'&&COM&&OBRA_T[p.k]){ COM.c[p.k]=(COM.c[p.k]||0)+1; updObraUI(); setBuilding(obraPct()); if(Math.random()<0.5) toastNet(`🏗️ ${String(p.n||'Alguien').slice(0,18)} aportó a la obra (${OBRA_T[p.k].n})`); return; } const e=NET.peers.get(p.id); if(!e) return; if(p.t==='horn'){ e.horn=1.2; const d=MC_?Math.hypot(e.x-MC_.x,e.z-MC_.z):30; playHorn(clamp(1-d/120,0.15,1)); } if(p.t==='wave') toastNet(`👋 ${e.n} te saluda`); }
 function playHorn(vol){ if(!AC||muted) return; const t=AC.currentTime; for(const f of [311,392]){ const o=AC.createOscillator(), g=AC.createGain(), fl=AC.createBiquadFilter(); o.type='sawtooth'; o.frequency.value=f; fl.type='lowpass'; fl.frequency.value=1400; g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.07*vol,t+0.03); g.gain.setValueAtTime(0.07*vol,t+0.55); g.gain.exponentialRampToValueAtTime(0.0001,t+0.75); o.connect(fl); fl.connect(g); g.connect(mast); o.start(t); o.stop(t+0.8); } }
 let netTT=null; function toastNet(t){ const el=$('ntoast'); el.textContent=t; el.classList.add('on'); clearTimeout(netTT); netTT=setTimeout(()=>el.classList.remove('on'),2800); }
 function updOnline(){ const L=[...NET.peers.values()]; $('onl').innerHTML=NET.ok?`👷 En la faena: <b>${L.length+1}</b>`+(L.length?`<div class="ol">${L.map(e=>`<div>${DEF[e.k].ic} ${String(e.n).replace(/[<>&]/g,'')} <small>${e.s?e.s.o+'%':''}</small></div>`).join('')}</div>`:'<div class="ol"><small>Por ahora trabajas solo. Comparte el enlace para que otros se sumen.</small></div>'):'<small>Modo individual</small>'; }
 
 /* ================= BUCLE ================= */
-buildWorld(); buildBuilding(); makeTgt(); netInit(); updOnline(); renderSel(); setPreview(); updObraUI(); $('bMus').style.opacity=musicOn?1:0.45;
+buildWorld(); buildBuilding(); makeTgt(); netInit(); updOnline(); comFetch(); renderSel(); setPreview(); updObraUI(); $('bMus').style.opacity=musicOn?1:0.45;
 let last=performance.now(), perfT=0;
 function frame(now){ const dt=Math.min(0.05,(now-last)/1000); last=now; perfT+=dt; bumpT-=dt;
  if(mode==='play'&&MC_){ readInput(); drive(MC_,dt); workUpdate(MC_,dt); updParked(dt); updCam(dt); updHUD(); audioTick(dt); }
