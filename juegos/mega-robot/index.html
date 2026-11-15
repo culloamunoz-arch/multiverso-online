@@ -22,16 +22,19 @@ canvas{display:block;position:fixed;inset:0;width:100vw;height:100vh}
 const cv=document.getElementById('c'), ctx=cv.getContext('2d');
 const buf=document.createElement('canvas'), b=buf.getContext('2d');
 const TS=16, ROWS=15, VH=ROWS*TS;           // logical view height 240
-let VW=320, DPR=1, scale=1, offX=0, offY=0, touchUI=false;
+let VW=320, DPR=1, scale=1, offX=0, offY=0, touchUI=false, ZT=0, ZB=0, BH=VH;
 const FONT='"Press Start 2P", monospace';
 function resize(){
   DPR=Math.min(2,devicePixelRatio||1);
   cv.width=Math.round(innerWidth*DPR); cv.height=Math.round(innerHeight*DPR);
   const ar=cv.width/cv.height;
-  VW=Math.round(Math.max(256,Math.min(448,VH*ar)));
-  buf.width=VW; buf.height=VH;
-  scale=Math.min(cv.width/VW, cv.height/VH);
-  offX=Math.round((cv.width-VW*scale)/2); offY=Math.round((cv.height-VH*scale)/2);
+  const coarse=matchMedia('(pointer:coarse)').matches||touchUI, portrait=ar<1;
+  // cámara más abierta: franja de cielo arriba y de suelo abajo (ahí van los botones táctiles)
+  ZT=portrait?8:(coarse?34:20); ZB=portrait?6:(coarse?60:6); BH=VH+ZT+ZB;
+  VW=portrait?336:Math.round(Math.max(288,Math.min(620,BH*ar)));
+  buf.width=VW; buf.height=BH;
+  scale=Math.min(cv.width/VW, cv.height/BH);
+  offX=Math.round((cv.width-VW*scale)/2); offY=Math.round((cv.height-BH*scale)/2);
   if(cv.height>cv.width) offY=Math.round(cv.height*0.08);
 }
 addEventListener('resize',resize); resize();
@@ -303,7 +306,7 @@ function syncPointers(){ const was={...keys}; keys.left=keys.right=keys.jump=key
   for(const [id,p] of pointers){ if(p.b&&p.b!=='mute') keys[p.b]=true; }
   if(keys.jump&&!was.jump) jumpPressed=true; if(keys.fire&&!was.fire) firePressed=true; }
 cv.addEventListener('pointerdown',e=>{ e.preventDefault(); audioInit(); if(AC&&AC.state==='suspended') AC.resume();
-  if(e.pointerType==='touch') touchUI=true; anyPressed=true;
+  if(e.pointerType==='touch'&&!touchUI){ touchUI=true; resize(); } anyPressed=true;
   const x=e.clientX*DPR,y=e.clientY*DPR, k=whichBtn(x,y);
   if(k==='mute'){ toggleMute(); return; }
   if(state!=='play'&&state!=='flag'){ jumpPressed=true; return; }
@@ -408,7 +411,7 @@ function update(dt){
   if(P.y>ROWS*TS+20){ die(); return; }
   if(!checkpoint&&L.mid&&P.x>L.mid*TS) checkpoint=true;
   // camera
-  const target=P.x-VW*0.42; if(target>camX) camX=Math.min(target,L.COLS*TS-VW);
+  const target=P.x-VW*0.34; if(target>camX) camX=Math.min(target,L.COLS*TS-VW);
   // flag
   if(P.x+P.w>=L.flagX*TS+6 && state==='play'){ state='flag'; stateT=0; P.x=L.flagX*TS+8-P.w; P.vx=0; P.vy=0; flagY=0; const h=clamp(Math.round((12*TS-P.y)/TS),0,9); const pts=[100,200,400,800,1000,2000,3000,4000,5000,5000][h]; score+=pts; pops.push({x:P.x+16,y:P.y,t:0,kind:'txt',s:String(pts)}); sfx('flag'); stopSong(); }
   // enemies
@@ -576,11 +579,21 @@ function drawHUD(c){
   if(starT>0) hudText(c,'★ '+Math.ceil(starT),cols[2]+44,22,'#ffe066');
 }
 function drawRobotIcon(c,x,y,big){ drawSpr(c,sprite(big?BIG_TOP:SMALL_TOP,PAL,(big?'B':'S')+'icon'),x,y,false); }
+// franja inferior: tierra bajo el suelo, oscura en los pozos
+function drawUnder(c){ if(ZB<=0) return; const W=WORLDS[world]; const c0=Math.floor(camX/TS);
+  for(let i=0;i<=Math.ceil(VW/TS)+1;i++){ const tx=c0+i, x=Math.round(tx*TS-camX); const gr=solid(tx,ROWS-1);
+    c.fillStyle=gr?(W.groundDark||'#3a2a20'):'#07040c'; c.fillRect(x,VH,TS,ZB+2);
+    if(gr){ c.fillStyle='rgba(0,0,0,.22)'; c.fillRect(x,VH+6+(tx%3)*14,TS-1,1); c.fillRect(x+((tx*5)%11),VH+14+(tx%2)*16,3,3); } }
+  const g=c.createLinearGradient(0,VH,0,VH+ZB); g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,'rgba(0,0,0,.55)'); c.fillStyle=g; c.fillRect(0,VH,VW,ZB+2); }
 function render(){
   b.imageSmoothingEnabled=false; b.setTransform(1,0,0,1,0,0);
+  { const W=WORLDS[state==='title'?Math.floor(t/2.5)%WORLDS.length:world]; const intro=state==='intro';
+    b.fillStyle=intro?'#000':W.sky[0]; b.fillRect(0,0,VW,ZT+1);
+}
+  b.setTransform(1,0,0,1,0,ZT);
   if(state==='title'){
-    const wi=Math.floor(t/2.5)%WORLDS.length; drawBG(b,wi,t*40);
-    b.fillStyle='rgba(0,0,10,.45)'; b.fillRect(0,0,VW,VH);
+    const wi=Math.floor(t/2.5)%WORLDS.length; drawBG(b,wi,t*40); b.fillStyle=WORLDS[wi].groundDark||'#222'; b.fillRect(0,VH,VW,ZB+2);
+    b.fillStyle='rgba(0,0,10,.45)'; b.fillRect(0,-ZT,VW,BH);
     hudText(b,'MEGA ROBOT',VW/2,52,'#ffe066',16,'center'); hudText(b,'MÁXIMO',VW/2,74,'#ffe066',16,'center');
     hudText(b,'VIAJE POR EL MULTIVERSO',VW/2,94,'#7fe8ff',8,'center');
     const s=sprite(BIG_TOP,PAL,'Btitle'); b.save(); b.translate(VW/2-16,108); b.scale(2,2); b.drawImage(s,0,0); b.fillStyle='#40b050'; b.fillRect(5,20,3,9); b.fillStyle='#60a8f0'; b.fillRect(9,20,3,9); b.fillStyle='#3a3c4c'; b.fillRect(4,29,4,3); b.fillRect(9,29,4,3); b.restore();
@@ -595,14 +608,14 @@ function render(){
     b.font='8px sans-serif'; b.textAlign='center'; b.fillStyle='#bfefff'; b.fillText(WORLDS[world].tag,VW/2,122); b.textAlign='left';
     drawRobotIcon(b,VW/2-30,140,true); hudText(b,'x '+lives,VW/2,162,'#fff',8,'left');
   } else {
-    drawBG(b,world,camX); drawLevel(b); drawItems(b); drawEnts(b); drawPlayer(b); drawHUD(b);
+    drawBG(b,world,camX); drawLevel(b); drawItems(b); drawEnts(b); drawPlayer(b); drawUnder(b); b.setTransform(1,0,0,1,0,Math.max(0,ZT-14)); drawHUD(b); b.setTransform(1,0,0,1,0,ZT);
     if(state==='clear'){ hudText(b,'¡MUNDO SUPERADO!',VW/2,90,'#ffe066',10,'center'); }
-    if(state==='over'){ b.fillStyle='rgba(0,0,0,.75)'; b.fillRect(0,0,VW,VH); hudText(b,'FIN DEL JUEGO',VW/2,100,'#ff6a8a',12,'center'); hudText(b,'PUNTAJE '+score,VW/2,124,'#fff',8,'center'); hudText(b,'RÉCORD '+best,VW/2,140,'#ffe08a',8,'center'); if(stateT>1.2) hudText(b,touchUI?'TOCA PARA SEGUIR':'PRESIONA ESPACIO',VW/2,170,'#fff',8,'center'); }
-    if(state==='end'){ b.fillStyle='rgba(0,0,20,.8)'; b.fillRect(0,0,VW,VH); hudText(b,'¡MULTIVERSO',VW/2,80,'#ffe066',12,'center'); hudText(b,'COMPLETADO!',VW/2,100,'#ffe066',12,'center'); hudText(b,'PUNTAJE '+score,VW/2,128,'#fff',8,'center'); hudText(b,'¿UNIVERSO B-8? ...',VW/2,150,'#7fe8ff',8,'center'); if(stateT>1.2) hudText(b,'SIGUIENTE VUELTA: MÁS DIFÍCIL',VW/2,176,'#fff',6,'center'); }
+    if(state==='over'){ b.fillStyle='rgba(0,0,0,.75)'; b.fillRect(0,-ZT,VW,BH); hudText(b,'FIN DEL JUEGO',VW/2,100,'#ff6a8a',12,'center'); hudText(b,'PUNTAJE '+score,VW/2,124,'#fff',8,'center'); hudText(b,'RÉCORD '+best,VW/2,140,'#ffe08a',8,'center'); if(stateT>1.2) hudText(b,touchUI?'TOCA PARA SEGUIR':'PRESIONA ESPACIO',VW/2,170,'#fff',8,'center'); }
+    if(state==='end'){ b.fillStyle='rgba(0,0,20,.8)'; b.fillRect(0,-ZT,VW,BH); hudText(b,'¡MULTIVERSO',VW/2,80,'#ffe066',12,'center'); hudText(b,'COMPLETADO!',VW/2,100,'#ffe066',12,'center'); hudText(b,'PUNTAJE '+score,VW/2,128,'#fff',8,'center'); hudText(b,'¿UNIVERSO B-8? ...',VW/2,150,'#7fe8ff',8,'center'); if(stateT>1.2) hudText(b,'SIGUIENTE VUELTA: MÁS DIFÍCIL',VW/2,176,'#fff',6,'center'); }
     if(growT>0){ b.fillStyle='rgba(255,255,255,0.08)'; b.fillRect(0,0,VW,VH); }
   }
   ctx.setTransform(1,0,0,1,0,0); ctx.fillStyle='#000'; ctx.fillRect(0,0,cv.width,cv.height);
-  ctx.imageSmoothingEnabled=false; ctx.drawImage(buf,0,0,VW,VH,offX,offY,Math.round(VW*scale),Math.round(VH*scale));
+  ctx.imageSmoothingEnabled=false; b.setTransform(1,0,0,1,0,0); ctx.drawImage(buf,0,0,VW,BH,offX,offY,Math.round(VW*scale),Math.round(BH*scale));
   // touch controls
   const B=btnLayout(); const showPad=touchUI||matchMedia('(pointer:coarse)').matches;
   if(showPad&&(state==='play'||state==='flag')){
@@ -612,7 +625,7 @@ function render(){
     ctx.font=`${Math.round(B.fire.r*0.28)}px ${FONT}`; ctx.fillStyle='rgba(255,255,255,.7)'; ctx.textAlign='center'; ctx.fillText('FUEGO/CORRER',B.fire.x,B.fire.y+B.fire.r+14*DPR); ctx.fillText('SALTO',B.jump.x,B.jump.y+B.jump.r+14*DPR); ctx.textAlign='left';
   }
   const m=B.mute; ctx.beginPath(); ctx.arc(m.x,m.y,m.r,0,7); ctx.fillStyle='rgba(0,0,0,.4)'; ctx.fill(); ctx.font=`${Math.round(m.r)}px sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillStyle='#fff'; ctx.fillText(muted?'🔇':'🔊',m.x,m.y+1); ctx.textAlign='left'; ctx.textBaseline='alphabetic';
-  if(cv.height>cv.width*1.1 && state==='title'){ ctx.font=`${Math.round(14*DPR)}px sans-serif`; ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.fillText('📱 Gira el teléfono para jugar mejor',cv.width/2,offY+VH*scale+30*DPR); ctx.textAlign='left'; }
+  if(cv.height>cv.width*1.1 && state==='title'){ ctx.font=`${Math.round(14*DPR)}px sans-serif`; ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.fillText('📱 Gira el teléfono para jugar mejor',cv.width/2,offY+BH*scale+30*DPR); ctx.textAlign='left'; }
 }
 let last=performance.now();
 function loopFn(now){ const dt=Math.min(1/30,(now-last)/1000); last=now; try{ update(dt); render(); }catch(err){ console.error(err); } requestAnimationFrame(loopFn); }

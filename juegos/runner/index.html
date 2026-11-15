@@ -286,7 +286,8 @@ function makeObstacle(type,lane,z){
     const fr=toonBox(LANE*0.8,0.8,0.1,0xffffff,false); fr.position.set(0,1.6,1.15); g.add(fr);
     for(const s of [-1,1]){ const l=new THREE.Mesh(new THREE.CircleGeometry(0.18,12),new THREE.MeshBasicMaterial({color:0xfff6a0})); l.position.set(s*0.6,0.6,1.16); g.add(l);}
     o.h=2.4; o.len=L; o.zTop=-L+1.1;
-    if(type==='trainR'){ const r=new THREE.Mesh(new THREE.BoxGeometry(LANE*0.9,0.2,5.2),mat(0x8a8a9a)); r.position.set(0,1.2,3.6); r.rotation.x=0.47; g.add(r); o.ramp=true; o.top=true; }
+    if(type==='trainR'){ const RA=Math.atan2(2.4,5.1), RL=Math.hypot(5.1,2.4); const r=new THREE.Mesh(new THREE.BoxGeometry(LANE*0.9,0.2,RL),mat(0x8a8a9a)); r.position.set(0,1.2-0.1/Math.cos(RA),3.65); r.rotation.x=RA; g.add(r);
+      for(let k=1;k<6;k++){ const st=new THREE.Mesh(new THREE.BoxGeometry(LANE*0.86,0.04,0.12),mat(0xffd040)); st.position.set(0,2.4*k/6+0.02,1.1+5.1*(1-k/6)); st.rotation.x=RA; g.add(st); } o.ramp=true; o.top=true; }
     o.moving=Math.random()<0.35&&type==='train'?4:0; }
   g.position.set(x,0,z); scene.add(g); obs.push(o); return o;
 }
@@ -343,7 +344,7 @@ function togglePause(){ if(state!=='run') return; paused=!paused; if(paused) men
 /* ---------------- UPDATE ---------------- */
 let msgT=0; function showMsg(a,b,d){ $('msg').textContent=a; $('sub').textContent=b||''; msgT=d; }
 function laneBlocked(lane,z,y){ // returns obstacle colliding at (lane,z,y)
-  for(const o of obs){ if(o.lane!==lane) continue; const z0=o.z+ (o.type.startsWith('train')?1.1:o.len/2), z1=o.z-(o.type.startsWith('train')?o.len-1.1:o.len/2);
+  for(const o of obs){ if(o.lane!==lane) continue; const z0=o.z+ (o.ramp?6.2:o.type.startsWith('train')?1.1:o.len/2), z1=o.z-(o.type.startsWith('train')?o.len-1.1:o.len/2);
     if(z>z1&&z<z0+0.4) return o; } return null; }
 function topAt(o,z){ if(!o) return 0; if(o.type==='trainR'||o.type==='train'){ if(o.ramp&&z>o.z+1.1&&z<o.z+6.2){ return clamp((o.z+6.2-z)/5.1,0,1)*2.4; } if(z<=o.z+1.1&&z>o.z-o.len+1.1) return 2.4; } return 0; }
 function update(dt){
