@@ -101,7 +101,7 @@ const TRACKS=[
   pts:[[0,0],[120,0],[190,40],[200,120],[150,170],[60,150],[20,200],[-60,230],[-150,190],[-170,100],[-110,40]],
   h:(u)=>4*Math.sin(u*2*Math.PI*2)+2, deco:'mesa', boxes:[0.12,0.45,0.75]},
  {name:'Skatepark B-7', sub:'Universo paralelo · ¡gran salto!', width:15, walls:'all', music:1,
-  sky:['#2898aa','#f07aaa','#ffc296'], fog:0xf0a0c0, ground:'#a8a4ae', ground2:'#9690a0', road:'#c8c4cc', line:'#ff5aa0', curb:['#ff5aa0','#3cdcff'],
+  sky:['#1c6f86','#d8609a','#f0a888'], fog:0xb8708e, ground:'#5e5870', ground2:'#544e66', road:'#3e3a4c', line:'#ff5aa0', curb:['#ff3a8c','#18b8e0'],
   pts:[[0,0],[140,0],[200,60],[160,130],[90,110],[40,160],[-40,200],[-140,170],[-160,80],[-90,30]],
   h:(u)=>{ const a=0.28,b=0.36; if(u>a&&u<b){ const k=(u-a)/(b-a); return k<0.85? 7*k/0.85 : 0; } return 0; }, jump:[0.28,0.36], deco:'skate', boxes:[0.1,0.5,0.8]},
  {name:'Autopista Anime', sub:'Universo anime · ¡cuidado con el tráfico!', width:22, walls:'all', music:2,
@@ -158,9 +158,9 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 1.6));
 const scene=new THREE.Scene(); const camera=new THREE.PerspectiveCamera(70,1,0.1,2500);
 function resize(){ renderer.setSize(innerWidth,innerHeight,false); camera.aspect=innerWidth/innerHeight; camera.fov=innerWidth<innerHeight?82:68; camera.updateProjectionMatrix(); layoutCtl(); }
 addEventListener('resize',resize);
-const hemi=new THREE.HemisphereLight(0xffffff,0x444466,0.9); scene.add(hemi);
+const hemi=new THREE.HemisphereLight(0xffffff,0x444466,0.62); scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xffffff,0.8); sun.position.set(100,200,80); scene.add(sun);
-const rimL=new THREE.DirectionalLight(0xffe8d0,0.45); rimL.position.set(-80,120,-150); scene.add(rimL);
+const rimL=new THREE.DirectionalLight(0xffe8d0,0.32); rimL.position.set(-80,120,-150); scene.add(rimL);
 const texLoader=new THREE.TextureLoader();
 const GLOW=canvasTex(64,64,(x,w,h)=>{ const g=x.createRadialGradient(32,32,0,32,32,32); g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(0.35,'rgba(255,255,255,.8)'); g.addColorStop(1,'rgba(255,255,255,0)'); x.fillStyle=g; x.fillRect(0,0,w,h); });
 const IMG={}; CHARS.forEach(c=>{ if(c.h3d) c.img=HEROES3D.thumb(c.id); const im=new Image(); im.src=c.img; IMG[c.id]=im; });
@@ -193,7 +193,7 @@ function buildWorld(ti){
   const pos=[],uv=[],idx=[]; let v=0;
   for(let i=0;i<=N;i++){ const k=i%N, p=P[k], n=NOR[k]; pos.push(p.x-n.x*W/2,p.y+0.02,p.z-n.z*W/2, p.x+n.x*W/2,p.y+0.02,p.z+n.z*W/2); uv.push(0,v,1,v); v+=P[k].distanceTo(P[(k+1)%N])/12; if(i<N){ const a=i*2; idx.push(a,a+2,a+1,a+1,a+2,a+3);} }
   const rg=new THREE.BufferGeometry(); rg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); rg.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2)); rg.setIndex(idx); rg.computeVertexNormals();
-  const rtex=roadTexture(T); const roadMat=new THREE.MeshLambertMaterial({map:rtex,side:THREE.DoubleSide, emissive:T.road==='rainbow'?0x444444:0x000000});
+  const rtex=roadTexture(T); const roadMat=new THREE.MeshLambertMaterial({map:rtex,side:THREE.DoubleSide, emissive:T.road==='rainbow'?0x1c1c1c:0x000000});
   G.add(new THREE.Mesh(rg,roadMat));
   // underside / embankment skirts
   const skirt=(side,width,toY,col,em)=>{ const sp=[],si=[]; for(let i=0;i<=N;i++){ const k=i%N,p=P[k],n=NOR[k]; const ex=p.x+n.x*side*W/2, ez=p.z+n.z*side*W/2; sp.push(ex,p.y,ez, ex+n.x*side*width,toY(p.y),ez+n.z*side*width); if(i<N){const a=i*2; si.push(a,a+2,a+1,a+1,a+2,a+3);} }

@@ -1,27 +1,79 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Multiverso · Sala de Juegos</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Nunito,system-ui,sans-serif;color:#f3eadb;background:radial-gradient(ellipse at 50% 0%,#3a1a6a,#0b0618 65%);padding:28px 16px 40px}
-h1{font-family:Cinzel,serif;font-weight:900;text-align:center;font-size:clamp(30px,7vw,56px);margin:0;background:linear-gradient(100deg,#8a5a10,#ffe9a8 35%,#fff 45%,#f5c542 60%,#8a5a10);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 18px rgba(255,180,60,.45))}
-p.sub{text-align:center;opacity:.8;margin:6px 0 26px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;max-width:1000px;margin:auto}
-a.card{display:block;text-decoration:none;color:inherit;border-radius:18px;overflow:hidden;border:1px solid rgba(255,210,130,.3);background:rgba(20,12,40,.8);box-shadow:0 8px 30px rgba(0,0,0,.5);transition:transform .2s,box-shadow .2s}
-a.card:hover{transform:translateY(-6px);box-shadow:0 14px 40px rgba(0,0,0,.6),0 0 24px rgba(245,197,66,.35)}
-.art{height:140px;display:flex;align-items:center;justify-content:center;font-size:68px;text-shadow:0 6px 18px rgba(0,0,0,.4)}
-.info{padding:12px 14px 16px}.info b{font-family:Cinzel,serif;font-size:18px;color:#f5c542;display:block}.info span{font-size:14px;opacity:.85}
-.tag{display:inline-block;margin-top:8px;font-size:11px;padding:3px 8px;border-radius:10px;background:rgba(255,255,255,.1)}
-.main .art{height:170px}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Nunito,system-ui,sans-serif;color:#f3eadb;background:#07040f;overflow-x:hidden}
+#bg{position:fixed;inset:-40px;background:center/cover no-repeat;filter:blur(28px) saturate(1.3) brightness(.35);transform:scale(1.1);z-index:-2}
+body:after{content:'';position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% -10%,rgba(120,60,220,.45),transparent 60%),linear-gradient(transparent 60%,#07040f)}
+header{text-align:center;padding:30px 16px 8px}
+h1{font-family:Cinzel,serif;font-weight:900;font-size:clamp(32px,7vw,62px);margin:0;letter-spacing:.02em;background:linear-gradient(100deg,#8a5a10 0%,#ffe9a8 30%,#fff 45%,#f5c542 60%,#8a5a10 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 0 #3a2400) drop-shadow(0 0 22px rgba(255,180,60,.45));animation:shine 6s linear infinite}
+@keyframes shine{from{background-position:120% 0}to{background-position:-120% 0}}
+.sub{opacity:.8;margin:6px 0 0;letter-spacing:.04em}
+main{max-width:1180px;margin:auto;padding:22px 16px 50px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.card{position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit;border-radius:20px;overflow:hidden;background:rgba(18,11,34,.82);border:1px solid rgba(255,210,130,.22);box-shadow:0 10px 34px rgba(0,0,0,.55);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,border-color .25s;animation:in .6s both;animation-delay:calc(var(--i)*70ms)}
+@keyframes in{from{opacity:0;transform:translateY(24px)}}
+.card:hover{transform:translateY(-8px);border-color:var(--c);box-shadow:0 18px 44px rgba(0,0,0,.6),0 0 30px var(--g)}
+.shot{position:relative;aspect-ratio:16/9;overflow:hidden;background:#111}
+.shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.06);transition:opacity 1s,transform 6s linear}
+.shot img.on{opacity:1;transform:scale(1.14)}
+.shot:after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(10,6,22,.92));pointer-events:none}
+.dots{position:absolute;right:10px;top:10px;display:flex;gap:5px;z-index:2}
+.dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.4);transition:.3s}.dots i.on{background:#fff;width:18px;border-radius:4px}
+.badge{position:absolute;left:10px;top:10px;z-index:2;font-size:11px;font-weight:800;padding:4px 9px;border-radius:12px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.15)}
+.play{position:absolute;left:50%;top:50%;z-index:2;width:62px;height:62px;margin:-31px;border-radius:50%;display:grid;place-items:center;font-size:24px;padding-left:5px;background:var(--c);color:#140b00;box-shadow:0 0 0 6px rgba(255,255,255,.18),0 8px 24px rgba(0,0,0,.5);opacity:0;transform:scale(.6);transition:.25s}
+.card:hover .play{opacity:1;transform:scale(1)}
+.title{position:absolute;left:14px;bottom:10px;z-index:2;display:flex;align-items:center;gap:10px}
+.title .ic{font-size:30px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.6))}
+.title b{font-family:Cinzel,serif;font-size:21px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.8)}
+.info{padding:12px 15px 15px;display:flex;flex-direction:column;gap:9px;flex:1}
+.info p{margin:0;font-size:14px;line-height:1.4;opacity:.88}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+.chips span{font-size:11px;font-weight:800;padding:3px 9px;border-radius:10px;background:var(--g);border:1px solid var(--c)}
+.card.main{grid-column:1/-1;flex-direction:row}
+.card.main .shot{flex:1.6;aspect-ratio:auto;min-height:300px}
+.card.main .info{flex:1;justify-content:center;padding:24px}
+.card.main .title b{font-size:30px}.card.main .info p{font-size:15px}
+.card.main .chips{margin-top:0}
+.cta{align-self:flex-start;margin-top:6px;font-weight:900;padding:11px 22px;border-radius:12px;background:linear-gradient(#f5c542,#b8860b);color:#2a1800;box-shadow:0 0 20px rgba(245,197,66,.45)}
+@media (max-width:760px){.card.main{flex-direction:column}.card.main .shot{min-height:0;aspect-ratio:16/9;flex:none}.card.main .info{padding:15px}.play{opacity:.9;transform:scale(.8)}}
+@media (prefers-reduced-motion:reduce){.shot img{transition:opacity .5s}.shot img.on{transform:none}h1{animation:none}}
 </style></head><body>
-<h1>Sala de Juegos</h1>
-<p class="sub">Todos los mundos del Multiverso en un solo lugar</p>
-<div class="grid">
- <a class="card main" href="/"><div class="art" style="background:linear-gradient(135deg,#2a1450,#7a3cc8,#f5c542)">⚔️</div><div class="info"><b>Multiverso Online</b><span>MMORPG en línea: 7 especies, 24 destinos, mazmorras, jefes y arena PvP.</span><div class="tag">Multijugador · con cuenta</div></div></a>
- <a class="card" href="/juegos/vuelo/"><div class="art" style="background:linear-gradient(180deg,#5ab8ff,#ffd18a)">🛩️</div><div class="info"><b>Vuelo Libre</b><span>Vuela sobre las Islas del Sol, relájate y aterriza.</span><div class="tag">Un jugador</div></div></a>
- <a class="card" href="/juegos/mega-robot/"><div class="art" style="background:linear-gradient(135deg,#1b2a6b,#e2483d)">🤖</div><div class="info"><b>Mega Robot Máximo</b><span>Viaje por el Multiverso: plataformas a través de seis mundos.</span><div class="tag">Un jugador</div></div></a>
- <a class="card" href="/juegos/pompon/"><div class="art" style="background:linear-gradient(135deg,#ffc1dc,#b9e6ff)">🐰</div><div class="info"><b>Juega con Pompón</b><span>Colores, formas, números y animales. Desde 3 años, sin anuncios.</span><div class="tag">Para niños</div></div></a>
- <a class="card" href="/juegos/runner/"><div class="art" style="background:linear-gradient(135deg,#ff7a2a,#ffd04a)">🏃</div><div class="info"><b>Multiverso Runner</b><span>Corre esquivando obstáculos con Mega Robot, Pompón y los vehículos de la casa.</span><div class="tag">Un jugador</div></div></a>
- <a class="card" href="/juegos/kart/"><div class="art" style="background:linear-gradient(135deg,#1a6be0,#2ad0a0)">🏎️</div><div class="info"><b>Multiverso Kart</b><span>Carreras con derrapes, turbos e ítems. Copa Multiverso y carrera libre.</span><div class="tag">Un jugador</div></div></a>
-</div>
+<div id="bg"></div>
+<header><h1>Sala de Juegos</h1><p class="sub">Todos los mundos del Multiverso en un solo lugar</p></header>
+<main><div class="grid" id="grid"></div></main>
+<script>
+const G=[
+ {k:'mmo',n:3,href:'/',ic:'⚔️',t:'Multiverso Online',c:'#f5c542',badge:'En línea',main:true,
+  d:'MMORPG en el navegador. Crea tu cuenta, elige entre 7 especies y 24 destinos, explora zonas, mazmorras y jefes, y mide fuerzas en la arena con otros jugadores.',chips:['Multijugador','3 personajes por cuenta','Audio adaptativo']},
+ {k:'kart',n:3,href:'/juegos/kart/',ic:'🏎️',t:'Multiverso Kart',c:'#3cc8ff',badge:'Carreras',
+  d:'Derrapes, mini-turbos e ítems en cuatro pistas: cañón, skatepark, autopista anime y arcoíris neón.',chips:['Copa Multiverso','50 · 100 · 150cc']},
+ {k:'runner',n:3,href:'/juegos/runner/',ic:'🏃',t:'Multiverso Runner',c:'#ff8a3c',badge:'Corre sin parar',
+  d:'Corre, salta y deslízate entre universos juntando monedas, escudos e imanes.',chips:['Récords','Personajes y vehículos']},
+ {k:'vuelo',n:3,href:'/juegos/vuelo/',ic:'🛩️',t:'Vuelo Libre',c:'#5ad0ff',badge:'Relajado',
+  d:'Despega, vuela sobre las Islas del Sol y aterriza en sus aeropuertos para sellar tu pasaporte.',chips:['Mundo abierto','Sin prisa']},
+ {k:'mega-robot',n:3,href:'/juegos/mega-robot/',ic:'🤖',t:'Mega Robot Máximo',c:'#ff5a5a',badge:'Plataformas',
+  d:'Viaje por el Multiverso: salta entre bloques, esquiva enemigos y cruza seis universos.',chips:['6 mundos','Estilo clásico']},
+ {k:'pompon',n:2,href:'/juegos/pompon/',ic:'☁️',t:'Juega con Pompón',c:'#ff9ac8',badge:'Desde 3 años',
+  d:'Colores, formas, números y animales con Pompón. Sin anuncios ni enlaces.',chips:['Para niños','Pausa de pantalla']},
+];
+const grid=document.getElementById('grid'), bg=document.getElementById('bg');
+const glow=h=>{ const n=parseInt(h.slice(1),16); return `rgba(${n>>16},${n>>8&255},${n&255},.28)`; };
+G.forEach((g,i)=>{
+  const a=document.createElement('a'); a.className='card'+(g.main?' main':''); a.href=g.href;
+  a.style.setProperty('--c',g.c); a.style.setProperty('--g',glow(g.c)); a.style.setProperty('--i',i);
+  let imgs='',dots=''; for(let j=1;j<=g.n;j++){ imgs+=`<img src="/juegos/img/${g.k}-${j}.webp" alt="Vista de ${g.t}"${j===1?' class="on"':''}>`; dots+=`<i${j===1?' class="on"':''}></i>`; }
+  a.innerHTML=`<div class="shot">${imgs}<span class="badge">${g.badge}</span><div class="dots">${dots}</div><div class="play">▶</div><div class="title"><span class="ic">${g.ic}</span><b>${g.t}</b></div></div>
+   <div class="info"><p>${g.d}</p><div class="chips">${g.chips.map(c=>`<span>${c}</span>`).join('')}</div>${g.main?'<span class="cta">Entrar al mundo ▶</span>':''}</div>`;
+  grid.appendChild(a);
+  const im=a.querySelectorAll('.shot img'), dt=a.querySelectorAll('.dots i'); let cur=0, hover=false, hv=null;
+  const step=()=>{ im[cur].classList.remove('on'); dt[cur].classList.remove('on'); cur=(cur+1)%im.length; im[cur].classList.add('on'); dt[cur].classList.add('on'); if(hover) bg.style.backgroundImage=`url(${im[cur].src})`; };
+  setTimeout(()=>setInterval(()=>{ if(!hover) step(); },4200),i*650);
+  a.addEventListener('mouseenter',()=>{ hover=true; bg.style.backgroundImage=`url(${im[cur].src})`; step(); hv=setInterval(step,1400); });
+  a.addEventListener('mouseleave',()=>{ hover=false; clearInterval(hv); });
+});
+bg.style.backgroundImage='url(/juegos/img/mmo-3.webp)';
+</script>
 </body></html>
