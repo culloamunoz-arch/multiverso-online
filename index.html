@@ -166,12 +166,20 @@ input.name{background:#0a0818;border:2px solid var(--line);color:#fff;border-rad
 #tut{position:absolute;left:50%;top:84px;transform:translateX(-50%);width:min(440px,92vw);display:none;padding:12px 14px;z-index:30;border:2px solid var(--gold);box-shadow:0 0 24px rgba(245,197,66,.35)}
 #tut .tt{font-family:'Cinzel',serif;font-weight:900;color:var(--gold);font-size:17px}#tut .td{font-size:14px;line-height:1.4;margin:6px 0 8px}#tut .tb{display:flex;align-items:center;gap:10px;flex-wrap:wrap}#tut .tw{font-weight:800;font-size:13px;color:#9fe0ff}#tut .tp{margin-left:auto;font-size:11px;opacity:.6}
 @media (max-width:700px){ #tut{top:auto;bottom:150px} }
+
+.ico{width:1.2em;height:1.2em;vertical-align:-0.25em;display:inline-block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4));pointer-events:none;-webkit-user-drag:none}
+.ab>.ico{width:88%;height:88%;vertical-align:0;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+.slot>.ico,.slot>span>.ico{width:78%;height:78%}
+.mb>.ico{width:70%;height:70%}
+.portrait #pfpi .ico{width:62%;height:62%}.portrait #pfpi{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+.gsk .gi .ico{width:40px;height:40px}.arow .ai .ico{width:34px;height:34px}
+#abtip b .ico{width:22px;height:22px}
 </style>
 <link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><meta name="theme-color" content="#120624"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Multiverso"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="/visit.js" data-game="mmo" defer></script></head>
 <body>
 <canvas id="gl"></canvas><div id="vig" style="position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 58%,rgba(10,5,30,.38) 100%)"></div><canvas id="ov"></canvas>
 <div id="ui">
- <div id="pf" class="frame panel"><div class="portrait" id="pfp">🛡️<b id="pflv">1</b></div><div class="bars"><div class="nm" id="pfn"></div><div class="bar"><i id="pfhp"></i><span id="pfhpt"></span></div><div class="bar mp"><i id="pfmp"></i><span id="pfmpt"></span></div></div></div>
+ <div id="pf" class="frame panel"><div class="portrait" id="pfp"><span id="pfpi"></span><b id="pflv">1</b></div><div class="bars"><div class="nm" id="pfn"></div><div class="bar"><i id="pfhp"></i><span id="pfhpt"></span></div><div class="bar mp"><i id="pfmp"></i><span id="pfmpt"></span></div></div></div>
  <div id="tf" class="frame panel"><div class="portrait" id="tfp">⚙️<b id="tflv">1</b></div><div class="bars"><div class="nm" id="tfn"></div><div class="bar"><i id="tfhp"></i><span id="tfhpt"></span></div><button class="sbtn" id="tfinv" style="display:none;margin-top:3px;font-size:11px;padding:1px 6px">➕ Invitar al grupo</button></div></div>
  <div id="online" class="panel"></div>
  <div id="party" class="panel"></div>
@@ -190,7 +198,7 @@ input.name{background:#0a0818;border:2px solid var(--line);color:#fff;border-rad
  <div id="xp"><i id="xpi"></i></div>
  <div id="bar" class="panel"></div>
  <div id="joy"><i></i></div>
- <div id="mobbtns"><div class="mb" id="mbT" title="Objetivo">🎯</div><div class="mb" id="mbP" title="Poción">🧪</div></div>
+ <div id="mobbtns"><div class="mb" id="mbT" title="Objetivo"></div><div class="mb" id="mbP" title="Poción"></div></div>
  <div id="toast"></div>
  <div id="dead"><div>HAS CAÍDO</div><br><button class="btn" id="revive">Reaparecer en el Pueblo</button></div>
 </div>
@@ -408,6 +416,141 @@ function box(w,h,d,c,em){ return new THREE.Mesh(new THREE.BoxGeometry(w,h,d),TM(
 function sph(r,c,em,ws=10){ return new THREE.Mesh(new THREE.SphereGeometry(r,ws,Math.max(6,ws*0.7|0)),TM(c,em)); }
 function cyl(r1,r2,h,c,n=10,em){ return new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,n),TM(c,em)); }
 function cone(r,h,c,n=8,em){ return new THREE.Mesh(new THREE.ConeGeometry(r,h,n),TM(c,em)); }
+/* ================= ÍCONOS PROPIOS (SVG dibujados en código) ================= */
+const ICO=(()=>{
+ const K='#1a1024';
+ const st=(d,c,w)=>`<path d="${d}" fill="none" stroke="${K}" stroke-width="${w+3}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+ const pts=(cx,cy,r1,r2,n,rot=-Math.PI/2)=>{ let p=[]; for(let i=0;i<n*2;i++){ const r=i%2?r2:r1, a=rot+i*Math.PI/n; p.push((cx+Math.cos(a)*r).toFixed(1)+','+(cy+Math.sin(a)*r).toFixed(1)); } return p.join(' '); };
+ const star=(cx,cy,r1,r2,n,fill)=>`<polygon points="${pts(cx,cy,r1,r2,n)}" ${fill?`fill="${fill}"`:''}/>`;
+ const spark=(cx,cy,r,c)=>`<path d="M${cx} ${cy-r} Q${cx+r*0.18} ${cy-r*0.18} ${cx+r} ${cy} Q${cx+r*0.18} ${cy+r*0.18} ${cx} ${cy+r} Q${cx-r*0.18} ${cy+r*0.18} ${cx-r} ${cy} Q${cx-r*0.18} ${cy-r*0.18} ${cx} ${cy-r}Z" fill="${c||'#fff8d0'}" stroke-width="1.6"/>`;
+ const arrow=(x1,y1,x2,y2,head,shaft,fl)=>{ const a=Math.atan2(y2-y1,x2-x1), c=Math.cos(a), s=Math.sin(a); const hx=x2-c*8, hy=y2-s*8;
+   return st(`M${x1} ${y1} L${hx.toFixed(1)} ${hy.toFixed(1)}`,shaft||'#c8945a',3)+`<polygon points="${x2},${y2} ${(hx-s*5).toFixed(1)},${(hy+c*5).toFixed(1)} ${(hx+s*5).toFixed(1)},${(hy-c*5).toFixed(1)}" fill="${head||'#e8eef8'}"/>`
+    +`<polygon points="${x1},${y1} ${(x1+c*7-s*4).toFixed(1)},${(y1+s*7+c*4).toFixed(1)} ${(x1+c*11).toFixed(1)},${(y1+s*11).toFixed(1)} ${(x1+c*7+s*4).toFixed(1)},${(y1+s*7-c*4).toFixed(1)}" fill="${fl||'#ff6a5a'}" stroke-width="1.8"/>`; };
+ const sword=(rot,blade,guard)=>`<g transform="rotate(${rot} 32 32)"><path d="M28.5 40 L28.5 11 L32 5 L35.5 11 L35.5 40Z"/><path d="M32 9 L32 38" stroke="rgba(255,255,255,.6)" stroke-width="1.4" fill="none"/><rect x="21" y="39" width="22" height="5.5" rx="2.5" fill="${guard||'#f5c542'}"/><rect x="29.3" y="44.5" width="5.4" height="10" rx="2" fill="#7a4a2a"/><circle cx="32" cy="57" r="3.6" fill="${guard||'#f5c542'}"/></g>`;
+ const dagger=(rot,x=0,y=0,s=1)=>`<g transform="translate(${x} ${y}) rotate(${rot} 32 32) translate(32 32) scale(${s}) translate(-32 -32)"><path d="M29 38 L29 16 L32 9 L35 16 L35 38Z"/><rect x="24" y="37" width="16" height="4.5" rx="2" fill="#9aa4b8"/><rect x="29.6" y="41.5" width="4.8" height="9" rx="2" fill="#5a3a5a"/></g>`;
+ const shield=(fill,emb)=>`<path d="M32 7 L52 14 Q52 40 32 57 Q12 40 12 14Z" ${fill?`fill="${fill}"`:''}/><path d="M32 12 L47 17.5 Q46.5 38 32 51" fill="rgba(255,255,255,.22)" stroke="none"/>${emb||''}`;
+ const flame=(cx,cy,s,c1,c2)=>`<g transform="translate(${cx} ${cy}) scale(${s})"><path d="M0 18 C-14 16 -16 2 -8 -6 C-8 2 -3 3 -3 -2 C-3 -10 2 -14 1 -22 C10 -14 16 -4 13 6 C11 14 6 18 0 18Z" fill="${c1||'#ff7a1a'}"/><path d="M0 15 C-7 13 -8 5 -3 0 C-2 5 2 5 2 1 C6 5 8 10 5 13 C4 14.5 2 15 0 15Z" fill="${c2||'#ffe066'}" stroke-width="1.5"/></g>`;
+ const bolt=(x,y,s,c)=>`<path transform="translate(${x} ${y}) scale(${s})" d="M4 -22 L-10 3 L-1 3 L-5 22 L11 -4 L2 -4 L7 -22Z" fill="${c||'#ffe94a'}"/>`;
+ const snow=(cx,cy,r,c)=>{ let d=''; for(let i=0;i<3;i++){ const a=i*Math.PI/3, x=Math.cos(a)*r, y=Math.sin(a)*r; d+=`M${(cx-x).toFixed(1)} ${(cy-y).toFixed(1)} L${(cx+x).toFixed(1)} ${(cy+y).toFixed(1)} `; for(const sg of [-1,1]){ const bx=cx+x*0.55*sg, by=cy+y*0.55*sg, p=a+Math.PI/2; const ex=Math.cos(a)*r*0.25*sg, ey=Math.sin(a)*r*0.25*sg; d+=`M${bx.toFixed(1)} ${by.toFixed(1)} L${(bx+ex+Math.cos(p)*r*0.22).toFixed(1)} ${(by+ey+Math.sin(p)*r*0.22).toFixed(1)} M${bx.toFixed(1)} ${by.toFixed(1)} L${(bx+ex-Math.cos(p)*r*0.22).toFixed(1)} ${(by+ey-Math.sin(p)*r*0.22).toFixed(1)} `; } } return st(d,c||'#e8f8ff',3.4); };
+ const cloud=(x,y,s,c)=>`<path transform="translate(${x} ${y}) scale(${s})" d="M-16 6 Q-22 6 -22 0 Q-22 -7 -14 -7 Q-12 -15 -3 -15 Q6 -15 8 -8 Q17 -9 18 -1 Q22 6 14 6Z" fill="${c||'#c8c8e8'}"/>`;
+ const gem=(cx,cy,w,h,c1,c2)=>`<polygon points="${cx},${cy-h} ${cx+w},${cy-h*0.25} ${cx},${cy+h} ${cx-w},${cy-h*0.25}" fill="${c1}"/><polygon points="${cx},${cy-h} ${cx+w},${cy-h*0.25} ${cx},${cy-h*0.1}" fill="${c2}" stroke-width="1.4"/><polygon points="${cx},${cy-h} ${cx-w},${cy-h*0.25} ${cx},${cy-h*0.1}" fill="rgba(255,255,255,.55)" stroke-width="1.4"/>`;
+ const heart=(cx,cy,s,c)=>`<path transform="translate(${cx} ${cy}) scale(${s})" d="M0 16 C-18 4 -20 -8 -12 -13 C-6 -17 -1 -12 0 -8 C1 -12 6 -17 12 -13 C20 -8 18 4 0 16Z" fill="${c}"/>`;
+ const cross=(cx,cy,r,w,c)=>`<path d="M${cx-w} ${cy-r} H${cx+w} V${cy-w} H${cx+r} V${cy+w} H${cx+w} V${cy+r} H${cx-w} V${cy+w} H${cx-r} V${cy-w} H${cx-w}Z" fill="${c}"/>`;
+ const skull=(cx,cy,s,c)=>`<g transform="translate(${cx} ${cy}) scale(${s})"><path d="M-14 2 Q-16 -18 0 -18 Q16 -18 14 2 Q14 8 8 9 L8 15 L-8 15 L-8 9 Q-14 8 -14 2Z" fill="${c||'#f0ead8'}"/><ellipse cx="-6" cy="-3" rx="4.2" ry="5" fill="${K}" stroke="none"/><ellipse cx="6" cy="-3" rx="4.2" ry="5" fill="${K}" stroke="none"/><path d="M0 4 L-2.5 8 L2.5 8Z" fill="${K}" stroke="none"/><path d="M-4 11 V15 M0 11 V15 M4 11 V15" stroke-width="1.6"/></g>`;
+ const G={
+  // ---------- armas y equipo ----------
+  sword:P=>sword(45,null,P.ac),
+  staff:P=>`<g transform="rotate(35 32 32)">${st('M32 22 L32 60','#8a5a2a',4.5)}<path d="M24 22 Q32 28 40 22 L38 18 Q32 22 26 18Z" fill="#f5c542"/><circle cx="32" cy="12" r="8.5" fill="${P.ac||'#ff8a3a'}"/><circle cx="29" cy="9.5" r="2.8" fill="rgba(255,255,255,.75)" stroke="none"/></g>`,
+  bow:P=>st('M20 7 Q54 32 20 57','#9a6a32',5)+`<path d="M21 8 L21 56" stroke="#f0e8d0" stroke-width="1.6" fill="none"/>`+arrow(10,32,54,32,'#e8eef8','#c8945a',P.ac||'#4ac06a'),
+  mace:P=>`<g transform="rotate(40 32 32)">${st('M32 26 L32 60','#8a5a2a',5)}${star(32,17,14,9,8,'#c8d0e0')}<circle cx="32" cy="17" r="7.5" fill="${P.ac||'#f5c542'}"/></g>`,
+  armor:P=>`<path d="M20 10 L26 8 Q32 13 38 8 L44 10 L54 18 L50 28 L46 26 L46 54 L18 54 L18 26 L14 28 L10 18Z"/><path d="M32 16 L32 52" stroke-width="2" fill="none"/><path d="M22 34 H42 M22 42 H42" stroke-width="2" fill="none" stroke="rgba(26,16,36,.6)"/><circle cx="32" cy="24" r="4" fill="${P.ac||'#f5c542'}"/>`,
+  helmet:P=>`<path d="M12 40 Q12 10 32 9 Q52 10 52 40 L52 50 L40 50 L40 38 L24 38 L24 50 L12 50Z"/><path d="M18 30 H46 L44 37 H20Z" fill="#2a2a40"/><path d="M32 2 Q36 8 32 12 Q28 8 32 2Z" fill="${P.ac||'#e84a4a'}"/><path d="M20 18 Q32 12 44 18" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="2"/>`,
+  amulet:P=>`<path d="M14 8 Q32 34 50 8" fill="none" stroke="${K}" stroke-width="5"/><path d="M14 8 Q32 34 50 8" fill="none" stroke="#f5c542" stroke-width="2.4" stroke-dasharray="3 2"/><circle cx="32" cy="40" r="13" fill="#f5c542"/>${gem(32,40,8,10,P.ac||'#c040ff','#ff9af0')}`,
+  potion:P=>`<path d="M26 8 H38 V20 Q52 26 50 40 Q48 56 32 56 Q16 56 14 40 Q12 26 26 20Z" fill="#dff4ff"/><path d="M16.5 38 Q24 34 32 38 Q40 42 47.5 37 Q47 54 32 54 Q17 54 16.5 38Z" fill="${P.ac||'#ff4a6a'}" stroke-width="2"/><rect x="24" y="4" width="16" height="6" rx="2" fill="#a0703a"/><circle cx="24" cy="44" r="2.5" fill="rgba(255,255,255,.7)" stroke="none"/><circle cx="36" cy="48" r="1.6" fill="rgba(255,255,255,.7)" stroke="none"/>`,
+  target:P=>`<circle cx="30" cy="34" r="20" fill="#f0f0f0"/><circle cx="30" cy="34" r="14" fill="#e84a4a"/><circle cx="30" cy="34" r="8" fill="#f0f0f0"/><circle cx="30" cy="34" r="3.5" fill="#e84a4a"/>`+arrow(56,8,32,32,'#e8eef8','#c8945a','#4ac06a'),
+  coin:P=>`<circle cx="32" cy="32" r="20" fill="#f5c542"/><circle cx="32" cy="32" r="14" fill="none" stroke="#a87a10" stroke-width="2"/>`+star(32,32,9,4,5,'#fff2a8'),
+  // ---------- materiales ----------
+  nut:P=>`<polygon points="${pts(32,32,22,22,3,0)}" fill="#c8ccd8"/><circle cx="32" cy="32" r="9" fill="#4a4a5a"/><circle cx="32" cy="32" r="9" fill="none" stroke="#8a8a9a" stroke-width="1.5" stroke-dasharray="2 2"/><path d="M16 26 L22 22" stroke="rgba(255,255,255,.7)" stroke-width="2" fill="none"/>`,
+  gel:P=>`<path d="M32 10 Q44 26 50 36 Q54 52 32 54 Q10 52 14 36 Q20 26 32 10Z" fill="#c070ff"/><ellipse cx="25" cy="34" rx="4" ry="7" fill="rgba(255,255,255,.55)" stroke="none"/><circle cx="38" cy="44" r="2.5" fill="rgba(255,255,255,.5)" stroke="none"/>`,
+  crystal:P=>`<polygon points="32,6 42,22 38,54 26,54 22,22" fill="#8ae8ff"/><polygon points="32,6 42,22 32,26" fill="#d8fbff" stroke-width="1.5"/><polygon points="16,26 24,34 22,54 14,54 12,36" fill="#5ac8f0"/><polygon points="48,22 54,34 52,54 44,54 42,32" fill="#5ac8f0"/>`,
+  block:P=>`<polygon points="32,10 52,20 32,30 12,20" fill="#f0b880"/><polygon points="12,20 32,30 32,54 12,44" fill="#c87a48"/><polygon points="52,20 32,30 32,54 52,44" fill="#a85a30"/><path d="M12 32 L32 42 L52 32 M22 25 L22 49 M42 25 L42 49" stroke="rgba(26,16,36,.5)" stroke-width="1.6" fill="none"/>`,
+  sparkm:P=>bolt(32,32,1,'#ffe94a')+spark(14,16,6)+spark(50,46,5)+spark(48,14,4),
+  core:P=>`<circle cx="32" cy="32" r="20" fill="#ff9a40"/><path d="M32 32 m-12 0 a12 12 0 1 1 12 12 a8 8 0 1 1 -8 -8 a4 4 0 1 1 4 4" fill="none" stroke="#7a2a00" stroke-width="2.6"/><circle cx="25" cy="23" r="4" fill="rgba(255,255,255,.6)" stroke="none"/>`,
+  dust:P=>spark(24,26,13,'#e8f0ff')+spark(44,20,8,'#c8d8ff')+spark(42,44,10,'#fff3c0')+spark(18,48,5,'#c8d8ff'),
+  // ---------- cargas ----------
+  soul:P=>gem(32,32,18,24,'#ff9a2a','#ffd08a')+spark(50,14,5),
+  spirit:P=>gem(32,32,18,24,'#3a8aff','#9ad0ff')+spark(14,14,5),
+  blessed:P=>`<path d="M14 30 Q4 24 6 14 Q14 20 20 24Z M50 30 Q60 24 58 14 Q50 20 44 24Z" fill="#f0f8ff"/>`+gem(32,34,15,21,'#5af0ff','#d8ffff')+spark(32,8,5,'#fff6a0'),
+  // ---------- skills: guerrero ----------
+  heroic:P=>sword(45,null,'#f5c542')+spark(47,16,8)+`<path d="M8 44 Q20 40 26 30" fill="none" stroke="#ffe066" stroke-width="2.4" stroke-dasharray="3 3"/>`,
+  whirl:P=>`<path d="M32 32 m-4 0 a4 4 0 1 1 8 0 a8 8 0 1 1 -16 0 a12 12 0 1 1 24 0 a16 16 0 1 1 -32 0 a20 20 0 1 1 40 0" fill="none" stroke="${K}" stroke-width="6"/><path d="M32 32 m-4 0 a4 4 0 1 1 8 0 a8 8 0 1 1 -16 0 a12 12 0 1 1 24 0 a16 16 0 1 1 -32 0 a20 20 0 1 1 40 0" fill="none" stroke="#bfe8ff" stroke-width="3"/>`+dagger(-30,10,-14,0.55)+dagger(150,-10,14,0.55),
+  dash:P=>`<path d="M30 14 L44 14 L44 40 L54 46 L54 52 L30 52Z" fill="#9a6a3a"/><rect x="28" y="10" width="18" height="6" rx="2" fill="#c8cbd8"/>`+st('M6 22 H22 M10 32 H24 M4 42 H22','#ffe066',3),
+  horn:P=>`<path d="M10 40 Q12 22 30 18 L52 8 L52 46 L30 36 Q22 36 22 44 L16 46Z" fill="#e8d8b0"/><path d="M30 18 L30 36" stroke-width="2" fill="none"/>`+st('M56 18 L60 14 M57 27 H62 M56 37 L60 41','#ffe066',2.6),
+  // maga
+  fireball:P=>flame(34,30,1.1)+st('M8 50 L18 42 M14 56 L22 48','#ff9a3a',3),
+  icespear:P=>`<g transform="rotate(45 32 32)"><polygon points="32,4 38,20 35,58 29,58 26,20" fill="#bff0ff"/><polygon points="32,4 38,20 32,24" fill="#ffffff" stroke-width="1.5"/></g>`+snow(14,48,7,'#e8f8ff'),
+  nova:P=>star(32,32,26,12,8,'#d8a8ff')+`<circle cx="32" cy="32" r="9" fill="#fff6ff"/>`+`<circle cx="32" cy="32" r="22" fill="none" stroke="#c080ff" stroke-width="2" stroke-dasharray="4 4"/>`,
+  manashield:P=>shield('#6a8aff',`<path d="M32 18 L38 32 L32 46 L26 32Z" fill="#c8f0ff" stroke-width="2"/>`),
+  // arquera
+  aimed:P=>`<circle cx="32" cy="32" r="18" fill="none" stroke="${K}" stroke-width="5"/><circle cx="32" cy="32" r="18" fill="none" stroke="#ff6a5a" stroke-width="2.6"/>`+st('M32 6 V16 M32 48 V58 M6 32 H16 M48 32 H58','#ff6a5a',2.6)+arrow(52,12,33,31),
+  multishot:P=>arrow(8,52,50,10)+arrow(8,40,54,24)+arrow(20,56,40,14),
+  stunarrow:P=>arrow(8,56,46,18)+star(48,14,9,4,5,'#ffe066')+star(16,16,6,3,5,'#ffe066')+star(52,40,5,2.5,5,'#ffe066'),
+  bandage:P=>`<g transform="rotate(-35 32 32)"><rect x="8" y="22" width="48" height="20" rx="10" fill="#f8e8d0"/><rect x="24" y="22" width="16" height="20" fill="#e8c8a8"/><circle cx="28" cy="28" r="1.5" fill="#b08a68" stroke="none"/><circle cx="36" cy="28" r="1.5" fill="#b08a68" stroke="none"/><circle cx="28" cy="36" r="1.5" fill="#b08a68" stroke="none"/><circle cx="36" cy="36" r="1.5" fill="#b08a68" stroke="none"/></g>`+cross(50,14,6,2,'#4ae07a'),
+  // clérigo
+  smite:P=>`<circle cx="32" cy="18" r="10" fill="#fff3a0"/>`+st('M32 30 L32 56 M24 30 L18 54 M40 30 L46 54','#ffe066',3)+st('M18 18 H10 M46 18 H54 M22 8 L16 2 M42 8 L48 2','#ffe066',2.4),
+  heal:P=>cross(32,32,20,7,'#4ae07a')+spark(50,14,7)+spark(14,50,5),
+  renew:P=>`<path d="M14 52 Q12 22 46 10 Q54 36 30 50 Q22 54 14 52Z" fill="#5ad06a"/><path d="M14 52 Q26 34 40 20" fill="none" stroke-width="2.4"/>`+spark(50,46,6,'#d8ffd8'),
+  holyshield:P=>shield('#f5c542',cross(32,30,11,4,'#fff8e0')),
+  // ---------- especializaciones ----------
+  towershield:P=>`<rect x="14" y="6" width="36" height="52" rx="6" fill="#6a8ad8"/><rect x="19" y="11" width="26" height="42" rx="4" fill="none" stroke="#d8e4ff" stroke-width="2"/>`+star(32,32,9,4,4,'#f5c542'),
+  holyhammer:P=>`<g transform="rotate(-35 32 32)">${st('M32 26 L32 60','#8a5a2a',5)}<rect x="16" y="8" width="32" height="18" rx="3" fill="#f0f0f8"/><rect x="28" y="8" width="8" height="18" fill="#f5c542"/></g>`+spark(52,12,7,'#fff6a0'),
+  voidblade:P=>sword(45,null,'#8a4aff').replace('M28.5 40','M28.5 40').replace('<path d="M28.5 40','<path fill="#5a2a8a" d="M28.5 40')+spark(48,14,6,'#c080ff'),
+  axe:P=>`<g transform="rotate(30 32 32)">${st('M32 14 L32 60','#8a5a2a',5)}<path d="M32 10 Q52 8 54 28 Q44 26 32 30Z" fill="#d8dce8"/><path d="M32 10 Q16 12 14 24 Q22 22 32 24Z" fill="#b8bcc8"/></g>`,
+  swords:P=>sword(40,null,'#f5c542')+sword(-40,null,'#f5c542'),
+  warhorn:P=>G.horn(P).replace('#e8d8b0','#d84a3a'),
+  dagger:P=>dagger(40)+`<path d="M44 14 Q50 20 46 28" fill="none" stroke="#ff5a5a" stroke-width="3"/>`,
+  stealth:P=>`<path d="M32 6 Q50 10 52 34 Q52 52 32 58 Q12 52 12 34 Q14 10 32 6Z" fill="#3a2a5a"/><path d="M20 30 Q32 22 44 30 Q32 44 20 30Z" fill="#14101f" stroke-width="2"/><ellipse cx="27" cy="31" rx="3" ry="2" fill="#c8a8ff" stroke="none"/><ellipse cx="37" cy="31" rx="3" ry="2" fill="#c8a8ff" stroke="none"/>`,
+  daggers:P=>dagger(165,-14,-4,0.78)+dagger(180,0,-8,0.78)+dagger(195,14,-4,0.78)+st('M8 56 Q32 50 56 56','#c8d0e0',2),
+  mark:P=>`<circle cx="32" cy="32" r="20" fill="none" stroke="${K}" stroke-width="5"/><circle cx="32" cy="32" r="20" fill="none" stroke="#ff4a4a" stroke-width="2.6"/><circle cx="32" cy="32" r="9" fill="#ff4a4a"/>`+st('M32 4 V18 M32 46 V60 M4 32 H18 M46 32 H60','#ffffff',2.4),
+  wolf:P=>`<path d="M12 8 L24 22 L40 22 L52 8 L50 34 Q46 50 32 56 Q18 50 14 34Z" fill="#9aa8c0"/><path d="M24 40 Q32 48 40 40 L36 48 Q32 52 28 48Z" fill="#e8eef8" stroke-width="2"/><polygon points="22,30 28,32 22,34" fill="#ffe066" stroke-width="1.5"/><polygon points="42,30 36,32 42,34" fill="#ffe066" stroke-width="1.5"/><ellipse cx="32" cy="40" rx="3.5" ry="2.6" fill="${K}"/>`,
+  poison:P=>arrow(8,56,48,16,'#7aff5a','#7a5a3a','#7a3aaa')+`<path d="M48 30 Q54 40 48 46 Q42 40 48 30Z" fill="#7aff5a"/><path d="M18 18 Q22 24 18 28 Q14 24 18 18Z" fill="#7aff5a"/>`,
+  pierce:P=>`<ellipse cx="22" cy="32" rx="4" ry="14" fill="none" stroke="#ffe066" stroke-width="2.4"/><ellipse cx="38" cy="32" rx="4" ry="14" fill="none" stroke="#ffe066" stroke-width="2.4"/>`+arrow(4,32,60,32),
+  lethal:P=>arrow(8,56,50,14,'#fff6a0','#c8945a','#ffe066')+star(50,14,10,4,5,'#fff6a0')+st('M10 44 L4 50 M18 52 L14 60','#ffe066',2),
+  arcanerain:P=>[14,30,46].map((x,i)=>arrow(x,6+i*4,x+6,40+i*4,'#d8a8ff','#a87aff','#ff9af0')).join('')+star(32,52,8,3,4,'#e8c8ff'),
+  agile:P=>`<path d="M18 16 L36 16 L36 40 L50 46 L50 54 L18 54Z" fill="#5ad07a"/><path d="M36 22 Q50 10 58 14 Q50 18 40 28Z M36 30 Q52 22 58 26 Q50 30 40 34Z" fill="#f0fff0"/>`+st('M4 30 H14 M6 40 H14','#ffffff',2.4),
+  volley:P=>arrow(6,46,52,22)+arrow(6,34,52,10)+arrow(10,58,56,34)+st('M30 6 Q42 4 50 8','#ffe066',2),
+  blaze:P=>flame(22,36,0.8)+flame(42,34,0.95)+flame(32,28,1.05,'#ff5a1a'),
+  meteor:P=>st('M8 8 L30 30','#ff9a3a',6)+st('M18 4 L34 22','#ffd060',3)+`<circle cx="38" cy="38" r="15" fill="#8a4a2a"/><circle cx="34" cy="34" r="4" fill="#5a2a1a" stroke-width="1.5"/><circle cx="44" cy="42" r="3" fill="#5a2a1a" stroke-width="1.5"/>`+flame(40,38,0.45,'#ff7a1a'),
+  storm:P=>cloud(32,22,1.15,'#8a7ab8')+bolt(26,42,0.6)+bolt(42,44,0.5),
+  iceprison:P=>`<polygon points="32,8 52,18 52,44 32,56 12,44 12,18" fill="#bfefff"/><polygon points="32,8 52,18 32,28 12,18" fill="#e8fbff" stroke-width="1.8"/><path d="M32 28 V56" stroke-width="1.8" fill="none"/>`+snow(32,38,8,'#5ab8e8'),
+  blizzard:P=>snow(32,30,20)+snow(14,52,6)+snow(52,52,5),
+  chain:P=>bolt(22,28,0.9)+bolt(44,36,0.8)+st('M30 20 Q36 24 38 30','#ffffff',1.8),
+  drain:P=>`<path d="M32 6 Q50 30 48 42 Q46 56 32 56 Q18 56 16 42 Q14 30 32 6Z" fill="#d82a3a"/><ellipse cx="26" cy="40" rx="3" ry="6" fill="rgba(255,255,255,.5)" stroke="none"/>`+st('M44 12 Q56 18 52 30','#ff9aa8',2.4),
+  raise:P=>skull(32,30,1.25)+st('M14 58 L22 50 M50 58 L42 50 M32 60 V54','#8a7ab8',3),
+  curse:P=>`<rect x="24" y="24" width="16" height="32" rx="3" fill="#6a4a8a"/><path d="M24 30 Q32 34 40 30" fill="none" stroke-width="2"/>`+flame(32,14,0.55,'#b05aff','#e8c8ff')+`<path d="M44 24 Q52 22 54 30 M12 40 Q8 34 14 30" fill="none" stroke="#b05aff" stroke-width="2.4"/>`,
+  prayer:P=>`<path d="M30 56 L30 30 Q30 16 24 12 Q20 20 20 34 L22 50Z M34 56 L34 30 Q34 16 40 12 Q44 20 44 34 L42 50Z" fill="#f8d8b0"/>`+st('M12 18 L18 22 M52 18 L46 22 M32 2 V8','#ffe066',2.4),
+  bigheal:P=>heart(32,34,1.3,'#ff5a7a')+cross(32,32,8,3,'#ffffff')+spark(52,12,6),
+  prophet:P=>`<polygon points="32,8 56,52 8,52" fill="#f5c542"/><path d="M18 38 Q32 26 46 38 Q32 50 18 38Z" fill="#fff8e0" stroke-width="2"/><circle cx="32" cy="38" r="4.5" fill="#3a8aff"/>`+st('M32 0 V4 M8 16 L12 20 M56 16 L52 20','#fff6a0',2),
+  roots:P=>`<path d="M32 6 C30 20 34 28 30 40 C26 50 18 52 10 56 M30 40 C36 48 46 50 56 56 M31 30 C24 30 18 26 12 30 M32 22 C38 22 44 18 50 22" fill="none" stroke="${K}" stroke-width="7"/><path d="M32 6 C30 20 34 28 30 40 C26 50 18 52 10 56 M30 40 C36 48 46 50 56 56 M31 30 C24 30 18 26 12 30 M32 22 C38 22 44 18 50 22" fill="none" stroke="#7a5a2a" stroke-width="4"/><path d="M50 22 Q56 16 58 22 Q54 26 50 22Z M12 30 Q6 24 4 30 Q8 34 12 30Z" fill="#5ad06a"/>`,
+  paw:P=>`<ellipse cx="32" cy="42" rx="14" ry="12" fill="#8a5a3a"/><ellipse cx="16" cy="26" rx="5.5" ry="7" fill="#8a5a3a"/><ellipse cx="26" cy="18" rx="5.5" ry="7" fill="#8a5a3a"/><ellipse cx="38" cy="18" rx="5.5" ry="7" fill="#8a5a3a"/><ellipse cx="48" cy="26" rx="5.5" ry="7" fill="#8a5a3a"/>`,
+  moon:P=>`<path d="M40 8 A24 24 0 1 0 54 44 A18 18 0 1 1 40 8Z" fill="#e8ecff"/>`+spark(48,16,6,'#fff6c0')+spark(52,30,3.5,'#fff6c0'),
+  quake:P=>`<polygon points="8,56 18,30 30,34 38,20 50,26 56,56" fill="#a88a6a"/><path d="M30 34 L26 46 L34 50 L30 56" fill="none" stroke-width="2.4"/>`+st('M12 18 L18 24 M32 6 V14 M52 14 L46 20','#ffe066',2.4),
+  thunder:P=>cloud(32,18,1.05,'#6a6a9a')+bolt(32,40,0.85,'#ffe94a')+spark(12,44,5,'#fff6a0')+spark(52,46,4,'#fff6a0'),
+  totem:P=>`<rect x="20" y="8" width="24" height="48" rx="4" fill="#9a6a3a"/><rect x="20" y="8" width="24" height="16" rx="4" fill="#5ad06a"/><circle cx="27" cy="16" r="2.6" fill="${K}" stroke="none"/><circle cx="37" cy="16" r="2.6" fill="${K}" stroke="none"/><path d="M24 32 H40 M24 44 H40" stroke-width="2" fill="none"/>`+cross(52,46,7,2.4,'#4ae07a'),
+  shout:P=>G.horn(P),
+  // ---------- interfaz ----------
+  bag:P=>`<path d="M14 26 Q14 14 32 14 Q50 14 50 26 L52 54 L12 54Z" fill="#c8402a"/><path d="M24 14 Q24 6 32 6 Q40 6 40 14" fill="none" stroke-width="3"/><rect x="22" y="30" width="20" height="12" rx="3" fill="#e86a4a"/>`,
+ };
+ const PAL={ // fondo [centro, borde] y color base del dibujo
+  weapon:['#4a4a7a','#14102a','#dfe6f5'], armor:['#3a5a7a','#101a2a','#c8d4e8'], jewel:['#5a3a7a','#1a1030','#f5c542'], potion:['#2a5a4a','#0a1a14','#ffffff'],
+  mat:['#4a3a2a','#1a120a','#f0e8d8'], charge:['#3a2a5a','#100a1a','#ffffff'],
+  war:['#8a2a2a','#2a0808','#e8eef8'], mage:['#5a2a8a','#180a2a','#ffe0a0'], arch:['#2a6a3a','#08200e','#e8eef8'], cler:['#8a6a1a','#2a1a04','#fff6c8'],
+  dark:['#3a2a5a','#0a0614','#c8a8ff'], nature:['#2a5a2a','#081808','#d8ffd8'], frost:['#2a5a8a','#081828','#e8f8ff'], fire:['#8a3a1a','#2a0a04','#ffe0a0'], storm:['#3a3a6a','#0a0a1e','#ffffff'] };
+ const SK={'Golpe Heroico':['heroic','war'],'Torbellino':['whirl','war'],'Carga':['dash','war'],'Grito de Batalla':['horn','war'],
+  'Bola de Fuego':['fireball','fire'],'Lanza de Escarcha':['icespear','frost'],'Nova Arcana':['nova','mage'],'Escudo de Maná':['manashield','mage'],
+  'Disparo Certero':['aimed','arch'],'Multidisparo':['multishot','arch'],'Flecha Aturdidora':['stunarrow','arch'],'Vendaje':['bandage','arch'],
+  'Castigo de Luz':['smite','cler'],'Sanar':['heal','nature'],'Renovación':['renew','nature'],'Escudo Divino':['holyshield','cler'],
+  'Muro de Escudos':['towershield','war'],'Martillo Sagrado':['holyhammer','cler'],'Hoja del Vacío':['voidblade','dark'],'Golpe Brutal':['axe','war'],'Tormenta de Espadas':['swords','war'],'Grito de Guerra':['warhorn','war'],
+  'Puñalada':['dagger','dark'],'Sigilo':['stealth','dark'],'Lluvia de Dagas':['daggers','dark'],'Marca del Cazador':['mark','arch'],'Llamar al Lobo':['wolf','nature'],'Flecha Venenosa':['poison','nature'],
+  'Tiro Perforante':['pierce','arch'],'Disparo Letal':['lethal','arch'],'Lluvia Arcana':['arcanerain','mage'],'Paso Ágil':['agile','nature'],'Ráfaga de Flechas':['volley','arch'],
+  'Llamarada':['blaze','fire'],'Meteoro':['meteor','fire'],'Tormenta Arcana':['storm','storm'],'Prisión de Hielo':['iceprison','frost'],'Ventisca':['blizzard','frost'],'Cadena de Rayos':['chain','storm'],
+  'Drenar Vida':['drain','dark'],'Alzar Esqueleto':['raise','dark'],'Maldición':['curse','dark'],'Plegaria':['prayer','cler'],'Gran Sanación':['bigheal','nature'],'Bendición del Profeta':['prophet','cler'],
+  'Raíces':['roots','nature'],'Forma de Oso':['paw','nature'],'Rayo Lunar':['moon','storm'],'Golpe de Tierra':['quake','nature'],'Furia del Trueno':['thunder','storm'],'Tótem Sanador':['totem','nature']};
+ const FX={slash:'heroic',whirl:'whirl',charge:'dash',shout:'horn',fire:'fireball',frost:'icespear',nova:'nova',shield:'manashield',arrow:'aimed',arrows:'multishot',heal:'heal',smite:'smite',renew:'renew'};
+ const cache={};
+ function url(glyph,pal,ac){ const k=glyph+'|'+pal+'|'+(ac||''); if(cache[k]) return cache[k]; const p=PAL[pal]||PAL.weapon;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><radialGradient id="b" cx="50%" cy="38%" r="72%"><stop offset="0" stop-color="${p[0]}"/><stop offset="1" stop-color="${p[1]}"/></radialGradient><linearGradient id="f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="${p[2]}"/></linearGradient></defs><rect x="1.5" y="1.5" width="61" height="61" rx="12" fill="url(#b)"/><g stroke="${K}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" fill="url(#f)">${(G[glyph]||G.sword)({ac})}</g><rect x="1.5" y="1.5" width="61" height="61" rx="12" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.4"/><path d="M8 14 Q32 2 56 14 Q32 9 8 14Z" fill="rgba(255,255,255,.14)"/></svg>`;
+  return cache[k]='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg); }
+ const img=(u,cls)=>`<img class="ico${cls?' '+cls:''}" src="${u}" alt="" draggable="false">`;
+ return {
+  sk:A=>{ if(!A) return ''; const m=SK[A.n]||[FX[A.fx]||'heroic','war']; return img(url(m[0],m[1])); },
+  mat:k=>{ const m={tuerca:'nut',gel:'gel',cristal:'crystal',bloque:'block',chispa:'sparkm',nucleo:'core',polvo:'dust'}[k]; return img(url(m||'dust','mat')); },
+  chg:k=>img(url({ss:'soul',sps:'spirit',bss:'blessed'}[k]||'soul','charge')),
+  slot:(s,c)=>{ if(s==='arma'){ const g={guerrero:'sword',maga:'staff',arquero:'bow',clerigo:'mace'}[c]||'sword'; return img(url(g,'weapon')); } return img(url({armadura:'armor',casco:'helmet',amuleto:'amulet'}[s]||'armor',s==='amuleto'?'jewel':'armor')); },
+  potion:()=>img(url('potion','potion')), target:()=>img(url('target','arch')), coin:()=>img(url('coin','jewel')),
+  raw:(g,p,ac)=>img(url(g,p,ac)), url };
+})();
+
 /* ---------------- WORLD ---------------- */
 const WS=520;
 const ZONES=[
@@ -1166,7 +1309,7 @@ joyEl.addEventListener('pointerdown',e=>{ e.stopPropagation(); joy.active=true; 
 joyEl.addEventListener('pointermove',e=>{ if(joy.active&&e.pointerId===joy.id) joyMove(e); });
 const joyEnd=e=>{ if(e.pointerId!==joy.id) return; joy.active=false; joy.x=joy.y=0; joyK.style.transform='translate(0,0)'; }; joyEl.addEventListener('pointerup',joyEnd); joyEl.addEventListener('pointercancel',joyEnd);
 function joyMove(e){ const r=joyEl.getBoundingClientRect(); let dx=e.clientX-(r.left+r.width/2), dy=e.clientY-(r.top+r.height/2); const m=r.width/2-10; const l=Math.hypot(dx,dy); if(l>m){dx*=m/l;dy*=m/l;} joy.x=dx/m; joy.y=dy/m; joyK.style.transform=`translate(${dx}px,${dy}px)`; }
-$('mbT').onclick=()=>cycleTarget(); $('mbP').onclick=()=>usePotion();
+$('mbT').innerHTML=ICO.target(); $('mbP').innerHTML=ICO.potion(); $('mbT').onclick=()=>cycleTarget(); $('mbP').onclick=()=>usePotion();
 $('muteb').onclick=()=>{ muted=!muted; $('muteb').textContent=muted?'🔇':'🔊'; if(master) master.gain.value=muted?0:0.4; };
 $('chatb').onclick=()=>{ const c=$('chat'); const vis=getComputedStyle(c).display!=='none'; c.style.display=vis?'none':'block'; if(!vis) $('chatin').focus(); };
 $('guideb').onclick=()=>openGuide(me&&me.cls); $('bagb').onclick=()=>toggleBag(); $('boardb').onclick=()=>toggleBoard(); $('charb').onclick=()=>toggleChar(); $('qualb').onclick=()=>{ const q=$('qpanel'); q.style.display=q.style.display==='block'?'none':'block'; renderQPanel(); }; $('tfinv').onclick=(e)=>{ e.stopPropagation(); inviteTarget(); };
@@ -1189,7 +1332,7 @@ const MOBMAT={soldadito:'tuerca',arana:'polvo',reyjuguete:'nucleo',chatarrin:'tu
 const RAR=[{n:'Normal',c:'#e8e8e8'},{n:'Mágico',c:'#7a9cff'},{n:'Raro',c:'#ffe066'},{n:'Único',c:'#e0a85a'}];
 const SLOTS={arma:{n:'Arma'},armadura:{n:'Armadura',i:'🥋'},casco:{n:'Casco',i:'⛑️'},amuleto:{n:'Amuleto',i:'📿'}};
 const WICON={guerrero:'🗡️',maga:'🪄',arquero:'🏹',clerigo:'🔨'};
-function slotIcon(s,c){ return s==='arma'?WICON[c||me.cls]:SLOTS[s].i; }
+function slotIcon(s,c){ return ICO.slot(s,c||me.cls); }
 const BASES={arma:{guerrero:['Espada Oxidada','Espada de Engranaje','Hoja de Cristal','Gran Espada Solar'],maga:['Varita de Rama','Bastón Estelar','Cetro de Cristal','Báculo de Tormenta'],arquero:['Arco Corto','Arco de Engranaje','Arco de Cristal','Arco Largo Solar'],clerigo:['Maza de Madera','Maza Solar','Martillo de Cristal','Lucero del Alba']},
  armadura:['Túnica de Viaje','Cota de Tuercas','Peto de Cristal','Coraza de Bloques'],casco:['Gorro de Lana','Yelmo de Lata','Casco de Cristal','Corona de Tormenta'],amuleto:['Colgante de Hilo','Amuleto de Gel','Talismán Estelar','Medallón del Multiverso']};
 const AFF={fue:{n:'Fuerza',s:'del Oso',v:l=>1+Math.round(l*0.6)},des:{n:'Destreza',s:'del Halcón',v:l=>1+Math.round(l*0.6)},vit:{n:'Vitalidad',s:'de la Ballena',v:l=>1+Math.round(l*0.6)},mag:{n:'Magia',s:'del Búho',v:l=>1+Math.round(l*0.6)},vel:{n:'Velocidad',s:'del Viento',v:l=>1+Math.round(l*0.45)},
@@ -1241,7 +1384,7 @@ function respec(){ me.at={fue:0,des:0,vit:0,mag:0,vel:0}; me.stp=(me.lv-1)*5; me
 /* ---- materiales ---- */
 const hasMats=m=>{ for(const k in m) if((me.mats[k]||0)<m[k]) return false; return true; };
 const payMats=m=>{ for(const k in m) me.mats[k]-=m[k]; };
-const matsStr=m=>Object.entries(m).map(([k,v])=>`<span style="color:${(me.mats[k]||0)>=v?'#bfffbf':'#ff9a9a'}" title="${MATS[k].n}">${MATS[k].i}${me.mats[k]||0}/${v}</span>`).join(' ');
+const matsStr=m=>Object.entries(m).map(([k,v])=>`<span style="color:${(me.mats[k]||0)>=v?'#bfffbf':'#ff9a9a'}" title="${MATS[k].n}">${ICO.mat(k)}${me.mats[k]||0}/${v}</span>`).join(' ');
 function giveItem(it){ if(me.inv.length<INV_MAX){ me.inv.push(it); } else addGround(me.x,me.z,{k:'i',it,lock:1}); logLine(`Obtienes: <span style="color:${RAR[it.r].c}">${esc(itemName(it))}</span>`,'loot'); bagDirty(); }
 /* ---- botín en el suelo (personal, como en los ARPG modernos) ---- */
 const grounds=[];
@@ -1285,7 +1428,7 @@ function renderBag(){ const b=$('bag'); let h=`<span class="x" data-act="close">
       h+=`<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">${bagSel.f==='inv'?'<button class="sbtn" data-act="equip">Equipar</button>':'<button class="sbtn" data-act="unequip">Quitar</button>'}${bagSel.f==='eq'&&it.s==='arma'?`<button class="sbtn gold" data-act="ench">📜 Encantar (${me.scr.en|0}) · ${Math.round(enchRate(it.en|0)*100)}%</button><button class="sbtn gold" data-act="bench">✨ Bendito (${me.scr.ben|0})</button>`:''}${tr?`<button class="sbtn gold" data-act="sell">Vender (${price(it)} 🪙)</button>`:''}<button class="sbtn red" data-act="drop">Tirar</button></div>${tr?'':'<div style="font-size:11px;opacity:.6;margin-top:4px">Para vender, acércate a Lumi o al herrero.</div>'}</div>`; }
     else h+=`<div style="font-size:11px;opacity:.65;margin-top:6px">Toca un objeto para ver sus propiedades. Los enemigos dejan objetos en el suelo: camina sobre ellos para recogerlos.</div>`;
   } else {
-    h+='<div style="margin-top:6px">'+Object.entries(MATS).map(([k,M])=>`<div class="mrow"><span style="font-size:20px">${M.i}</span><span style="flex:1"><b style="color:${M.c}">${M.n}</b><br><small style="opacity:.65">Lo sueltan: ${M.w}</small></span><b>${me.mats[k]||0}</b></div>`).join('')+'</div><div style="font-size:11px;opacity:.7;margin-top:6px">Cámbialos con la Capitana Lumi o úsalos con el Maestro Tornillo (herrero) para mejorar y forjar equipo.</div>';
+    h+='<div style="margin-top:6px">'+Object.entries(MATS).map(([k,M])=>`<div class="mrow"><span style="font-size:26px">${ICO.mat(k)}</span><span style="flex:1"><b style="color:${M.c}">${M.n}</b><br><small style="opacity:.65">Lo sueltan: ${M.w}</small></span><b>${me.mats[k]||0}</b></div>`).join('')+'</div><div style="font-size:11px;opacity:.7;margin-top:6px">Cámbialos con la Capitana Lumi o úsalos con el Maestro Tornillo (herrero) para mejorar y forjar equipo.</div>';
   }
   h+=`<div class="bfoot">🪙 ${me.gold} · 🧪 ${me.pot} · 📜 ${me.tp} ${me.tp?'<button class="sbtn" data-act="tp">Usar portal (R)</button>':''}</div>`;
   b.innerHTML=h;
@@ -1315,7 +1458,7 @@ function renderChar(){ const p=$('cpanel'); if(p.style.display!=='block') return
   else { const cap=skillCap(); h+=`<div style="margin:6px 0">Puntos de habilidad: <b style="color:#ffe066">${me.skp}</b> <small style="opacity:.6">(+1 por nivel · rango máximo actual ${cap})</small></div>`;
     AB().forEach((A,i)=>{ const r=me.skl[i]||1; const pow=Math.round(skillMul(i)*100); const ev=r>=10?'<span style="color:#e0a85a">Evolución II</span>':r>=5?'<span style="color:#7a9cff">Evolución I</span>':'';
       const eff=A.dm?`Poder ${pow}%`:A.heal||A.aoeHeal?`Sanación ${pow}%`:A.shield?`Escudo ${pow}%`:'';
-      h+=`<div class="arow"><span class="ai ${r>=10?'ev2':r>=5?'ev1':''}">${A.i}</span><span style="flex:1"><b>${A.n}</b> ${ev}<br><small style="opacity:.85">${abDesc(A).txt}</small><br><small style="opacity:.7">Rango ${r}/10 · ${eff}${A.cd?` · recarga ${skillCd(i).toFixed(1)} s`:''}</small></span>${me.skp&&r<cap?`<button class="pbtn" data-sk="${i}">+</button>`:''}</div>`; });
+      h+=`<div class="arow"><span class="ai ${r>=10?'ev2':r>=5?'ev1':''}">${ICO.sk(A)}</span><span style="flex:1"><b>${A.n}</b> ${ev}<br><small style="opacity:.85">${abDesc(A).txt}</small><br><small style="opacity:.7">Rango ${r}/10 · ${eff}${A.cd?` · recarga ${skillCd(i).toFixed(1)} s`:''}</small></span>${me.skp&&r<cap?`<button class="pbtn" data-sk="${i}">+</button>`:''}</div>`; });
     h+=`<div style="font-size:11px;opacity:.7;margin-top:6px">Cada rango: +15% de poder y −3% de recarga. Rango 5 → Evolución I (−20% recarga). Rango 10 → Evolución II (+25% de poder).</div>`; }
   p.innerHTML=h; p.querySelector('[data-x]').onclick=()=>{ p.style.display='none'; };
   p.querySelectorAll('[data-ct]').forEach(x=>x.onclick=()=>{ cpTab=x.dataset.ct; renderChar(); });
@@ -1336,7 +1479,7 @@ function shopDlg(title,render){ const m=$('menu'); const draw=()=>{ const r=rend
     $('shx').onclick=()=>{ m.style.display='none'; }; m.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{ const f=r.on[b.dataset.k]; if(f){ f(); recalc(); doSave(); bagDirty(); renderChar(); } draw(); }); }; draw(); }
 function talkSmith(){ shopDlg('⚒️ Maestro Tornillo',()=>{ const on={}; let h=`<div class="tabs"><button data-k="t_up" class="${smTab==='up'?'on':''}">Mejorar</button><button data-k="t_fo" class="${smTab==='fo'?'on':''}">Forjar</button></div>`;
   on.t_up=()=>{smTab='up'}; on.t_fo=()=>{smTab='fo'};
-  h+=`<div style="margin:6px 0;font-size:13px;opacity:.85">Tus materiales: ${Object.keys(MATS).map(k=>MATS[k].i+(me.mats[k]||0)).join(' ')} · 🪙 ${me.gold}</div>`;
+  h+=`<div style="margin:6px 0;font-size:13px;opacity:.85">Tus materiales: ${Object.keys(MATS).map(k=>ICO.mat(k)+(me.mats[k]||0)).join(' ')} · 🪙 ${me.gold}</div>`;
   if(smTab==='up'){ h+='<p style="margin:4px 0">"¡Tráeme tu equipo y lo dejo como nuevo! Cada mejora suma +12% a su daño o defensa base, hasta +5."</p>';
     const eqd=SLK.filter(s=>me.eq[s]); if(!eqd.length) h+='<p style="opacity:.7">No tienes nada equipado.</p>';
     for(const s of eqd){ const it=me.eq[s]; if((it.up||0)>=5){ h+=`<div class="srow"><span style="color:${RAR[it.r].c}">${slotIcon(s,it.c)} ${esc(itemName(it))}</span><span style="opacity:.7">Mejora máxima</span></div>`; continue; }
@@ -1670,7 +1813,7 @@ function chargeFlash(k){ const col=k==='ss'?0xffb040:k==='sps'?0x50c8ff:0x8affff
 function chargeMul(kind){ if(kind==='fis'){ if(chReady('ss')){ chUse('ss'); return 2; } return 1; }
   if(chReady('bss')){ chUse('bss'); return 2.5; } if(kind==='mag'&&chReady('sps')){ chUse('sps'); return 1.5; } return 1; }
 function chargeCastMul(){ if(chReady('bss')) return 0.6; if(chReady('sps')) return 0.85; return 1; }
-function chargeBarHTML(){ return Object.keys(CHG).map(k=>`<div class="ab chg ${me.cha&&me.cha[k]?'auto':''} ${primed[k]?'prim':''}" data-c="${k}" title="${CHG[k].n} (${GRADE_N[wGrade()]}) — toca: preparar · mantén o clic derecho: automático. ${CHG[k].d}">${CHG[k].i}<small class="chn">${chCount(k)}</small></div>`).join(''); }
+function chargeBarHTML(){ return Object.keys(CHG).map(k=>`<div class="ab chg ${me.cha&&me.cha[k]?'auto':''} ${primed[k]?'prim':''}" data-c="${k}" title="${CHG[k].n} (${GRADE_N[wGrade()]}) — toca: preparar · mantén o clic derecho: automático. ${CHG[k].d}">${ICO.chg(k)}<small class="chn">${chCount(k)}</small></div>`).join(''); }
 function bindChargeBar(){ $('bar').querySelectorAll('.chg').forEach(el=>{ let lt=null, long=false; const k=el.dataset.c;
   el.addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation(); long=false; lt=setTimeout(()=>{ long=true; toggleAutoCh(k); },500); });
   el.addEventListener('pointerup',e=>{ e.stopPropagation(); clearTimeout(lt); if(!long&&e.button!==2){ if(chCount(k)<=0){ toast('Sin '+CHG[k].n.toLowerCase()+' de grado '+GRADE_N[wGrade()],'Cómpralas al Comerciante Ramón'); return; } primed[k]=!primed[k]; SFX.coin(); refreshChargeBar(); } });
@@ -1892,7 +2035,7 @@ function selectJob(id){ const J=JT[id], step=(me.jp||[]).length+1, Rq=JOB_REQ[st
   me.gold-=Rq.g; payMats(Rq.m); me.jp=(me.jp||[]).concat([id]); me.job=me.jp.length; while(me.skl.length<4+me.job) me.skl.push(1); jobChanged(); }
 function resetJobs(){ const cost=1000; if(me.gold<cost){ toast('Necesitas 1000 de oro'); return; } me.gold-=cost; const refund=me.jp.length; me.jp=[]; me.job=0; me.skl=me.skl.slice(0,4); if(PET){ scene.remove(PET.R.g); PET=null; } me.mats.cristal=(me.mats.cristal||0)+(refund>=1?5:0); me.mats.bloque=(me.mats.bloque||0)+(refund>=1?3:0); if(refund>=2){ me.mats.polvo=(me.mats.polvo||0)+4; me.mats.nucleo=(me.mats.nucleo||0)+1; } jobChanged(true); }
 function jobChanged(reset){ scene.remove(hero.g); hero=buildHero(me.cls,me.race,me.ci,me.skin,me.jp,me.sex); scene.add(hero.g); hero.g.position.set(me.x,me.y,me.z); recalc(); buildBar(); SFX.lvl(); spawnFx('lvl',me.x,me.y,me.z); burst(me.x,me.y+1.5,me.z,0xfff2a0,50,9,0.6); ringWave(me.x,me.z,6,0xffe066); shake(0.3);
-  if(reset){ toast('Camino reiniciado','Vuelve a elegir tu evolución'); } else { const J=JT[me.jp[me.jp.length-1]]; toast('¡Ahora eres '+J.n+'!','Nueva habilidad: '+J.sk.i+' '+J.sk.n+' (tecla '+(5+me.jp.length)+')'); logMsg(`¡Evolucionaste a ${J.n}!`,'sys'); }
+  if(reset){ toast('Camino reiniciado','Vuelve a elegir tu evolución'); } else { const J=JT[me.jp[me.jp.length-1]]; toast('¡Ahora eres '+J.n+'!','Nueva habilidad: '+ICO.sk(J.sk)+' '+J.sk.n+' (tecla '+(5+me.jp.length)+')'); logMsg(`¡Evolucionaste a ${J.n}!`,'sys'); }
   doSave(true); }
 function jobTreeHTML(on){ const jp=me.jp||[], step=jp.length; let h=`<h3 style="margin:12px 0 4px;color:var(--gold);font-size:15px">Árbol de clases · ${clsName(me.cls,me.sex)}</h3><p style="margin:2px 0 6px;font-size:13px">Clase actual: <b>${jobName(me.cls,jp)}</b></p>`;
   if(step<2){ const opts=step===0?firstJobs(me.cls):secondJobs(jp[0]); const Rq=JOB_REQ[step+1]; const ok=me.lv>=Rq.lv&&me.gold>=Rq.g&&hasMats(Rq.m);
@@ -1901,7 +2044,7 @@ function jobTreeHTML(on){ const jp=me.jp||[], step=jp.length; let h=`<h3 style="
   else h+='<p style="font-size:13px;opacity:.8">Alcanzaste la especialización máxima. ✨</p>';
   if(step>0){ h+=`<div class="srow"><span>Reiniciar tu camino de clase (te devuelve los materiales)</span><span>🪙1000</span><button class="sbtn red" data-k="resetjob">Reiniciar</button></div>`; on.resetjob=resetJobs; }
   // mapa completo
-  h+=`<details style="margin-top:8px"><summary style="cursor:pointer;color:#ffe066">Ver el árbol completo de ${clsName(me.cls,me.sex)}</summary><div class="tree">`+firstJobs(me.cls).map(f=>`<div class="tbranch ${jp[0]===f?'mine':''}"><b>${JT[f].sk.i} ${JT[f].n}</b> <small>${JT[f].role}</small><div>`+secondJobs(f).map(s2=>`<span class="tleaf ${jp[1]===s2?'mine':''}">${JT[s2].sk.i} ${JT[s2].n}<small>${JT[s2].role}</small></span>`).join('')+'</div></div>').join('')+'</div></details>';
+  h+=`<details style="margin-top:8px"><summary style="cursor:pointer;color:#ffe066">Ver el árbol completo de ${clsName(me.cls,me.sex)}</summary><div class="tree">`+firstJobs(me.cls).map(f=>`<div class="tbranch ${jp[0]===f?'mine':''}"><b>${ICO.sk(JT[f].sk)} ${JT[f].n}</b> <small>${JT[f].role}</small><div>`+secondJobs(f).map(s2=>`<span class="tleaf ${jp[1]===s2?'mine':''}">${ICO.sk(JT[s2].sk)} ${JT[s2].n}<small>${JT[s2].role}</small></span>`).join('')+'</div></div>').join('')+'</div></details>';
   return h; }
 
 /* ================== ARENA PvP SEGURA ================== */
@@ -1984,11 +2127,11 @@ function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;',
 function sysMsg(t){ logLine(esc(t),'sys'); } function logMsg(t,c){ logLine(esc(t),c); }
 function logChat(n,t,mine){ const d=document.createElement('div'); d.className=mine?'say me':'say'; const b=document.createElement('b'); b.textContent='['+n+']: '; d.appendChild(b); d.appendChild(document.createTextNode(t)); const l=$('log'); l.appendChild(d); l.scrollTop=l.scrollHeight; }
 function updateQuest(){ const Q=QUESTS[me.q]; $('quest').innerHTML=Q?`<h4>📜 ${Q.t}</h4><div>${Q.d}</div><div class="${me.qp>=Q.n?'done':''}">${Q.k==='item'?'Fragmentos':'Derrotados'}: ${me.qp}/${Q.n}${me.qp>=Q.n?' ✔ — vuelve con la Capitana Lumi (F)':''}</div>`:`<h4>📜 Sin misiones</h4><div>¡Completaste la historia! Caza con tus amigos.</div>`; }
-function buildBar(){ const L=AB(); $('bar').innerHTML=L.slice(0,4).map((a,i)=>`<div class="ab" data-a="${i}" title="${a.n}"><span class="k">${i+1}</span>${a.i}<div class="cd"></div></div>`).join('')+`<div class="ab" data-a="p" title="Poción (5)"><span class="k">5</span>🧪<small id="potn"></small><div class="cd"></div></div>`+L.slice(4).map((a,i)=>`<div class="ab job" data-a="${i+4}" title="${a.n}"><span class="k">${i+6}</span>${a.i}<div class="cd"></div></div>`).join('')+'<span class="barsep"></span>'+chargeBarHTML();
+function buildBar(){ const L=AB(); $('bar').innerHTML=L.slice(0,4).map((a,i)=>`<div class="ab" data-a="${i}" title="${a.n}"><span class="k">${i+1}</span>${ICO.sk(a)}<div class="cd"></div></div>`).join('')+`<div class="ab" data-a="p" title="Poción (5)"><span class="k">5</span>${ICO.potion()}<small id="potn"></small><div class="cd"></div></div>`+L.slice(4).map((a,i)=>`<div class="ab job" data-a="${i+4}" title="${a.n}"><span class="k">${i+6}</span>${ICO.sk(a)}<div class="cd"></div></div>`).join('')+'<span class="barsep"></span>'+chargeBarHTML();
   bindChargeBar(); bindAbTips(); }
 function toggleBag(){ const b=$('bag'); if(b.style.display==='block'){ b.style.display='none'; return; } b.style.display='block'; renderBag(); }
 function updHUD(){
-  const st=me.st; $('pfn').textContent=me.name; $('pflv').textContent=me.lv; $('pfp').firstChild.textContent=CLASSES[me.cls].icon;
+  const st=me.st; $('pfn').textContent=me.name; $('pflv').textContent=me.lv; if($('pfpi').dataset.c!==me.cls){ $('pfpi').dataset.c=me.cls; $('pfpi').innerHTML=ICO.slot('arma',me.cls); }
   $('pfhp').style.width=(me.hp/st.mhp*100)+'%'; $('pfhpt').textContent=Math.ceil(me.hp)+' / '+st.mhp+(shield>0?' (+'+shield+')':'');
   $('pfmp').style.width=(me.mp/st.mmp*100)+'%'; $('pfmpt').textContent=Math.floor(me.mp)+' / '+st.mmp;
   $('xpi').style.width=(me.lv>=MAXLV?100:me.xp/xpNext(me.lv)*100)+'%';
@@ -2287,11 +2430,11 @@ function abDesc(A){ const L=[]; const pct=v=>Math.round(v*100)+'%';
   if(A.fx==='shout'&&A.heal&&!A.dm&&!A.buff) L.unshift('Grito que te devuelve el ánimo.');
   const meta=[A.r>0?`Alcance ${A.r} m`:'Sobre ti', A.cast?`Carga ${A.cast} s (quieto)`:'Instantánea', A.cd?`Recarga ${A.cd} s`:'Sin recarga', `Energía ${A.cost}`];
   return {txt:L.join(' '),meta:meta.join(' · ')}; }
-function abCard(A,key){ const D=abDesc(A); return `<div class="gsk"><span class="gi">${A.i}</span><div><b>${A.n}</b>${key?` <kbd>${key}</kbd>`:''}<div>${D.txt}</div><small>${D.meta}</small></div></div>`; }
+function abCard(A,key){ const D=abDesc(A); return `<div class="gsk"><span class="gi">${ICO.sk(A)}</span><div><b>${A.n}</b>${key?` <kbd>${key}</kbd>`:''}<div>${D.txt}</div><small>${D.meta}</small></div></div>`; }
 /* tooltip al mantener presionada una skill (o pasar el mouse) */
 function showAbTip(el,a){ const tip=$('abtip'); let h;
-  if(a==='p') h=`<b>🧪 Poción</b><div>Recupera el 45% de tu vida al instante. Te quedan ${me.pot}.</div><small>Recarga 10 s · Tecla 5 o Q</small>`;
-  else { const i=+a, A=AB()[i]; if(!A) return; const D=abDesc(A), r=(me.skl&&me.skl[i])||1; h=`<b>${A.i} ${A.n}</b> <span style="opacity:.7">· Rango ${r}/10 · Poder ${Math.round(skillMul(i)*100)}%</span><div>${D.txt}</div><small>${D.meta}</small>`; }
+  if(a==='p') h=`<b>${ICO.potion()} Poción</b><div>Recupera el 45% de tu vida al instante. Te quedan ${me.pot}.</div><small>Recarga 10 s · Tecla 5 o Q</small>`;
+  else { const i=+a, A=AB()[i]; if(!A) return; const D=abDesc(A), r=(me.skl&&me.skl[i])||1; h=`<b>${ICO.sk(A)} ${A.n}</b> <span style="opacity:.7">· Rango ${r}/10 · Poder ${Math.round(skillMul(i)*100)}%</span><div>${D.txt}</div><small>${D.meta}</small>`; }
   tip.innerHTML=h; tip.style.display='block'; const r=el.getBoundingClientRect(); const w=tip.offsetWidth; tip.style.left=clamp(r.left+r.width/2-w/2,6,innerWidth-w-6)+'px'; tip.style.top=Math.max(6,r.top-tip.offsetHeight-10)+'px'; }
 function hideAbTip(){ $('abtip').style.display='none'; }
 function bindAbTips(){ $('bar').querySelectorAll('.ab:not(.chg)').forEach(el=>{ const a=el.dataset.a; const fire=()=>{ if(a==='p') usePotion(); else useAbility(+a); };
@@ -2369,7 +2512,7 @@ const TUT_STEPS=[
  {t:'2 · Mirar alrededor',d:()=>isTouch?'Arrastra un dedo por la pantalla para girar la cámara. Pellizca para acercar o alejar.':'Arrastra con el mouse para girar la cámara. La rueda acerca o aleja.',chk:T=>T.cam>1.2},
  {t:'3 · Elegir un enemigo',d:()=>`Sigue la flecha dorada hasta un Chatarrín (nivel 1–3) y ${isTouch?'tócalo o pulsa el botón 🎯':'haz clic sobre él o pulsa Tab'}.`,chk:T=>target&&target.kind==='mob',arrow:true},
  {t:'4 · Ataque automático',d:'Acércate al enemigo: tu personaje ataca solo mientras esté seleccionado. Fíjate en la animación de tu clase.',chk:T=>T.hits>=2,arrow:true},
- {t:'5 · Habilidades',d:()=>`Usa la habilidad 1 (${AB()[0].i} ${AB()[0].n}). ${isTouch?'Mantén presionado':'Pasa el mouse sobre'} cualquier botón de la barra para ver qué hace.`,chk:T=>T.skill,arrow:true},
+ {t:'5 · Habilidades',d:()=>`Usa la habilidad 1 (${ICO.sk(AB()[0])} ${AB()[0].n}). ${isTouch?'Mantén presionado':'Pasa el mouse sobre'} cualquier botón de la barra para ver qué hace.`,chk:T=>T.skill,arrow:true},
  {t:'6 · Poción',d:'Cuando tengas poca vida usa la poción 🧪 (tecla 5 o el botón de la barra). Úsala una vez ahora.',chk:T=>T.pot,skip:true},
  {t:'7 · Misiones',d:'El panel de la izquierda muestra tu misión. Cúmplela y vuelve con quien te la dio: da mucha experiencia y oro. Habla con los personajes del Pueblo tocándolos o con F.',btn:'Entendido'},
  {t:'8 · Tu personaje',d:'En 👤 repartes los puntos de atributos y de skill cada vez que subes de nivel. En 🎒 están tu equipo y objetos. En 📖 Guía tienes todas las skills explicadas.',btn:'Entendido'},
@@ -2399,6 +2542,6 @@ showTitle();
 requestAnimationFrame(frame);
 window.__mmo={setTarget:(t)=>{target=t},dbg:()=>({acts:myActs.length,seen:JSON.stringify(actSeqSeen),cds:cds.slice(),gcd,mp:me.mp,tgt:target}),get me(){return me},get state(){return state},get amHost(){return amHost},get myPeer(){return myPeer},peersMap,mobState,useAbility,autoTarget,startGame:()=>{ me=newChar('Prueba','guerrero','humano',0,0); startGame(); },setMe:(o)=>Object.assign(me,o),get target(){return target}};
 </script>
-<div style="position:fixed;left:6px;bottom:4px;font-size:10px;opacity:.45;color:#fff;pointer-events:none;z-index:99">v2026.11.17 · GitHub</div>
+<div style="position:fixed;left:6px;bottom:4px;font-size:10px;opacity:.45;color:#fff;pointer-events:none;z-index:99">v2026.11.18 · GitHub</div>
 </body>
 </html>
