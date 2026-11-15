@@ -150,8 +150,24 @@ input.name{background:#0a0818;border:2px solid var(--line);color:#fff;border-rad
 #menu.fadeout{animation:fo .7s forwards}@keyframes fo{to{opacity:0}}
 .glass.confirm{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(90vw,340px);z-index:5;text-align:center;display:flex;flex-direction:column;gap:8px}
 @media (max-width:640px){#menu.mcreate .cpanel{left:6px;right:6px;width:auto;top:auto;bottom:6px;max-height:52vh}.slotc{width:30vw;padding:7px 6px}.slotc .sname{font-size:13px}}
+
+#abtip{position:fixed;z-index:60;display:none;max-width:min(320px,92vw);background:linear-gradient(160deg,rgba(40,26,70,.96),rgba(14,10,28,.97));border:1px solid var(--gold);border-radius:12px;padding:9px 12px;color:#f3eadb;font-size:13px;line-height:1.35;box-shadow:0 8px 30px rgba(0,0,0,.6);pointer-events:none}
+#abtip b{color:var(--gold);font-size:14px}#abtip div{margin:4px 0}#abtip small{color:#9fd0ff}
+#guide{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:10px}
+#guide .gbox{position:relative;width:min(760px,100%);max-height:92vh;display:flex;flex-direction:column;background:linear-gradient(160deg,rgba(40,26,70,.97),rgba(14,10,28,.98));border:1px solid var(--gold);border-radius:16px;padding:14px 16px;color:#f3eadb;box-shadow:0 10px 50px rgba(0,0,0,.7)}
+#guide h2{margin:0 0 8px;font-family:'Cinzel',serif;color:var(--gold);font-size:22px}#guide .x{position:absolute;right:14px;top:10px;cursor:pointer;font-size:22px}
+.gtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.gtabs button{padding:7px 11px;border-radius:9px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#eee;font-weight:800;cursor:pointer;font-size:13px}.gtabs button.on{background:linear-gradient(#f5c542,#b8860b);color:#2a1800;border-color:#ffd870}
+.gbody{overflow:auto;padding-right:4px;-webkit-overflow-scrolling:touch}.gd{font-size:14px;line-height:1.45;opacity:.92;margin:6px 0}.gh{font-family:'Cinzel',serif;color:#cdb8ff;font-weight:700;margin:14px 0 6px;font-size:15px;letter-spacing:.04em}
+.gstats{font-size:13px;color:#9fe0ff;margin:4px 0}.gsk{display:flex;gap:10px;align-items:flex-start;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 10px;margin:6px 0;font-size:13px;line-height:1.35}
+.gsk .gi{font-size:26px;width:36px;text-align:center;flex:none}.gsk b{color:#ffe6a0}.gsk small{color:#9fd0ff}.gsk kbd{font-size:11px;background:#2a2050;border:1px solid #5a4a90;border-radius:4px;padding:0 5px;margin-left:4px}
+.gtip{background:rgba(245,197,66,.12);border:1px solid rgba(245,197,66,.4);border-radius:10px;padding:8px 10px;font-size:13px;margin:8px 0}
+.gjob{border-left:3px solid var(--gold);padding:4px 0 4px 10px;margin:10px 0}.gjob p{font-size:13px;margin:2px 0 4px;opacity:.9}.gjt{font-weight:900;color:#ffe066;font-size:15px}.gjt span{font-weight:600;color:#cdb8ff;font-size:12px}
+.gsub{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;margin-top:4px}.gjob2{border-left:2px solid #7a6aff;padding-left:8px}
+#tut{position:absolute;left:50%;top:84px;transform:translateX(-50%);width:min(440px,92vw);display:none;padding:12px 14px;z-index:30;border:2px solid var(--gold);box-shadow:0 0 24px rgba(245,197,66,.35)}
+#tut .tt{font-family:'Cinzel',serif;font-weight:900;color:var(--gold);font-size:17px}#tut .td{font-size:14px;line-height:1.4;margin:6px 0 8px}#tut .tb{display:flex;align-items:center;gap:10px;flex-wrap:wrap}#tut .tw{font-weight:800;font-size:13px;color:#9fe0ff}#tut .tp{margin-left:auto;font-size:11px;opacity:.6}
+@media (max-width:700px){ #tut{top:auto;bottom:150px} }
 </style>
-<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><meta name="theme-color" content="#120624"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Multiverso"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"></head>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><meta name="theme-color" content="#120624"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Multiverso"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="/visit.js" data-game="mmo" defer></script></head>
 <body>
 <canvas id="gl"></canvas><div id="vig" style="position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 58%,rgba(10,5,30,.38) 100%)"></div><canvas id="ov"></canvas>
 <div id="ui">
@@ -162,7 +178,8 @@ input.name{background:#0a0818;border:2px solid var(--line);color:#fff;border-rad
  <div id="pinv" class="panel"></div>
  <div id="cpanel" class="panel"></div>
  <div id="mm" class="panel"><canvas id="mmc" width="280" height="280"></canvas><div id="zone">Pueblo Central</div></div>
- <div id="topb"><button id="bagb" title="Bolso (B)">🎒</button><button id="charb" title="Personaje (C)">👤<i class="dot" id="chardot"></i></button><button id="boardb" title="Tablero (T)">🏆</button><button id="chatb" title="Chat">💬</button><button id="muteb" title="Sonido">🔊</button><button id="qualb" title="Calidad gráfica">⚙️</button></div>
+ <div id="topb"><button id="bagb" title="Bolso (B)">🎒</button><button id="charb" title="Personaje (C)">👤<i class="dot" id="chardot"></i></button><button id="boardb" title="Tablero (T)">🏆</button><button id="chatb" title="Chat">💬</button><button id="muteb" title="Sonido">🔊</button><button id="qualb" title="Calidad gráfica">⚙️</button><button id="guideb" title="Guía de skills">📖</button></div>
+ <div id="tut" class="panel"></div>
  <div id="qpanel" class="panel"></div>
  <div id="buffs"></div>
  <div id="arenahud" class="panel"></div>
@@ -177,7 +194,7 @@ input.name{background:#0a0818;border:2px solid var(--line);color:#fff;border-rad
  <div id="toast"></div>
  <div id="dead"><div>HAS CAÍDO</div><br><button class="btn" id="revive">Reaparecer en el Pueblo</button></div>
 </div>
-<div id="menu"></div><div id="title"></div>
+<div id="menu"></div><div id="title"></div><div id="guide"></div><div id="abtip"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
@@ -715,12 +732,14 @@ function buildHero(cls,race,ci,skin,job,sex){ const jpArr=parseJP(job); job=jpAr
 
   // armas (estilizadas)
   const rh=R.arms[0].hand, lh=R.arms[1].hand;
+  if(cls==='arquero'){ const nk=arrowMesh(1); nk.position.set(-0.16,0.69,0.47); nk.rotation.y=-0.25; nk.visible=false; torso.add(nk); R.nock=nk; nk.traverse(o=>o.userData.keep=1); nk.userData.keep=1; }
   if(cls==='guerrero'){ const sw=new THREE.Group(); const bl=new THREE.Mesh(new THREE.BoxGeometry(0.1,1.15,0.03),TM(0xe8ecf8,0x202838)); bl.position.y=-0.72; sw.add(bl); const tip=cone(0.07,0.18,0xe8ecf8,4,0x202838); tip.position.y=-1.38; tip.rotation.x=Math.PI; sw.add(tip);
     const gd=cap(0.04,0.3,gold); gd.rotation.z=Math.PI/2; gd.position.y=-0.12; sw.add(gd); const gem=sph(0.045,0xd83a3a,0x600000,8); gem.position.y=-0.12; gem.position.z=0.04; sw.add(gem); const grip=cyl(0.03,0.03,0.18,0x4a2a1a,6); sw.add(grip);
     sw.rotation.x=Math.PI; sw.position.y=-0.02; rh.add(sw); R.weapon=sw;
     const shd=lathe('shield',[[0,0.03],[0.3,0.02],[0.34,-0.02],[0,-0.04]],0x2e60ce,18); shd.rotation.z=Math.PI/2; shd.position.set(-0.07,0,0.08); lh.add(shd); const em=sph(0.08,gold,0x3a2a00,10); em.position.set(-0.12,0,0.08); lh.add(em); }
   else if(cls==='maga'){ const st=cyl(0.03,0.04,1.55,0x6a4022,6); st.position.y=-0.15; rh.add(st); const cr=new THREE.Mesh(new THREE.TorusGeometry(0.13,0.025,6,18),TM(gold,0x3a2a00)); cr.position.y=0.66; rh.add(cr); const orb=sph(0.11,0xff8a3a,0xff5a00,12); orb.position.y=0.66; rh.add(orb); R.orb=orb; R.weapon=st; }
-  else if(cls==='arquero'){ const bw=new THREE.Mesh(new THREE.TorusGeometry(0.6,0.03,6,24,Math.PI*0.9),TM(0x6a4022)); bw.rotation.z=Math.PI/2+0.15; bw.position.set(0,0,0.05); lh.add(bw); const strg=cyl(0.005,0.005,1.1,0xffffff,3); strg.position.set(0,0,0.05-0.0); lh.add(strg); const qv=cap(0.08,0.5,0x6a4022); qv.position.set(0.14,0.45,-0.22); qv.rotation.z=0.35; torso.add(qv); R.weapon=bw; }
+  else if(cls==='arquero'){ const bg=new THREE.Group(); const tg=new THREE.TorusGeometry(0.6,0.03,8,28,Math.PI*0.9); tg.rotateZ(-Math.PI*0.45); tg.translate(-0.6,0,0); tg.rotateZ(-Math.PI/2); tg.rotateY(Math.PI/2); const bw=new THREE.Mesh(tg,TM(0x6a4022)); bg.add(bw);
+    const sg=new THREE.CylinderGeometry(0.005,0.005,1.19,4); sg.translate(-0.506,0,0); sg.rotateZ(-Math.PI/2); sg.rotateY(Math.PI/2); const strg=new THREE.Mesh(sg,new THREE.MeshBasicMaterial({color:0xf8f0e0})); bg.add(strg); bg.rotation.x=-Math.PI/2; lh.add(bg); R.bowG=bg; bg.userData.keep=1; bw.userData.keep=1; strg.userData.keep=1; const qv=cap(0.08,0.5,0x6a4022); qv.position.set(0.14,0.45,-0.22); qv.rotation.z=0.35; torso.add(qv); R.weapon=bw; }
   else { const mc=cyl(0.035,0.035,0.7,0x8a6a3a,6); mc.position.y=-0.15; rh.add(mc); const hd2=new THREE.Mesh(new THREE.OctahedronGeometry(0.13),TM(gold,0x664400)); hd2.position.y=-0.55; rh.add(hd2); R.weapon=mc; const bk=box(0.24,0.3,0.07,0x8a2a2a); bk.position.set(0,-0.08,0.1); lh.add(bk); }
   // evolución visual de clase (job change)
   if(job>=1){ for(const a of R.arms){ const p=sph(0.13,robot?0x50f0ff:gold,robot?0x1a6070:0x3a2a00,12); p.scale.set(1.15,0.6,1.05); p.position.set(a.s*0.03,0.06,0); a.sh.add(p); }
@@ -736,17 +755,20 @@ function buildHero(cls,race,ci,skin,job,sex){ const jpArr=parseJP(job); job=jpAr
   R.animate=(dt,moving,speed)=>{ R.t+=dt*(moving?speed:1); const t=R.t;
     if(R.state==='dead'){ g.rotation.z=lerp(g.rotation.z,Math.PI/2,0.1); hip.position.y=lerp(hip.position.y,0.35,0.1); return; } g.rotation.z=lerp(g.rotation.z,0,0.2);
     const ph=t*7.5; const run=moving?1:0; const br=Math.sin(R.t*2.2);
+    if(R.atkT>0&&!R.akOn){ R.akOn=true; R.ak=0; R.akDur=ATK_DUR[cls]||0.5; R.akKind=R.atkKind||'auto'; R.atkKind=null; } R.atkT=0;
+    let AP=null; if(R.akOn){ R.ak+=dt; const k=R.ak/R.akDur; if(k>=1) R.akOn=false; else AP=attackPose(cls,R.akKind,k,R); } if(R.nock) R.nock.visible=!!(AP&&AP.nock); if(R.bowG) R.bowG.rotation.x=lerp(R.bowG.rotation.x,AP?0:-Math.PI/2,0.35);
     hip.position.y=(stance&&!run?1.0:1.05)+(run?Math.abs(Math.sin(ph))*0.09:br*0.012);
     tb.scale.set(1+br*0.012*(1-run),1+br*0.015*(1-run),0.78+br*0.01*(1-run)); head.rotation.x=lerp(head.rotation.x,run?0.08:br*0.03,0.1);
     R.legs.forEach((l,i)=>{ const p=Math.sin(ph+(i?Math.PI:0)); l.th.rotation.x=lerp(l.th.rotation.x,run*p*0.9+(stance&&!run?(i?0.25:-0.2):0),0.3); l.th.rotation.z=lerp(l.th.rotation.z,stance&&!run?(i?-0.12:0.12):0,0.2); l.kn.rotation.x=lerp(l.kn.rotation.x,run*Math.max(0,-Math.cos(ph+(i?Math.PI:0)))*1.2+(stance&&!run?0.25:0),0.3); });
     torso.rotation.x=lerp(torso.rotation.x,run*0.18+(stance&&!run?0.06:0),0.2); torso.rotation.y=lerp(torso.rotation.y,run?Math.sin(ph)*0.12:(stance?-0.25:0),0.2);
+    if(AP){ if(AP.spin!=null) torso.rotation.y=AP.spin; else if(AP.ty!=null) torso.rotation.y=lerp(torso.rotation.y,AP.ty,0.45); if(AP.tx!=null) torso.rotation.x=lerp(torso.rotation.x,AP.tx,0.4); } head.rotation.y=lerp(head.rotation.y,AP&&AP.head!=null?AP.head:0,0.35);
     if(R.cape) R.cape.rotation.x=-(run*0.5+Math.sin(R.t*3)*0.04); if(R.pony) R.pony.rotation.x=0.9+Math.sin(R.t*(run?9:2.5))*(run?0.25:0.06); if(R.hair) R.hair.rotation.z=Math.sin(R.t*(run?8:1.5))*(run?0.03:0.01); if(R.tail){ R.tail.rotation.z=Math.sin(R.t*(run?7:1.8))*(run?0.35:0.25); R.tail.rotation.x=-2.3+Math.sin(R.t*1.1)*0.12-run*0.4; }
     R.arms.forEach((a,i)=>{ let tx=run*Math.sin(ph+(i?0:Math.PI))*0.8, tz=a.s*(0.12+br*0.01), ex=-0.35;
       if(stance&&!run){ tx=i?-0.5:-0.9; ex=i?-0.9:-1.2; tz=a.s*0.25; }
       if(R.castT>0){ tx=-2.5; tz=a.s*0.4; ex=-0.2; }
-      if(R.atkT>0&&i===0){ const k=R.atkT/0.45; const e2=k*k*(3-2*k); tx=-2.9*e2+1.3*(1-e2); ex=-0.15; tz=a.s*0.5*e2; }
-      a.sh.rotation.x=lerp(a.sh.rotation.x,tx,0.38); a.sh.rotation.z=lerp(a.sh.rotation.z,tz,0.3); a.el.rotation.x=lerp(a.el.rotation.x,ex,0.32); });
-    if(R.atkT>0) R.atkT-=dt; if(R.castT>0) R.castT-=dt;
+      let sp=0.38; if(AP&&AP.a[i]){ tx=AP.a[i].x; tz=AP.a[i].z; ex=AP.a[i].e; sp=0.55; }
+      a.sh.rotation.x=lerp(a.sh.rotation.x,tx,sp); a.sh.rotation.z=lerp(a.sh.rotation.z,tz,sp*0.8); a.el.rotation.x=lerp(a.el.rotation.x,ex,sp*0.85); });
+    if(R.castT>0) R.castT-=dt;
     if(R.orb) R.orb.material=R.castT>0?TM(0xffd060,0xffa000):TM(0xff8a3a,0xff5a00); };
   return R; }
 
@@ -1041,7 +1063,7 @@ function useAbility(i){
 function allyTarget(){ if(target&&target.kind==='pl') return target.peer; return myPeer; }
 function doEffect(A,i){
   const st=me.st; const base=st.dmg*(0.9+Math.random()*0.2); const crit=Math.random()<(st.crit||0.1); const mul=crit?(st.critM||1.8):1; const sm=skillMul(i); const ck=A.dm?((A.mag||!FIGHTER(me.cls))?'mag':'fis'):((A.heal||A.aoeHeal)?'heal':null); const cm=ck?chargeMul(ck):1;
-  combatT=6; hero.atkT=0.45; facing();
+  combatT=6; hero.atkKind=A.fx; hero.atkT=0.45; facing(); if(TUT) TUT.skill=true;
   if(A.buff||A.pet||A.totem){ jobSpecial(A); if(!A.dm&&!A.heal&&!A.aoeHeal) { sfxFor(A.fx); return; } }
   if(A.heal&&!A.ally){ const v=Math.round(st.mhp*A.heal*sm*st.heal*cm); healSelf(v); SFX.heal(); spawnFx('heal',me.x,me.y,me.z); }
   if(A.shield){ shield=Math.round(st.mhp*A.shield*sm); shieldT=12; SFX.heal(); spawnFx('shield',me.x,me.y,me.z); toast(A.n); }
@@ -1058,14 +1080,14 @@ function doEffect(A,i){
     const act={k:'d',m:ids.slice(0,12),v:dmg,ab:i,th:me.cls==='guerrero'?2.5:1}; if(A.stun) act.st=A.stun; if(A.slow) act.sl=A.slow; myAct(act);
     for(const id of ids){ const ms=mobState.get(id); addFloat(ms.x,heightAt(ms.x,ms.z)+2.4*MOBT[SPAWNS[id].type].size,ms.z,(crit?'¡'+dmg+'!':String(dmg)),crit?'#ffe066':'#ffffff',crit); }
     if(crit) shake(0.22); if(A.aoe){ const p=A.aoeAtTarget?targetPos():me; if(p) ringWave(p.x,p.z,A.aoe,me.cls==='maga'?0xc080ff:me.cls==='clerigo'?0xffe066:0xffb060); shake(0.15); }
-    jobAfterHit(A,ids,dmg); sfxFor(A.fx); visualFor(myPeer,A.fx,ids); }
+    jobAfterHit(A,ids,dmg); sfxFor(A.fx); visualFor(myPeer,A.fx,ids); if(TUT) TUT.hits++; }
 }
 function sfxFor(fx){ ({slash:SFX.swing,whirl:SFX.swing,charge:SFX.swing,fire:SFX.fire,frost:SFX.frost,nova:SFX.frost,arrow:SFX.arrow,arrows:SFX.arrow,smite:SFX.heal,auto:SFX.swing,autor:SFX.arrow})[fx]?.(); }
 function autoAttack(dt){
   if(target&&target.kind==='pl'&&!me.dead&&!casting){ arenaAuto(dt); return; }
   if(!target||target.kind!=='mob'||me.dead||casting) return; const ms=mobState.get(target.id); if(!ms||ms.dead) return; const C=CLASSES[me.cls];
   autoT-=dt; if(autoT>0) return; if(!inRange(C.range)) return; autoT=C.auto/(me.st.aspd||1); combatT=6;
-  const acr=Math.random()<(me.st.crit||0.1); const dmg=Math.round(me.st.dmg*(0.8+Math.random()*0.3)*(acr?(me.st.critM||1.8):1)*chargeMul('fis')*stealthHit()*markMul(target.id)); if(acr) shake(0.14); if(me.st.ls>0) me.hp=Math.min(me.st.mhp,me.hp+dmg*me.st.ls); myAct({k:'d',m:[target.id],v:dmg,ab:-1,th:me.cls==='guerrero'?2:1}); hero.atkT=0.45; facing();
+  const acr=Math.random()<(me.st.crit||0.1); const dmg=Math.round(me.st.dmg*(0.8+Math.random()*0.3)*(acr?(me.st.critM||1.8):1)*chargeMul('fis')*stealthHit()*markMul(target.id)); if(acr) shake(0.14); if(me.st.ls>0) me.hp=Math.min(me.st.mhp,me.hp+dmg*me.st.ls); myAct({k:'d',m:[target.id],v:dmg,ab:-1,th:me.cls==='guerrero'?2:1}); hero.atkKind='auto'; hero.atkT=0.45; if(TUT) TUT.hits++; facing();
   addFloat(ms.x,heightAt(ms.x,ms.z)+2.2*MOBT[SPAWNS[target.id].type].size,ms.z,acr?'¡'+dmg+'!':String(dmg),acr?'#ffe066':'#dddddd',acr);
   const ranged=C.range>6; sfxFor(ranged?'autor':'auto'); visualFor(myPeer,ranged?(me.cls==='maga'?'fireball_s':me.cls==='clerigo'?'smite_s':'arrow'):'slash',[target.id]);
 }
@@ -1104,7 +1126,11 @@ function visualFor(peer,fx,ids){ // proyectiles desde un jugador hacia objetivos
   const proj={fire:[0xff6a1a,0.6],fireball_s:[0xff8a3a,0.35],frost:[0x9fe8ff,0.5],arrow:[0xd8c090,0.18],arrows:[0xd8c090,0.18],smite:[0xffe066,0.55],smite_s:[0xffe066,0.3]}[fx];
   if(fx==='whirl'||fx==='nova'){ if(peer!==myPeer) spawnFx(fx,src.x,src.y-1.6,src.z); return; }
   if(!proj) return;
-  for(const id of ids.slice(0,6)){ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:GLOW,color:proj[0],transparent:true,blending:THREE.AdditiveBlending,depthWrite:false})); s.scale.setScalar(proj[1]*3); s.position.set(src.x,src.y,src.z); scene.add(s); projectiles.push({s,id,t:0,from:{...src}}); } }
+  const shooter=peer===myPeer?me.cls:(peersMap.get(peer)?.pres?.c); const ry=peer===myPeer?(hero&&hero.g.rotation.y):(peersMap.get(peer)?.model?.g.rotation.y); const isArrow=fx==='arrow'||fx==='arrows';
+  if(ry!=null){ src.x+=Math.sin(ry)*0.75; src.z+=Math.cos(ry)*0.75; } if(isArrow) src.y-=0.15;
+  const delay=(SHOT_DELAY[shooter]||0)*2.2;
+  ids.slice(0,6).forEach((id,n)=>{ let s; if(isArrow){ s=arrowMesh(1.4); } else { s=new THREE.Sprite(new THREE.SpriteMaterial({map:GLOW,color:proj[0],transparent:true,blending:THREE.AdditiveBlending,depthWrite:false})); s.scale.setScalar(proj[1]*3); }
+    s.position.set(src.x,src.y,src.z); s.visible=false; scene.add(s); projectiles.push({s,id,t:-delay-n*0.12,from:{...src},arrow:isArrow}); }); }
 /* ---------------- ENTRADA ---------------- */
 const keys={}; let camYaw=Math.PI, camPitch=0.42, camDist=11, drag=null, joy={x:0,y:0,active:false,id:null};
 addEventListener('keydown',e=>{ if(document.activeElement===$('chatin')){ if(e.key==='Enter'){ sendChat(); } if(e.key==='Escape') $('chatin').blur(); return; }
@@ -1143,12 +1169,12 @@ function joyMove(e){ const r=joyEl.getBoundingClientRect(); let dx=e.clientX-(r.
 $('mbT').onclick=()=>cycleTarget(); $('mbP').onclick=()=>usePotion();
 $('muteb').onclick=()=>{ muted=!muted; $('muteb').textContent=muted?'🔇':'🔊'; if(master) master.gain.value=muted?0:0.4; };
 $('chatb').onclick=()=>{ const c=$('chat'); const vis=getComputedStyle(c).display!=='none'; c.style.display=vis?'none':'block'; if(!vis) $('chatin').focus(); };
-$('bagb').onclick=()=>toggleBag(); $('boardb').onclick=()=>toggleBoard(); $('charb').onclick=()=>toggleChar(); $('qualb').onclick=()=>{ const q=$('qpanel'); q.style.display=q.style.display==='block'?'none':'block'; renderQPanel(); }; $('tfinv').onclick=(e)=>{ e.stopPropagation(); inviteTarget(); };
+$('guideb').onclick=()=>openGuide(me&&me.cls); $('bagb').onclick=()=>toggleBag(); $('boardb').onclick=()=>toggleBoard(); $('charb').onclick=()=>toggleChar(); $('qualb').onclick=()=>{ const q=$('qpanel'); q.style.display=q.style.display==='block'?'none':'block'; renderQPanel(); }; $('tfinv').onclick=(e)=>{ e.stopPropagation(); inviteTarget(); };
 $('revive').onclick=()=>{ me.dead=false; hero.state='idle'; me.hp=Math.round(me.st.mhp*0.6); me.mp=Math.round(me.st.mmp*0.6); me.x=rnd(-4,4); me.z=8; $('dead').style.display='none'; target=null; };
 $('chatin').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); sendChat(); } });
 function sendChat(){ const v=$('chatin').value.trim().slice(0,120); $('chatin').value=''; if(!v){ $('chatin').blur(); return; } sayText=v; sayN++; sayAt=performance.now(); logChat(me.name,v,true); if(isTouch) $('chatin').blur(); }
 let sayAt=0;
-function usePotion(){ if(me.dead) return; if(me.pot<=0){ toast('No tienes pociones'); return; } if(potCd>0) return; me.pot--; potCd=10; healSelf(Math.round(me.st.mhp*0.45)); SFX.heal(); spawnFx('heal',me.x,me.y,me.z); }
+function usePotion(){ if(me.dead) return; if(me.pot<=0){ toast('No tienes pociones'); return; } if(potCd>0) return; me.pot--; potCd=10; if(TUT) TUT.pot=true; healSelf(Math.round(me.st.mhp*0.45)); SFX.heal(); spawnFx('heal',me.x,me.y,me.z); }
 let potCd=0;
 /* ================== SISTEMAS ARPG (atributos, habilidades, botín, herrero, grupo) ================== */
 const MAXLV=20, INV_MAX=24;
@@ -1289,7 +1315,7 @@ function renderChar(){ const p=$('cpanel'); if(p.style.display!=='block') return
   else { const cap=skillCap(); h+=`<div style="margin:6px 0">Puntos de habilidad: <b style="color:#ffe066">${me.skp}</b> <small style="opacity:.6">(+1 por nivel · rango máximo actual ${cap})</small></div>`;
     AB().forEach((A,i)=>{ const r=me.skl[i]||1; const pow=Math.round(skillMul(i)*100); const ev=r>=10?'<span style="color:#e0a85a">Evolución II</span>':r>=5?'<span style="color:#7a9cff">Evolución I</span>':'';
       const eff=A.dm?`Poder ${pow}%`:A.heal||A.aoeHeal?`Sanación ${pow}%`:A.shield?`Escudo ${pow}%`:'';
-      h+=`<div class="arow"><span class="ai ${r>=10?'ev2':r>=5?'ev1':''}">${A.i}</span><span style="flex:1"><b>${A.n}</b> ${ev}<br><small style="opacity:.7">Rango ${r}/10 · ${eff}${A.cd?` · recarga ${skillCd(i).toFixed(1)} s`:''}</small></span>${me.skp&&r<cap?`<button class="pbtn" data-sk="${i}">+</button>`:''}</div>`; });
+      h+=`<div class="arow"><span class="ai ${r>=10?'ev2':r>=5?'ev1':''}">${A.i}</span><span style="flex:1"><b>${A.n}</b> ${ev}<br><small style="opacity:.85">${abDesc(A).txt}</small><br><small style="opacity:.7">Rango ${r}/10 · ${eff}${A.cd?` · recarga ${skillCd(i).toFixed(1)} s`:''}</small></span>${me.skp&&r<cap?`<button class="pbtn" data-sk="${i}">+</button>`:''}</div>`; });
     h+=`<div style="font-size:11px;opacity:.7;margin-top:6px">Cada rango: +15% de poder y −3% de recarga. Rango 5 → Evolución I (−20% recarga). Rango 10 → Evolución II (+25% de poder).</div>`; }
   p.innerHTML=h; p.querySelector('[data-x]').onclick=()=>{ p.style.display='none'; };
   p.querySelectorAll('[data-ct]').forEach(x=>x.onclick=()=>{ cpTab=x.dataset.ct; renderChar(); });
@@ -1959,7 +1985,7 @@ function sysMsg(t){ logLine(esc(t),'sys'); } function logMsg(t,c){ logLine(esc(t
 function logChat(n,t,mine){ const d=document.createElement('div'); d.className=mine?'say me':'say'; const b=document.createElement('b'); b.textContent='['+n+']: '; d.appendChild(b); d.appendChild(document.createTextNode(t)); const l=$('log'); l.appendChild(d); l.scrollTop=l.scrollHeight; }
 function updateQuest(){ const Q=QUESTS[me.q]; $('quest').innerHTML=Q?`<h4>📜 ${Q.t}</h4><div>${Q.d}</div><div class="${me.qp>=Q.n?'done':''}">${Q.k==='item'?'Fragmentos':'Derrotados'}: ${me.qp}/${Q.n}${me.qp>=Q.n?' ✔ — vuelve con la Capitana Lumi (F)':''}</div>`:`<h4>📜 Sin misiones</h4><div>¡Completaste la historia! Caza con tus amigos.</div>`; }
 function buildBar(){ const L=AB(); $('bar').innerHTML=L.slice(0,4).map((a,i)=>`<div class="ab" data-a="${i}" title="${a.n}"><span class="k">${i+1}</span>${a.i}<div class="cd"></div></div>`).join('')+`<div class="ab" data-a="p" title="Poción (5)"><span class="k">5</span>🧪<small id="potn"></small><div class="cd"></div></div>`+L.slice(4).map((a,i)=>`<div class="ab job" data-a="${i+4}" title="${a.n}"><span class="k">${i+6}</span>${a.i}<div class="cd"></div></div>`).join('')+'<span class="barsep"></span>'+chargeBarHTML();
-  bindChargeBar(); $('bar').querySelectorAll('.ab:not(.chg)').forEach(el=>el.addEventListener('pointerdown',e=>{ e.preventDefault(); const a=el.dataset.a; if(a==='p') usePotion(); else useAbility(+a); })); }
+  bindChargeBar(); bindAbTips(); }
 function toggleBag(){ const b=$('bag'); if(b.style.display==='block'){ b.style.display='none'; return; } b.style.display='block'; renderBag(); }
 function updHUD(){
   const st=me.st; $('pfn').textContent=me.name; $('pflv').textContent=me.lv; $('pfp').firstChild.textContent=CLASSES[me.cls].icon;
@@ -2006,7 +2032,7 @@ function updatePeers(dt){
     // acciones: visuales y curaciones dirigidas a mí
     const acts=p.acts||[]; if(!(e.peer in visSeen)){ visSeen[e.peer]=acts.reduce((m,x)=>Math.max(m,x.s||0),0); } const vs=visSeen[e.peer]; let mx=vs;
     for(const a of acts){ if(a.s<=vs) continue; mx=Math.max(mx,a.s);
-      if(a.k==='d'){ M.atkT=0.45; const A=abFor(p.c,p.j)[a.ab]; const fx=a.ab<0?(CLASSES[p.c]&&CLASSES[p.c].range>6?(p.c==='maga'?'fireball_s':p.c==='clerigo'?'smite_s':'arrow'):'slash'):(A?A.fx:'slash'); visualFor(e.peer,fx,a.m||[]); }
+      if(a.k==='d'){ const A=abFor(p.c,p.j)[a.ab]; M.atkKind=a.ab<0?'auto':(A?A.fx:'auto'); M.atkT=0.45; const fx=a.ab<0?(CLASSES[p.c]&&CLASSES[p.c].range>6?(p.c==='maga'?'fireball_s':p.c==='clerigo'?'smite_s':'arrow'):'slash'):(A?A.fx:'slash'); visualFor(e.peer,fx,a.m||[]); }
       if(a.k==='pv'){ if(a.to===myPeer){ const k=e.peer; if((pvSeen[k]||0)<a.s){ pvSeen[k]=a.s; pvpHit(clamp(+a.v||0,0,4000),e.peer,a); } } else { const te=peersMap.get(a.to); if(te&&te.pres){ burst(te.rx??te.pres.x,heightAt(te.pres.x,te.pres.z)+1.3,te.rz??te.pres.z,0xffe8b0,6,5,0.3); } } M.atkT=0.45; }
       if(a.k==='h'&&a.to===myPeer){ const k=e.peer; if((healSeen[k]||0)<a.s){ healSeen[k]=a.s; healSelf(clamp(+a.v||0,0,2000)); SFX.heal(); spawnFx('heal',me.x,me.y,me.z); logMsg(`${clean(p.n)} te sana.`,'loot'); } } }
     visSeen[e.peer]=mx;
@@ -2048,8 +2074,10 @@ function tick(dt){
   updatePeers(dt); updGround(dt); checkInvites(); updDungeon(dt); updArena(dt); updJobs(dt);
   SMITH.R.animate(dt,false,1); if(SELENE.R){ SELENE.R.animate(dt,false,1); RAMON.R.animate(dt,false,1); SELENE.ring.rotation.y+=dt*0.5; } SMITH.glow.material.opacity=0.7+Math.sin(performance.now()/90)*0.15+Math.random()*0.1;
   // proyectiles
-  for(const p of projectiles){ p.t+=dt*2.2; const ms=mobState.get(p.id); if(!ms){ p.t=2; continue; } const tx=ms.x,tz=ms.z,ty=heightAt(tx,tz)+1.2*MOBT[SPAWNS[p.id].type].size; const u=Math.min(1,p.t);
-    p.s.position.set(lerp(p.from.x,tx,u),lerp(p.from.y,ty,u)+Math.sin(u*Math.PI)*1.2,lerp(p.from.z,tz,u)); if(u>=1){ p.t=9; } }
+  for(const p of projectiles){ p.t+=dt*(p.arrow?3.2:2.2); if(p.t<0){ p.s.visible=false; continue; } p.s.visible=true; const ms=mobState.get(p.id); if(!ms){ p.t=9; continue; } const tx=ms.x,tz=ms.z,ty=heightAt(tx,tz)+1.2*MOBT[SPAWNS[p.id].type].size; const u=Math.min(1,p.t);
+    const arc=p.arrow?0.5:1.2; p.s.position.set(lerp(p.from.x,tx,u),lerp(p.from.y,ty,u)+Math.sin(u*Math.PI)*arc,lerp(p.from.z,tz,u));
+    if(p.arrow){ const u2=Math.min(1,u+0.05); p.s.lookAt(lerp(p.from.x,tx,u2),lerp(p.from.y,ty,u2)+Math.sin(u2*Math.PI)*arc,lerp(p.from.z,tz,u2)); }
+    if(u>=1){ p.t=9; if(p.arrow) burst(tx,ty,tz,0xffe0a0,5,3,0.25); } }
   for(const p of projectiles) if(p.t>=2){ scene.remove(p.s); } for(let i=projectiles.length-1;i>=0;i--) if(projectiles[i].t>=2) projectiles.splice(i,1);
   for(const f of fxList){ f.t+=dt; const k=f.t/f.life; if(f.ring&&f.ring.isMesh){ f.ring.scale.setScalar(1+k*f.aoe); f.ring.material.opacity=1-k; } if(f.kind==='lvl'){ f.g.position.y+=dt*2; } if(f.t>f.life){ scene.remove(f.g); f.dead=true; } } for(let i=fxList.length-1;i>=0;i--) if(fxList[i].dead) fxList.splice(i,1);
   if(FOUNTAIN_ORB){ FOUNTAIN_ORB.rotation.y+=dt; FOUNTAIN_ORB.position.y=5.4+Math.sin(performance.now()/600)*0.3; }
@@ -2097,7 +2125,7 @@ function drawOverlay(){
   if(flash>0){ oc.fillStyle=`rgba(255,255,220,${flash*0.5})`; oc.fillRect(0,0,innerWidth,innerHeight); flash-=1/60; }
 }
 let mmT=0;
-function frame(now){ const dt=Math.min(0.05,(now-last)/1000); last=now; try{ auTick(dt); auListener(); }catch(e){}
+function frame(now){ const dt=Math.min(0.05,(now-last)/1000); last=now; try{ auTick(dt); auListener(); }catch(e){} try{ if(TUT&&state==='play') tutTick(dt); }catch(e){ console.warn(e); }
   if(state==='play'){ tick(dt); mmT+=dt; if(mmT>0.2){ mmT=0; drawMinimap(); } drawOverlay(); }
   else if(state==='menu'){ if((MENU.mode==='select'||MENU.mode==='create')&&STAGE.g){ updStage(dt); } else { const t=now/1000; camera.position.set(Math.cos(t*0.05)*60,26+Math.sin(t*0.1)*6,Math.sin(t*0.05)*60); camera.lookAt(0,4,0); } }
   updateAtmos(dt); if(state==='menu') menuAtmos(); updFeel(dt); updOcclusion(dt); updGlowers(dt); updFps(dt); renderFrame(); requestAnimationFrame(frame); }
@@ -2134,8 +2162,9 @@ function startGame(){
   buildBar(); updateQuest(); $('ui').style.display='block';
   if(isTouch){ $('joy').style.display='block'; $('mobbtns').style.display='flex'; }
   state='play'; sysMsg(`Bienvenido a Multiverso Online, ${me.name}.`); sysMsg('Habla con la Capitana Lumi (signo ! amarillo) junto a la fuente. El Maestro Tornillo (herrero) mejora y forja equipo.'); if(me.stp||me.skp) sysMsg('Tienes puntos sin asignar: abre 👤 (tecla C).');
-  if(!room) sysMsg('Modo individual: el multijugador se activa cuando abres el enlace compartido con tu cuenta de Claude.');
+  if(!room) sysMsg('Modo individual: no hay conexión con el servidor de jugadores en este momento.');
   doSave(true);
+  if((typeof MENU!=='undefined'&&MENU.forceTut)||(!me.tut&&me.lv<=2)){ if(typeof MENU!=='undefined') MENU.forceTut=false; setTimeout(()=>{ if(state==='play') startTutorial(true); },1200); }
 }
 /* ================== PORTADA, CUENTAS Y SELECCIÓN DE PERSONAJES ================== */
 const MENU={mode:'title',slots:[null,null,null],sel:0,guest:false,busy:false};
@@ -2209,10 +2238,10 @@ function renderSelect(){ const m=$('menu'); m.style.display='flex'; m.className=
   const d=MENU.slots[MENU.sel];
   m.innerHTML=`<div class="stop"><span class="who">${MENU.guest?'👤 Invitado':'👤 '+esc(API().user||'')}</span><button class="link" id="lout">${MENU.guest?'Iniciar sesión':'Cerrar sesión'}</button></div>
    <div class="sbottom"><div class="slots">${[0,1,2].map(i=>`<div class="slotc ${i===MENU.sel?'on':''} ${MENU.slots[i]?'':'empty'}" data-s="${i}">${slotLine(MENU.slots[i])}</div>`).join('')}</div>
-   <div class="sacts">${d?`<button class="btn big glow" id="enter">⚔️ Entrar al mundo</button><button class="btn small danger" id="del">Borrar</button>`:`<button class="btn big glow" id="newc">✨ Crear personaje</button>`}</div></div>`;
+   <div class="sacts">${d?`<button class="btn big glow" id="enter">⚔️ Entrar al mundo</button><button class="btn small" id="tutb" title="Entrar con el tutorial guiado">🎓 Tutorial</button><button class="btn small" id="gdb" title="Guía de clases y skills">📖</button><button class="btn small danger" id="del">Borrar</button>`:`<button class="btn big glow" id="newc">✨ Crear personaje</button>`}</div></div>`;
   m.querySelectorAll('[data-s]').forEach(e=>{ e.onclick=()=>{ MENU.sel=+e.dataset.s; uiSnd('sel'); renderSelect(); }; e.onpointerenter=()=>uiSnd('hover'); });
   $('lout').onclick=async()=>{ if(!MENU.guest&&API()) await API().logout(); MENU.guest=false; if(API()) showLogin(); else showSelect(); };
-  if(d){ $('enter').onclick=()=>enterWorld(MENU.sel); $('del').onclick=()=>confirmDelete(MENU.sel); } else $('newc').onclick=()=>showCreate(MENU.sel); }
+  if(d){ $('enter').onclick=()=>enterWorld(MENU.sel); $('tutb').onclick=()=>{ MENU.forceTut=true; enterWorld(MENU.sel); }; $('gdb').onclick=()=>openGuide(d.cls); $('del').onclick=()=>confirmDelete(MENU.sel); } else $('newc').onclick=()=>showCreate(MENU.sel); }
 function confirmDelete(i){ const d=MENU.slots[i]; const m=$('menu'); const box=document.createElement('div'); box.className='glass confirm'; box.innerHTML=`<div>¿Borrar a <b>${esc(d.name)}</b> (nivel ${d.lv})? No se puede deshacer.</div><input id="cdel" placeholder="Escribe el nombre para confirmar"><div style="display:flex;gap:8px;justify-content:center;margin-top:8px"><button class="btn small danger" id="cy">Borrar</button><button class="btn small" id="cn">Cancelar</button></div>`; m.appendChild(box);
   $('cn').onclick=()=>box.remove(); $('cy').onclick=async()=>{ if($('cdel').value.trim()!==d.name){ $('cdel').style.borderColor='#ff5a5a'; return; } await saveSlot(i,null); stageHero(i,null); SFX.die(); renderSelect(); }; }
 /* ---- creación ---- */
@@ -2225,12 +2254,13 @@ function renderCreate(){ const m=$('menu'); m.style.display='flex'; m.className=
    <div class="lbl">Especie</div><div class="grid2">${Object.entries(RACES).map(([k,r])=>`<div class="opt ${csel.race===k?'on':''}" data-race="${k}"><span>${r.icon}</span>${r.name}</div>`).join('')}</div>
    <div class="rdesc">${R.d}<br><span class="bon">${Object.entries(R.b).map(([k,v])=>`${ATTR_I[k]} +${v} ${ATTR_N[k]}`).join(' · ')}</span></div>
    <div class="lbl">Clase</div><div class="grid2">${Object.entries(CLASSES).map(([k,c])=>`<div class="opt ${csel.cls===k?'on':''}" data-cls="${k}"><span>${c.icon}</span>${clsName(k,csel.sex)}</div>`).join('')}</div>
-   <div class="rdesc">${CLASSES[csel.cls].desc}<br><span class="bon">Caminos: ${firstJobs(csel.cls).map(k=>JT[k].n).join(' · ')}</span></div>
+   <div class="rdesc">${CLASSES[csel.cls].desc}<br><span class="bon">Caminos: ${firstJobs(csel.cls).map(k=>JT[k].n).join(' · ')}</span><br><button class="link" id="cguide">📖 Ver qué hace cada skill</button></div>
    <div class="lbl">Color</div><div>${COLORS.map((c,i)=>`<span class="sw ${csel.ci===i?'sel':''}" data-ci="${i}" style="background:#${c.toString(16).padStart(6,'0')}"></span>`).join('')}</div>
    ${csel.race!=='robot'?`<div class="lbl">Tono</div><div>${[0,1,2,3].map(i=>`<span class="sw ${csel.skin===i?'sel':''}" data-sk="${i}" style="background:#${raceSkin(csel.race,i).toString(16).padStart(6,'0')}"></span>`).join('')}</div>`:''}
    <div class="cacts"><button class="btn small" id="back">← Volver</button><button class="btn big glow" id="mk">✨ Crear</button></div><div class="err" id="cerr"></div></div>
    <div class="rothint">${isTouch?'Arrastra para girar':'Arrastra para girar al personaje'}</div>`;
   const keep=()=>{ csel.name=$('nm').value; };
+  $('cguide').onclick=()=>openGuide(csel.cls);
   m.querySelectorAll('[data-sex]').forEach(e=>e.onclick=()=>{ keep(); csel.sex=e.dataset.sex; uiSnd('sel'); refreshPreview(); renderCreate(); });
   m.querySelectorAll('[data-race]').forEach(e=>e.onclick=()=>{ keep(); csel.race=e.dataset.race; uiSnd('sel'); refreshPreview(); renderCreate(); });
   m.querySelectorAll('[data-cls]').forEach(e=>e.onclick=()=>{ keep(); csel.cls=e.dataset.cls; uiSnd('sel'); refreshPreview(); renderCreate(); });
@@ -2244,6 +2274,124 @@ async function enterWorld(i){ const sv=MENU.slots[i]; if(!sv) return; MENU.cur=i
   const m=$('menu'); m.classList.add('fadeout'); await new Promise(r=>setTimeout(r,700)); m.classList.remove('fadeout');
   me={...newChar(sv.name,sv.cls,sv.race,sv.ci,sv.skin),...sv,v:VER}; MENU.mode='play'; startGame(); }
 
+/* ---------------- DESCRIPCIONES DE SKILLS ---------------- */
+const BUFF_D={muro:'Recibes 40% menos daño',furia:'+30% de daño y +20% de velocidad de ataque',agil:'+35% de velocidad de movimiento y +20% de velocidad de ataque',oso:'Forma de oso: +40% de vida, +40 de armadura y +10% de daño',profecia:'+15% de daño y +15% de velocidad de ataque',sigilo:'Te vuelves invisible: tu próximo golpe hace el triple de daño'};
+function abDesc(A){ const L=[]; const pct=v=>Math.round(v*100)+'%';
+  if(A.dm){ let s=`Golpea con el ${pct(A.dm)} de tu ataque`; if(A.aoe&&!A.aoeAtTarget) s+=` a todos los enemigos a tu alrededor (${A.aoe} m)`; else if(A.aoeAtTarget) s+=` en un área de ${A.aoe} m alrededor del objetivo`; else s+=' a un enemigo'; L.push(s+'.'); }
+  if(A.acrit) L.push('Siempre es golpe crítico.'); if(A.fx==='charge') L.push(`Te lanzas hacia el enemigo (desde ${A.min} m).`);
+  if(A.stun) L.push(`Lo aturde ${A.stun} s.`); if(A.slow) L.push(`Lo ralentiza ${A.slow} s.`); if(A.drain) L.push(`Recuperas el ${pct(A.drain)} del daño como vida.`);
+  if(A.dot) L.push(`Además le quema la vida: ${A.dot.n} golpes de ${pct(A.dot.m)}.`); if(A.mark) L.push('Lo marca: recibe más daño de todo tu grupo.');
+  if(A.heal&&!A.ally) L.push(`${A.dm?'Y te':'Te'} cura el ${pct(A.heal)} de tu vida máxima.`); if(A.ally) L.push(`Cura el ${pct(A.heal)} de la vida de un aliado (o la tuya si no hay).`);
+  if(A.aoeHeal) L.push(`Cura el ${pct(A.aoeHeal)} de la vida a ti y a tus aliados a ${A.aoe} m.`); if(A.shield) L.push(`Escudo que absorbe el ${pct(A.shield)} de tu vida máxima por 12 s.`);
+  if(A.buff) L.push((BUFF_D[A.buff.k]||'Mejora temporal')+` durante ${A.buff.dur} s.`); if(A.pet) L.push(`Invoca un ${A.pet} que pelea a tu lado.`); if(A.totem) L.push('Pone un tótem que cura a los aliados cercanos.');
+  if(A.fx==='shout'&&A.heal&&!A.dm&&!A.buff) L.unshift('Grito que te devuelve el ánimo.');
+  const meta=[A.r>0?`Alcance ${A.r} m`:'Sobre ti', A.cast?`Carga ${A.cast} s (quieto)`:'Instantánea', A.cd?`Recarga ${A.cd} s`:'Sin recarga', `Energía ${A.cost}`];
+  return {txt:L.join(' '),meta:meta.join(' · ')}; }
+function abCard(A,key){ const D=abDesc(A); return `<div class="gsk"><span class="gi">${A.i}</span><div><b>${A.n}</b>${key?` <kbd>${key}</kbd>`:''}<div>${D.txt}</div><small>${D.meta}</small></div></div>`; }
+/* tooltip al mantener presionada una skill (o pasar el mouse) */
+function showAbTip(el,a){ const tip=$('abtip'); let h;
+  if(a==='p') h=`<b>🧪 Poción</b><div>Recupera el 45% de tu vida al instante. Te quedan ${me.pot}.</div><small>Recarga 10 s · Tecla 5 o Q</small>`;
+  else { const i=+a, A=AB()[i]; if(!A) return; const D=abDesc(A), r=(me.skl&&me.skl[i])||1; h=`<b>${A.i} ${A.n}</b> <span style="opacity:.7">· Rango ${r}/10 · Poder ${Math.round(skillMul(i)*100)}%</span><div>${D.txt}</div><small>${D.meta}</small>`; }
+  tip.innerHTML=h; tip.style.display='block'; const r=el.getBoundingClientRect(); const w=tip.offsetWidth; tip.style.left=clamp(r.left+r.width/2-w/2,6,innerWidth-w-6)+'px'; tip.style.top=Math.max(6,r.top-tip.offsetHeight-10)+'px'; }
+function hideAbTip(){ $('abtip').style.display='none'; }
+function bindAbTips(){ $('bar').querySelectorAll('.ab:not(.chg)').forEach(el=>{ const a=el.dataset.a; const fire=()=>{ if(a==='p') usePotion(); else useAbility(+a); };
+  el.removeAttribute('title');
+  el.addEventListener('pointerdown',e=>{ e.preventDefault(); if(e.pointerType==='mouse'){ fire(); return; } el._lp=false; clearTimeout(el._t); el._t=setTimeout(()=>{ el._lp=true; showAbTip(el,a); try{ navigator.vibrate&&navigator.vibrate(15); }catch(_){} },420); });
+  el.addEventListener('pointerup',e=>{ if(e.pointerType==='mouse') return; clearTimeout(el._t); if(el._lp) setTimeout(hideAbTip,900); else fire(); el._lp=false; });
+  el.addEventListener('pointercancel',()=>{ clearTimeout(el._t); if(el._lp) hideAbTip(); el._lp=false; });
+  el.addEventListener('mouseenter',()=>{ clearTimeout(el._h); el._h=setTimeout(()=>showAbTip(el,a),350); }); el.addEventListener('mouseleave',()=>{ clearTimeout(el._h); hideAbTip(); }); }); }
+
+/* ---------------- GUÍA DE CLASES Y ESPECIES ---------------- */
+const CLS_ATTR={guerrero:['fue','vit'],maga:['mag'],arquero:['des','vel'],clerigo:['mag','vit']};
+const CLS_ROLE={guerrero:'Primera línea. Aguanta los golpes y pega fuerte cuerpo a cuerpo.',maga:'Artillería mágica. Mucho daño a distancia, pero poca vida: mantén distancia.',arquero:'Tiradora rápida. Ataca desde lejos y se mueve mucho.',clerigo:'Sanador. Cura al grupo y castiga con luz a distancia.'};
+const CLS_TIP={guerrero:'Usa Carga para entrar al combate, Torbellino cuando te rodeen y Grito de Batalla para recuperar vida.',maga:'Lanza Bola de Fuego quieto, frena a los rápidos con Escarcha y usa Nova si se te acercan. Escudo de Maná antes de que te peguen.',arquero:'Abre con Flecha Aturdidora, sigue con Disparo Certero y usa Multidisparo con grupos. Vendaje cuando baje tu vida.',clerigo:'Castigo de Luz para dañar, Sanar a quien tenga menos vida, Renovación cuando todo el grupo sufra y Escudo Divino en peleas de jefe.'};
+function bestRaces(cls){ const at=CLS_ATTR[cls]||[]; return Object.entries(RACES).map(([k,r])=>[k,at.reduce((s,a)=>s+((r.b&&r.b[a])||0),0)]).sort((a,b)=>b[1]-a[1]).slice(0,2).map(x=>RACES[x[0]].icon+' '+RACES[x[0]].name); }
+let guideTab='guerrero';
+function openGuide(tab){ if(tab) guideTab=tab; const G=$('guide'); G.style.display='flex'; renderGuide(); }
+function renderGuide(){ const G=$('guide'); const sx=(state==='play'&&me&&me.sex)||(MENU.mode==='create'&&csel.sex)||null;
+  const tabs=Object.keys(CLASSES).map(k=>[k,CLASSES[k].icon+' '+clsName(k,sx||defSex(k))]).concat([['especies','🧬 Especies'],['controles','🎮 Controles']]);
+  let body='';
+  if(CLASSES[guideTab]){ const k=guideTab, C=CLASSES[k];
+    body+=`<p class="gd">${CLS_ROLE[k]||C.desc}</p><div class="gstats">❤️ Vida ${C.hp} · 💧 Energía ${C.mp} · ⚔️ Ataque ${C.dmg} · 📏 Alcance ${C.range} m</div>
+     <div class="gh">Ataque básico</div><div class="gsk"><span class="gi">${C.range>6?(k==='maga'?'🔥':k==='clerigo'?'☀️':'🏹'):'⚔️'}</span><div><b>Automático</b><div>Con un enemigo seleccionado y a menos de ${C.range} m, tu personaje ataca solo cada ${C.auto} s. No gasta energía.</div></div></div>
+     <div class="gh">Habilidades (teclas 1 a 4)</div>${C.ab.map((A,i)=>abCard(A,i+1)).join('')}
+     <div class="gtip">💡 ${CLS_TIP[k]}</div>
+     <div class="gh">Caminos de especialización</div><p class="gd">Al nivel ${JOB_REQ[1].lv} eliges un camino (te da una skill nueva, tecla 6) y al nivel ${JOB_REQ[2].lv} una especialización (tecla 7). Se hace con Ramón en el Pueblo.</p>`;
+    firstJobs(k).forEach(f=>{ const J=JT[f]; body+=`<div class="gjob"><div class="gjt">${J.n} <span>${J.role||''} · nivel ${JOB_REQ[1].lv}</span></div><p>${J.d||''}</p>${abCard(J.sk,6)}<div class="gsub">${secondJobs(f).map(s=>{ const S=JT[s]; return `<div class="gjob2"><div class="gjt">${S.n} <span>${S.role||''} · nivel ${JOB_REQ[2].lv}</span></div><p>${S.d||''}</p>${abCard(S.sk,7)}</div>`; }).join('')}</div></div>`; });
+    body+=`<div class="gh">Especies que más le ayudan</div><p class="gd">${bestRaces(k).join(' · ')} (por sus bonos de atributos). Cualquier especie sirve: la diferencia es pequeña.</p>`; }
+  else if(guideTab==='especies'){ body+=`<p class="gd">La especie cambia tu aspecto y te da puntos extra de atributo desde el nivel 1.</p>`+Object.entries(RACES).map(([k,r])=>{ const fit=Object.keys(CLASSES).filter(c=>(CLS_ATTR[c]||[]).some(a=>(r.b[a]||0)>=4)).map(c=>clsName(c,sx||defSex(c)));
+      return `<div class="gjob"><div class="gjt">${r.icon} ${r.name}</div><p>${r.d||''}</p><div class="gstats">${Object.entries(r.b).map(([a,v])=>`${ATTR_I[a]} +${v} ${ATTR_N[a]}`).join(' · ')}</div>${fit.length?`<small>Ideal para: ${fit.join(', ')}</small>`:''}</div>`; }).join('')
+      +`<div class="gh">¿Qué hace cada atributo?</div><div class="gsk"><span class="gi">💪</span><div><b>Fuerza</b><div>Más daño físico (Guerrero, Arquera).</div></div></div><div class="gsk"><span class="gi">🎯</span><div><b>Destreza</b><div>Más críticos y velocidad de ataque.</div></div></div><div class="gsk"><span class="gi">❤️</span><div><b>Vitalidad</b><div>Más vida y armadura.</div></div></div><div class="gsk"><span class="gi">✨</span><div><b>Magia</b><div>Más daño mágico, energía y curación.</div></div></div><div class="gsk"><span class="gi">👟</span><div><b>Velocidad</b><div>Te mueves más rápido y recargas antes.</div></div></div>`; }
+  else { body+=`<div class="gh">En el celular</div><div class="gd">• Joystick (abajo a la izquierda): moverte.<br>• Toca un enemigo o el botón 🎯 para seleccionarlo. Tu personaje ataca solo.<br>• Botones 1–4: habilidades. <b>Mantén presionado</b> un botón para ver qué hace.<br>• 🧪: poción. Arrastra la pantalla para girar la cámara; pellizca para acercar.</div>
+     <div class="gh">En computador</div><div class="gd">• WASD o flechas: moverte · Espacio: saltar · Arrastrar el mouse: cámara · Rueda: zoom.<br>• Clic o Tab: seleccionar enemigo · 1–4: habilidades (pasa el mouse para ver qué hacen) · 5 o Q: poción · 6 y 7: skills de especialización.<br>• B: bolso · C: personaje (atributos) · K: skills · T: tablero · F: hablar · R: portal · Enter: chat.</div>
+     <div class="gh">Cómo subir de nivel</div><div class="gd">Cumple las misiones del panel, derrota monstruos de tu nivel (los números entre corchetes) y reparte los puntos en 👤 Personaje. Cada nivel te da puntos de atributo y de skill.</div>
+     <button class="btn small" id="gtut">🎓 Repetir el tutorial</button>`; }
+  G.innerHTML=`<div class="gbox"><span class="x" id="gx">✕</span><h2>📖 Guía del Multiverso</h2><div class="gtabs">${tabs.map(([k,n])=>`<button class="${k===guideTab?'on':''}" data-gt="${k}">${n}</button>`).join('')}</div><div class="gbody">${body}</div></div>`;
+  $('gx').onclick=()=>{ G.style.display='none'; }; G.onclick=e=>{ if(e.target===G) G.style.display='none'; };
+  G.querySelectorAll('[data-gt]').forEach(b=>b.onclick=()=>{ guideTab=b.dataset.gt; renderGuide(); });
+  if($('gtut')) $('gtut').onclick=()=>{ G.style.display='none'; if(state==='play') startTutorial(true); else toast('Entra al mundo para hacer el tutorial'); }; }
+
+/* ---------------- ANIMACIÓN DE ATAQUE POR CLASE ---------------- */
+const _arrowG={}; function arrowMesh(scale){ const g=new THREE.Group(); const k=scale||1;
+  if(!_arrowG.s){ _arrowG.s=new THREE.CylinderGeometry(0.012,0.012,0.7,6); _arrowG.s.rotateX(Math.PI/2); _arrowG.h=new THREE.ConeGeometry(0.035,0.1,8); _arrowG.h.rotateX(Math.PI/2); _arrowG.f=new THREE.PlaneGeometry(0.06,0.12); }
+  const sh=new THREE.Mesh(_arrowG.s,TM(0x8a5a2a)); g.add(sh); const hd=new THREE.Mesh(_arrowG.h,TM(0xd8dce8,0x202838)); hd.position.z=0.4; g.add(hd);
+  for(let i=0;i<2;i++){ const f=new THREE.Mesh(_arrowG.f,new THREE.MeshBasicMaterial({color:0xf0f0f0,side:THREE.DoubleSide})); f.rotation.set(Math.PI/2,i*Math.PI/2,0); f.position.z=-0.3; f.rotation.order='ZXY'; f.rotation.z=i*Math.PI/2; g.add(f); }
+  g.scale.setScalar(k); return g; }
+const ATK_DUR={guerrero:0.5,maga:0.6,arquero:0.62,clerigo:0.55};
+const SHOT_DELAY={arquero:0.36,maga:0.26,clerigo:0.22,guerrero:0};
+// devuelve poses de brazos/torso según clase y avance (k de 0 a 1)
+function attackPose(cls,kind,k,R){ const P={a:[null,null],ty:null,tx:null,nock:false};
+  const ease=x=>x*x*(3-2*x);
+  if(cls==='arquero'){ // brazo izq. (1) sostiene el arco; derecho (0) tensa la cuerda
+    P.a[1]={x:-1.5,z:-0.1,e:-0.05}; P.ty=0.75; P.head=-0.65;
+    if(k<0.18){ P.a[0]={x:-1.45,z:0.15,e:-0.4}; }
+    else if(k<0.58){ const d=ease((k-0.18)/0.4); P.a[0]={x:-1.45-0.05*d,z:0.15-0.05*d,e:-0.4-2.2*d}; P.nock=true; }
+    else { P.a[0]={x:-1.0,z:0.75,e:-0.5}; if(k>0.85) P.a[1]={x:-1.1,z:-0.1,e:-0.3}; }
+    if(kind==='arrows'&&k>0.58){ P.a[1]={x:-1.9,z:-0.1,e:0}; } }
+  else if(cls==='maga'){ if(kind==='nova'){ const u=ease(Math.min(1,k/0.45)); P.a[0]={x:-2.7*u,z:0.9*u,e:-0.2}; P.a[1]={x:-2.7*u,z:-0.9*u,e:-0.2}; if(k>0.45){ P.a[0]={x:-1.2,z:1.4,e:0}; P.a[1]={x:-1.2,z:-1.4,e:0}; } }
+    else if(k<0.42){ const u=ease(k/0.42); P.a[0]={x:-2.5*u,z:0.3,e:-0.3}; P.a[1]={x:-1.0*u,z:-0.3,e:-1.2*u}; P.tx=-0.08*u; }
+    else { P.a[0]={x:-1.35,z:0.2,e:-0.1}; P.a[1]={x:-1.6,z:-0.15,e:0}; P.tx=0.18; } }
+  else if(cls==='clerigo'){ if(kind==='heal'||kind==='renew'||kind==='shield'){ const u=ease(Math.min(1,k/0.4)); P.a[0]={x:-2.8*u,z:0.5,e:-0.2}; P.a[1]={x:-2.8*u,z:-0.5,e:-0.2}; }
+    else if(k<0.4){ const u=ease(k/0.4); P.a[0]={x:-3.0*u,z:0.3,e:-0.4*u}; P.a[1]={x:-0.9,z:-0.3,e:-1.0}; P.ty=-0.3*u; }
+    else { P.a[0]={x:-0.7,z:0.1,e:-0.1}; P.a[1]={x:-0.9,z:-0.3,e:-1.0}; P.ty=0.3; P.tx=0.15; } }
+  else { // guerrero
+    if(kind==='whirl'){ P.spin=k*Math.PI*2; P.a[0]={x:-1.5,z:1.3,e:0}; P.a[1]={x:-1.5,z:-1.3,e:0}; }
+    else if(kind==='shout'||kind==='shield'){ const u=ease(Math.min(1,k/0.3)); P.a[0]={x:-2.9*u,z:0.6,e:-0.2}; P.a[1]={x:-0.6,z:-0.9*u,e:-1.4}; P.tx=-0.12*u; }
+    else if(k<0.38){ const u=ease(k/0.38); P.a[0]={x:-2.85*u,z:0.6*u,e:-0.6*u}; P.a[1]={x:-0.9,z:-0.2,e:-1.1}; P.ty=-0.55*u; P.tx=-0.08*u; }
+    else { const u=ease(Math.min(1,(k-0.38)/0.22)); P.a[0]={x:-2.85+3.35*u,z:0.6-0.95*u,e:-0.6+0.5*u}; P.a[1]={x:-0.9,z:-0.2,e:-1.1}; P.ty=-0.55+1.0*u; P.tx=0.2*u; if(kind==='charge') P.tx=0.35; } }
+  return P; }
+
+/* ---------------- TUTORIAL ---------------- */
+let TUT=null;
+const TUT_STEPS=[
+ {t:'¡Bienvenida al Multiverso!',d:'Te voy a enseñar lo básico en 2 minutos. Puedes saltarte el tutorial cuando quieras y repetirlo desde 📖 Guía.',btn:'Empezar'},
+ {t:'1 · Moverte',d:()=>isTouch?'Usa el joystick de abajo a la izquierda para caminar unos pasos.':'Camina con W A S D o las flechas. Espacio para saltar.',chk:T=>T.walk>6},
+ {t:'2 · Mirar alrededor',d:()=>isTouch?'Arrastra un dedo por la pantalla para girar la cámara. Pellizca para acercar o alejar.':'Arrastra con el mouse para girar la cámara. La rueda acerca o aleja.',chk:T=>T.cam>1.2},
+ {t:'3 · Elegir un enemigo',d:()=>`Sigue la flecha dorada hasta un Chatarrín (nivel 1–3) y ${isTouch?'tócalo o pulsa el botón 🎯':'haz clic sobre él o pulsa Tab'}.`,chk:T=>target&&target.kind==='mob',arrow:true},
+ {t:'4 · Ataque automático',d:'Acércate al enemigo: tu personaje ataca solo mientras esté seleccionado. Fíjate en la animación de tu clase.',chk:T=>T.hits>=2,arrow:true},
+ {t:'5 · Habilidades',d:()=>`Usa la habilidad 1 (${AB()[0].i} ${AB()[0].n}). ${isTouch?'Mantén presionado':'Pasa el mouse sobre'} cualquier botón de la barra para ver qué hace.`,chk:T=>T.skill,arrow:true},
+ {t:'6 · Poción',d:'Cuando tengas poca vida usa la poción 🧪 (tecla 5 o el botón de la barra). Úsala una vez ahora.',chk:T=>T.pot,skip:true},
+ {t:'7 · Misiones',d:'El panel de la izquierda muestra tu misión. Cúmplela y vuelve con quien te la dio: da mucha experiencia y oro. Habla con los personajes del Pueblo tocándolos o con F.',btn:'Entendido'},
+ {t:'8 · Tu personaje',d:'En 👤 repartes los puntos de atributos y de skill cada vez que subes de nivel. En 🎒 están tu equipo y objetos. En 📖 Guía tienes todas las skills explicadas.',btn:'Entendido'},
+ {t:'¡Listo para la aventura!',d:'Ya sabes lo básico. Sube a nivel 10 para elegir tu camino de especialización. ¡Suerte!',btn:'Entrar al mundo',end:true}];
+function startTutorial(force){ if(!force&&me.tut) return; TUT={i:0,walk:0,cam:0,hits:0,skill:false,pot:false,lx:me.x,lz:me.z,ly:camYaw,t:0}; $('tut').style.display='block'; renderTut(); }
+function endTutorial(){ TUT=null; $('tut').style.display='none'; if(tutArrow) tutArrow.visible=false; me.tut=1; doSave(true); }
+function renderTut(){ if(!TUT) return; const S=TUT_STEPS[TUT.i]; const d=typeof S.d==='function'?S.d():S.d; const prog=`${TUT.i}/${TUT_STEPS.length-1}`;
+  $('tut').innerHTML=`<div class="tt">${S.t}</div><div class="td">${d}</div><div class="tb">${S.btn?`<button class="btn small" id="tnext">${S.btn}</button>`:`<span class="tw" id="tst">${S.chk&&S.chk(TUT)?'✅':'⏳'} Hazlo para continuar</span>${S.skip?'<button class="link" id="tskip1">Omitir paso</button>':''}`}<button class="link" id="tskip">Saltar tutorial</button><span class="tp">${prog}</span></div>`;
+  if($('tnext')) $('tnext').onclick=()=>{ SFX.quest&&SFX.quest(); if(S.end) endTutorial(); else { TUT.i++; renderTut(); } };
+  if($('tskip1')) $('tskip1').onclick=()=>{ TUT.i++; renderTut(); }; $('tskip').onclick=endTutorial; }
+let tutArrow=null;
+function tutTick(dt){ if(!TUT) return; TUT.t+=dt; TUT.walk+=Math.hypot(me.x-TUT.lx,me.z-TUT.lz); TUT.lx=me.x; TUT.lz=me.z; TUT.cam+=Math.abs(camYaw-TUT.ly)+0; TUT.ly=camYaw;
+  const S=TUT_STEPS[TUT.i];
+  if(S.chk&&S.chk(TUT)&&!TUT.done){ TUT.done=true; SFX.quest&&SFX.quest(); toast('¡Bien hecho!'); setTimeout(()=>{ if(TUT){ TUT.done=false; TUT.i++; renderTut(); } },700); }
+  // flecha guía sobre el Chatarrín más cercano
+  if(S.arrow){ let best=null,bd=1e9; for(const sp of SPAWNS){ if(sp.type!=='chatarrin') continue; const ms=mobState.get(sp.id); if(!ms||ms.dead) continue; const d=dist2(ms.x,ms.z,me.x,me.z); if(d<bd){ bd=d; best=ms; } }
+    if(target&&target.kind==='mob'){ const ms=mobState.get(target.id); if(ms&&!ms.dead) best=ms; }
+    if(!tutArrow){ tutArrow=new THREE.Group(); const c=new THREE.Mesh(new THREE.ConeGeometry(0.45,0.9,4),new THREE.MeshBasicMaterial({color:0xffd040})); c.rotation.x=Math.PI; tutArrow.add(c); const gl=new THREE.Sprite(new THREE.SpriteMaterial({map:GLOW,color:0xffd040,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending})); gl.scale.setScalar(2.2); tutArrow.add(gl); scene.add(tutArrow); }
+    if(best){ tutArrow.visible=true; tutArrow.position.set(best.x,heightAt(best.x,best.z)+3.6+Math.sin(TUT.t*5)*0.3,best.z); tutArrow.rotation.y+=dt*3; } else tutArrow.visible=false; }
+  else if(tutArrow) tutArrow.visible=false;
+  const st=$('tst'); if(st) st.textContent=(S.chk&&S.chk(TUT)?'✅':'⏳')+' Hazlo para continuar'; }
+
 /* ---------------- INICIO ---------------- */
 resize(); buildWorld(); buildNPC(); buildSmith(); buildChest(); buildCityNPCs(); enhanceWorld(); decorZones(); buildDungeon(); buildArena(); initMobs(); applyQuality(QNAME);
 showTitle();
@@ -2251,6 +2399,6 @@ showTitle();
 requestAnimationFrame(frame);
 window.__mmo={setTarget:(t)=>{target=t},dbg:()=>({acts:myActs.length,seen:JSON.stringify(actSeqSeen),cds:cds.slice(),gcd,mp:me.mp,tgt:target}),get me(){return me},get state(){return state},get amHost(){return amHost},get myPeer(){return myPeer},peersMap,mobState,useAbility,autoTarget,startGame:()=>{ me=newChar('Prueba','guerrero','humano',0,0); startGame(); },setMe:(o)=>Object.assign(me,o),get target(){return target}};
 </script>
-<div style="position:fixed;left:6px;bottom:4px;font-size:10px;opacity:.45;color:#fff;pointer-events:none;z-index:99">v2026.11.16 · GitHub</div>
+<div style="position:fixed;left:6px;bottom:4px;font-size:10px;opacity:.45;color:#fff;pointer-events:none;z-index:99">v2026.11.17 · GitHub</div>
 </body>
 </html>

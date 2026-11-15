@@ -32,6 +32,8 @@ main{max-width:1180px;margin:auto;padding:22px 16px 50px}
 .info p{margin:0;font-size:14px;line-height:1.4;opacity:.88}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
 .chips span{font-size:11px;font-weight:800;padding:3px 9px;border-radius:10px;background:var(--g);border:1px solid var(--c)}
+.tot{display:inline-block;margin-top:12px;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,210,130,.3);font-weight:800;font-size:14px}
+.vis{position:absolute;right:10px;bottom:10px;z-index:2;font-size:11px;font-weight:800;padding:4px 9px;border-radius:12px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.15);white-space:nowrap}
 .sec{font-family:Cinzel,serif;font-weight:900;font-size:clamp(22px,4vw,32px);color:#f5c542;margin:40px 4px 16px;text-shadow:0 0 18px rgba(255,180,60,.35)}
 .card.main{grid-column:1/-1;flex-direction:row}
 .card.main .shot{flex:1.6;aspect-ratio:auto;min-height:300px}
@@ -41,9 +43,9 @@ main{max-width:1180px;margin:auto;padding:22px 16px 50px}
 .cta{align-self:flex-start;margin-top:6px;font-weight:900;padding:11px 22px;border-radius:12px;background:linear-gradient(#f5c542,#b8860b);color:#2a1800;box-shadow:0 0 20px rgba(245,197,66,.45)}
 @media (max-width:760px){.card.main{flex-direction:column}.card.main .shot{min-height:0;aspect-ratio:16/9;flex:none}.card.main .info{padding:15px}.play{opacity:.9;transform:scale(.8)}}
 @media (prefers-reduced-motion:reduce){.shot img{transition:opacity .5s}.shot img.on{transform:none}h1{animation:none}}
-</style><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><meta name="theme-color" content="#120624"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Multiverso"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"></head><body>
+</style><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><meta name="theme-color" content="#120624"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Multiverso"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="/visit.js" data-game="sala" defer></script></head><body>
 <div id="bg"></div>
-<header><h1>Sala de Juegos</h1><p class="sub">Todos los mundos del Multiverso en un solo lugar</p></header>
+<header><h1>Sala de Juegos</h1><p class="sub">Todos los mundos del Multiverso en un solo lugar</p><div id="tot" class="tot">👥 Contando visitantes…</div></header>
 <main><div class="grid" id="grid"></div><h2 class="sec">🎵 Escuela de música</h2><div class="grid" id="grid2"></div></main>
 <script>
 const G=[
@@ -72,7 +74,7 @@ G.forEach((g,i)=>{
   const a=document.createElement('a'); a.className='card'+(g.main?' main':''); a.href=g.href;
   a.style.setProperty('--c',g.c); a.style.setProperty('--g',glow(g.c)); a.style.setProperty('--i',i);
   let imgs='',dots=''; for(let j=1;j<=g.n;j++){ imgs+=`<img src="/juegos/img/${g.k}-${j}.webp" alt="Vista de ${g.t}"${j===1?' class="on"':''}>`; dots+=`<i${j===1?' class="on"':''}></i>`; }
-  a.innerHTML=`<div class="shot">${imgs}<span class="badge">${g.badge}</span><div class="dots">${dots}</div><div class="play">▶</div><div class="title"><span class="ic">${g.ic}</span><b>${g.t}</b></div></div>
+  a.innerHTML=`<div class="shot">${imgs}<span class="badge">${g.badge}</span><div class="dots">${dots}</div><div class="play">▶</div><span class="vis" data-g="${g.k}" style="display:none"></span><div class="title"><span class="ic">${g.ic}</span><b>${g.t}</b></div></div>
    <div class="info"><p>${g.d}</p><div class="chips">${g.chips.map(c=>`<span>${c}</span>`).join('')}</div>${g.main?'<span class="cta">Entrar al mundo ▶</span>':''}</div>`;
   (g.sec===2?document.getElementById('grid2'):grid).appendChild(a);
   const im=a.querySelectorAll('.shot img'), dt=a.querySelectorAll('.dots i'); let cur=0, hover=false, hv=null;
@@ -82,5 +84,10 @@ G.forEach((g,i)=>{
   a.addEventListener('mouseleave',()=>{ hover=false; clearInterval(hv); });
 });
 bg.style.backgroundImage='url(/juegos/img/mmo-3.webp)';
+const fmtN=n=>Number(n||0).toLocaleString('es-CL');
+function showStats(st){ if(!st) { document.getElementById('tot').style.display='none'; return; }
+  document.getElementById('tot').textContent=`👥 ${fmtN(st.total)} ${st.total==1?'persona ha':'personas han'} visitado Multiverso`;
+  document.querySelectorAll('.vis').forEach(el=>{ const g=st.games&&st.games[el.dataset.g]; el.style.display='block'; el.textContent=g?`👥 ${fmtN(g.u)} · ▶ ${fmtN(g.h)}`:'👥 0 · ▶ 0'; el.title=g?`${g.u} personas distintas · ${g.h} visitas`:'Aún sin visitas'; }); }
+(function wait(n){ if(window.MVO_STATS){ (window.MVO_VISIT||Promise.resolve()).then(()=>window.MVO_STATS()).then(showStats); } else if(n<40) setTimeout(()=>wait(n+1),100); else showStats(null); })(0);
 </script>
 </body></html>
