@@ -10,14 +10,14 @@ canvas#gl{position:fixed;inset:0;width:100vw;height:100vh;display:block}
 .blk{font-family:'Archivo Black',Nunito,sans-serif;letter-spacing:.01em}
 .card{background:linear-gradient(160deg,rgba(30,30,36,.92),rgba(16,16,20,.94));border:2px solid #f5b301;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
 .hz{background:repeating-linear-gradient(-45deg,#f5b301 0 12px,#1a1a1a 12px 24px);height:8px;border-radius:4px}
-#hud{position:fixed;inset:0;pointer-events:none;display:none;z-index:5}
+#hud{position:fixed;left:0;right:0;bottom:0;top:env(safe-area-inset-top,0px);pointer-events:none;display:none;z-index:5}
 #top{position:absolute;left:10px;top:10px;display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;right:10px}
 #cred{padding:8px 14px;font-size:20px}#cred small{display:block;font-size:11px;font-family:Nunito;opacity:.75}
 #job{padding:9px 13px;max-width:min(380px,60vw);font-size:14px;line-height:1.35}#job b{color:#f5b301;font-family:'Archivo Black';font-size:15px;display:block;margin-bottom:2px}
 #job .pg{height:8px;border-radius:4px;background:#333;margin-top:6px;overflow:hidden}#job .pg i{display:block;height:100%;background:linear-gradient(90deg,#f5b301,#ffe066);width:0}
 #tbtns{position:absolute;right:10px;top:10px;display:flex;gap:8px;pointer-events:auto}
 .rb{width:46px;height:46px;border-radius:12px;border:2px solid #f5b301;background:rgba(20,20,24,.85);color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-#comp{position:absolute;right:10px;top:66px;display:flex;align-items:center;gap:8px;padding:6px 12px;font-weight:900;font-size:14px}
+#comp{position:absolute;right:0;top:56px;display:flex;align-items:center;gap:8px;padding:6px 12px;font-weight:900;font-size:14px}
 #comp .ar{width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#f5b301;transition:transform .1s}
 #msg{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%);font-family:'Archivo Black';font-size:clamp(22px,5vw,44px);color:#ffe066;text-shadow:0 3px 0 #6a4a00,0 0 20px rgba(255,200,40,.6);opacity:0;transition:opacity .3s;white-space:nowrap;text-align:center}
 #msg small{display:block;font-family:Nunito;font-weight:900;font-size:.42em;color:#fff;text-shadow:0 2px 0 #000}
@@ -51,7 +51,7 @@ canvas#gl{position:fixed;inset:0;width:100vw;height:100vh;display:block}
 #board h2{margin:0 0 4px;font-family:'Archivo Black';color:#f5b301}#board table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
 #board td{padding:6px 4px;border-bottom:1px solid #333}#board tr.me td{color:#ffe066;font-weight:900}
 .fl{position:fixed;z-index:8;font-family:'Archivo Black';color:#7fff7f;text-shadow:0 2px 0 #000;pointer-events:none;font-size:22px;transition:transform 1.3s ease-out,opacity 1.3s;white-space:nowrap}
-@media (max-width:640px){ #top{right:120px} #job{max-width:none;font-size:12px;padding:7px 10px} #cred{font-size:16px;padding:6px 10px} .wb{min-width:62px;height:52px;font-size:10.5px} #keys{display:none} #comp{top:150px;right:auto;left:10px} #gauge{bottom:auto;top:auto;left:12px;bottom:12px;padding:6px 10px} }
+@media (max-width:640px){ #job{font-size:12px;padding:7px 10px} #cred{font-size:16px;padding:6px 10px} .wb{min-width:62px;height:52px;font-size:10.5px} #keys{display:none} #top{right:10px;flex-direction:column;align-items:flex-start;gap:6px} #comp{position:static;font-size:12.5px;padding:4px 10px} #job{max-width:calc(100vw - 84px)} #obra{margin-top:6px} #gauge{bottom:auto;top:auto;left:12px;bottom:12px;padding:6px 10px} }
 #mdesc{display:none;max-width:560px;text-align:center;font-size:13px;font-weight:800;background:rgba(0,0,0,.55);padding:6px 12px;border-radius:10px}
 @media (max-width:640px),(max-height:520px){ .mc{flex:1 1 40%;max-width:none;padding:7px 10px} .mc p{display:none} .mc b{font-size:14px} .mrow{gap:6px} #mdesc{display:block} }
 @media (max-height:520px){ #sel h1{font-size:26px;top:6px} #sel h1 small{display:none} #sel{gap:6px;padding:8px} .mc{flex:1 1 20%} .srow input{padding:7px 10px} .go{padding:8px 20px;font-size:17px} #work{grid-template-columns:repeat(4,auto)!important} }
@@ -68,17 +68,19 @@ canvas#gl{position:fixed;inset:0;width:100vw;height:100vh;display:block}
 #onl{position:absolute;right:10px;top:112px;padding:6px 11px;font-size:12.5px;pointer-events:auto;cursor:pointer;max-width:220px}#onl .ol{display:none;margin-top:4px;font-size:12px;line-height:1.5}#onl.open .ol{display:block}#onl small{opacity:.7}
 #soc{position:absolute;right:10px;top:156px;display:flex;gap:8px;pointer-events:auto}
 #ntoast{position:absolute;left:50%;top:58%;transform:translateX(-50%);background:rgba(20,20,24,.85);border:2px solid #f5b301;padding:6px 14px;border-radius:12px;font-weight:900;font-size:14px;opacity:0;transition:opacity .3s;white-space:nowrap}#ntoast.on{opacity:1}
-@media (max-width:640px){ #rear{top:auto;bottom:86px;left:10px;transform:none;width:56vw} #onl{top:auto;bottom:auto;top:112px} #soc{top:156px} }
+@media (max-width:640px){ #rear{top:auto;bottom:86px;left:10px;transform:none;width:56vw} #onl{top:66px} #soc{top:108px;flex-direction:column} }
+.rb.act{background:#f5b301;box-shadow:0 0 14px rgba(245,179,1,.8)}
+
+#sel h1{top:calc(14px + env(safe-area-inset-top,0px))}
 </style>
 <link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><meta name="theme-color" content="#1a1a1a">
 <script src="/visit.js" data-game="obras" defer></script>
 </head><body>
 <canvas id="gl"></canvas>
 <div id="hud">
- <div id="top"><div><div id="cred" class="card blk">💰 <span id="crv">0</span><small>créditos de obra</small></div><div id="obra" class="card" title="Toca para ver el detalle"></div></div><div id="job" class="card"></div></div>
+ <div id="top"><div><div id="cred" class="card blk">💰 <span id="crv">0</span><small>créditos de obra</small></div><div id="obra" class="card" title="Toca para ver el detalle"></div></div><div id="job" class="card"></div><div id="comp" class="card"><span class="ar" id="carr">⬆</span><span id="cdist">–</span></div></div>
  <div id="tbtns"><div class="rb" id="bBoard" title="Tablero de constructores">🏆</div><div class="rb" id="bSwap" title="Cambiar máquina">🔁</div><div class="rb" id="bMus" title="Música">🎵</div><div class="rb" id="bSnd" title="Sonido">🔊</div></div>
- <div id="comp" class="card"><span class="ar" id="carr">⬆</span><span id="cdist">–</span></div>
- <div id="msg"></div><div id="tip"></div><div id="rear"><span>📷 Retroceso</span></div><div id="onl" class="card"></div><div id="ntoast"></div><div id="soc"><div class="rb" id="bHorn" title="Bocina">📯</div><div class="rb" id="bWave" title="Saludar">👋</div></div>
+ <div id="msg"></div><div id="tip"></div><div id="rear"><span>📷 Retroceso</span></div><div id="onl" class="card"></div><div id="ntoast"></div><div id="soc"><div class="rb" id="bCam" title="Volver a la cámara principal (V)">🎥</div><div class="rb" id="bHorn" title="Bocina">📯</div><div class="rb" id="bWave" title="Saludar">👋</div></div>
  <div id="gauge" class="card"><div><div class="sp" id="gsp">0</div><small>km/h</small></div><div class="gr" id="ggr">N</div></div>
  <div id="work"></div><div id="keys"></div>
 </div>
@@ -130,6 +132,7 @@ const ZONES={
  trench:{x0:-60,x1:-47,z0:44,z1:50,n:'Zanja de alcantarillado'},
  park:{x:-44,z:41},
  whs:{x:50,z:45},
+ deliver:{x0:36,x1:46,z0:-22,z1:-10},
  pad:{x0:-12,x1:12,z0:-92,z1:-80,n:'Área de acopio'},
  field:{x0:-30,x1:30,z0:-74,z1:-42}};
 function buildWorld(){
@@ -178,6 +181,9 @@ function buildWorld(){
    addObs(rx,rz+0.35,4.9,0.6);
    for(let b=0;b<3;b++) for(let lv=0;lv<3;lv++) RACKS.push({x:rx-1.6+b*1.6,z:rz,y:[0,1.5,3.0][lv],lv,b,r:ri,name:`Estante ${'AB'[ri]}${b+1} · nivel ${lv+1}`,pal:null}); });
  // pallets en el andén
+ { const Z=ZONES.deliver, w=Z.x1-Z.x0, d=Z.z1-Z.z0, cx=(Z.x0+Z.x1)/2, cz=(Z.z0+Z.z1)/2; const zm=new THREE.Mesh(new THREE.PlaneGeometry(w,d),new THREE.MeshBasicMaterial({color:0x40e070,transparent:true,opacity:0.28})); zm.rotation.x=-Math.PI/2; zm.position.set(cx,0.05,cz); scene.add(zm);
+   const zb=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(w,0.01,d)),new THREE.LineBasicMaterial({color:0x40e070})); zb.position.set(cx,0.06,cz); scene.add(zb);
+   const sg=new THREE.Mesh(new THREE.PlaneGeometry(5,1.3),new THREE.MeshBasicMaterial({side:THREE.DoubleSide,map:tex(512,132,(x,w2,h2)=>{ x.fillStyle='#1c8a44'; x.fillRect(0,0,w2,h2); x.fillStyle='#fff'; x.font='bold 50px Archivo Black,sans-serif'; x.textAlign='center'; x.fillText('ENTREGA DE',w2/2,56); x.fillText('MATERIALES',w2/2,112); })})); sg.position.set(cx,3.2,Z.z0-0.3); scene.add(sg); for(const sx of [-2.2,2.2]) BOX(0.12,2.6,0.12,STEEL,cx+sx,1.3,Z.z0-0.3,null,false); }
  PALLETS.length=0; for(let i=0;i<6;i++) makePallet(W.x-10+i*4,W.z-7,0);
  BOX(14,1.2,4,M(0x9a9a96),W.x,0.6,W.z-15.5); addObs(W.x,W.z-15.5,14,4);
  // explanada de la topadora y acopio
@@ -197,7 +203,7 @@ function setPile(d){ const s=0.15+Math.min(1.25,d.vol*0.09); d.pile.scale.set(s,
 let PARKED=null, STOCK=null; const RACKS=[], PALLETS=[], HEAPS=[];
 function makePallet(x,z,y,yaw){ const g=new THREE.Group(); BOX(1.2,0.14,1.0,M(0xb88a54),0,0.07,0,g); for(const dx of [-0.5,0,0.5]) BOX(0.12,0.1,1.0,M(0x9a6a3a),dx,0.05,0,g);
  const cols=[0xc8a070,0x5a8ad8,0xd8483a,0x48a858]; const lc=cols[PALLETS.length%cols.length]; BOX(1.1,0.8,0.9,M(lc),0,0.55,0,g); BOX(1.12,0.05,0.92,M(0xf0f0f0,{transparent:true,opacity:0.5}),0,0.97,0,g,false);
- g.position.set(x,y,z); g.rotation.y=yaw||0; scene.add(g); const p={g,x,z,y,yaw:yaw||0,att:false,slot:null}; PALLETS.push(p); return p; }
+ g.position.set(x,y,z); g.rotation.y=yaw||0; scene.add(g); const p={g,x,z,y,yaw:yaw||0,att:false,slot:null,home:{x,z},busy:false}; PALLETS.push(p); return p; }
 function spawnHeap(){ const F=ZONES.field; const g=new THREE.Mesh(new THREE.DodecahedronGeometry(1.1,0),M(0x8a6a44,{flatShading:true,roughness:1})); g.scale.set(1,0.6,1); const x=F.x0+Math.random()*(F.x1-F.x0), z=F.z0+Math.random()*(F.z1-F.z0); g.position.set(x,0.5,z); g.rotation.y=Math.random()*3; g.castShadow=true; scene.add(g); HEAPS.push({g,x,z,r:1.2,done:false}); }
 
 /* ================= MÁQUINAS ================= */
@@ -248,11 +254,11 @@ function makeDozer(){ const g=new THREE.Group(), m={g,kind:'topa'};
 const DEF={
  tolva:{n:'Camión tolva',ic:'🚛',d:'Carga material en la cantera y llévalo a los rellenos. Vuelca la tolva en el lugar marcado.',make:()=>makeTruck(false),maxV:14,acc:4,wb:5.6,steer:0.55,circ:[[0,2.4,1.5],[0,-2.4,1.5]],spawn:[-48,-20,Math.PI*1.1],cam:[13,5.2]},
  retro:{n:'Retroexcavadora',ic:'🦾',d:'Excava la zanja con el brazo trasero y carga cada cuchara en el camión estacionado.',make:makeBackhoe,maxV:8,acc:3,wb:2.8,steer:0.6,circ:[[0,1.2,1.4],[0,-1.4,1.4]],spawn:[-50,38,Math.PI],cam:[10,5]},
- grua:{n:'Montacargas',ic:'📦',d:'Recoge pallets con la horquilla y ordénalos en los estantes de la bodega, en el nivel indicado.',make:makeForklift,maxV:6,acc:3,wb:1.6,steer:0.75,circ:[[0,-0.3,0.95]],spawn:[57,44,-Math.PI/2],cam:[8,4.2],rear:true},
+ grua:{n:'Montacargas',ic:'📦',d:'Recoge pallets de materiales en la bodega y llévalos a la zona de entrega junto al edificio.',make:makeForklift,maxV:6,acc:3,wb:1.6,steer:0.75,circ:[[0,-0.3,0.95]],spawn:[57,44,-Math.PI/2],cam:[8,4.2],rear:true},
  topa:{n:'Topadora',ic:'🚜',d:'Baja la hoja y empuja los montones de tierra hasta el área de acopio.',make:makeDozer,maxV:6,acc:2.5,wb:2.5,steer:0.6,circ:[[0,0.4,1.9]],spawn:[0,-50,Math.PI],cam:[11,5.5],tracked:true}};
 let MC_=null; // máquina activa
 const CTRL={thr:0,st:0,hold:{}};
-function spawnMachine(k){ if(MC_){ scene.remove(MC_.g); } const D=DEF[k]; const m=D.make(); m.D=D; m.k=k; m.x=D.spawn[0]; m.z=D.spawn[1]; m.yaw=D.spawn[2]; m.v=0; m.steerA=0; m.hydr=0; m.tracked=!!D.tracked; m.g.position.set(m.x,0,m.z); m.g.rotation.y=m.yaw; scene.add(m.g); m.g.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); MC_=m; if(palMark) palMark.visible=false; if(slotBox) slotBox.visible=false; CAM.yaw=m.yaw+Math.PI; CAM.off=0; buildWorkUI(); newJob(); return m; }
+function spawnMachine(k){ if(MC_){ scene.remove(MC_.g); } const D=DEF[k]; const m=D.make(); m.D=D; m.k=k; m.x=D.spawn[0]; m.z=D.spawn[1]; m.yaw=D.spawn[2]; m.v=0; m.steerA=0; m.hydr=0; m.tracked=!!D.tracked; m.g.position.set(m.x,0,m.z); m.g.rotation.y=m.yaw; scene.add(m.g); m.g.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); MC_=m; if(palMark) palMark.visible=false; if(slotBox) slotBox.visible=false; CAM.yaw=m.yaw+Math.PI; CAM.off=0; camFree(false); buildWorkUI(); newJob(); return m; }
 
 /* ================= CONDUCCIÓN ================= */
 function collide(m){ let hit=false; const s=Math.sin(m.yaw), c=Math.cos(m.yaw);
@@ -279,9 +285,7 @@ const HOLD=(k)=>!!CTRL.hold[k];
 function newJob(){ const m=MC_; if(!m) return;
  if(m.k==='tolva'){ const d=ZONES.dump[Math.floor(Math.random()*3)]; JOB={k:'tolva',phase:m.cargo>=1?'dump':'load',dest:d,pay:150}; }
  if(m.k==='retro'){ JOB={k:'retro',n:0,need:5,pay:45,bonus:120}; PARKED.cargo=PARKED.cargo||0; }
- if(m.k==='grua'){ const free=PALLETS.filter(p=>!p.slot&&!p.att), empty=RACKS.filter(r=>!r.pal);
-   if(free.length&&empty.length&&(Math.random()<0.7||!PALLETS.some(p=>p.slot))){ const p=free[Math.floor(Math.random()*free.length)], s=empty[Math.floor(Math.random()*empty.length)]; JOB={k:'grua',mode:'store',pal:p,slot:s,pay:120+s.lv*40}; }
-   else { const p=PALLETS.filter(p=>p.slot)[0]; JOB={k:'grua',mode:'dock',pal:p,pay:110}; } markPallet(JOB.pal); }
+ if(m.k==='grua'){ JOB={k:'grua',pay:130}; }
  if(m.k==='topa'){ JOB={k:'topa',n:0,need:3,pay:60,bonus:80}; }
  renderJob(); }
 let palMark=null; function markPallet(p){ if(!palMark){ palMark=new THREE.Mesh(new THREE.TorusGeometry(0.9,0.07,8,32),new THREE.MeshBasicMaterial({color:0x50ff8a})); palMark.rotation.x=Math.PI/2; scene.add(palMark); } palMark.userData.p=p; }
@@ -289,12 +293,12 @@ let slotBox=null; function showSlot(s){ if(!slotBox){ slotBox=new THREE.Mesh(new
 function jobTarget(){ const m=MC_; if(!JOB||!m) return null;
  if(JOB.k==='tolva') return JOB.phase==='load'?{x:ZONES.chute.x,z:ZONES.chute.z,n:'Tolva de carga'}:{x:JOB.dest.x,z:JOB.dest.z,n:JOB.dest.n};
  if(JOB.k==='retro') return m.bucket>0?{x:PARKED.g.position.x,z:PARKED.g.position.z,n:'Camión estacionado'}:{x:(ZONES.trench.x0+ZONES.trench.x1)/2,z:(ZONES.trench.z0+ZONES.trench.z1)/2,n:'Zanja'};
- if(JOB.k==='grua'){ if(!JOB.pal.att) return {x:JOB.pal.g.position.x,z:JOB.pal.g.position.z,n:'Pallet marcado'}; return JOB.mode==='store'?{x:JOB.slot.x,z:JOB.slot.z-1.2,n:JOB.slot.name}:{x:ZONES.whs.x,z:ZONES.whs.z-8,n:'Andén de despacho'}; }
+ if(JOB.k==='grua'){ if(m.carried) return {x:(ZONES.deliver.x0+ZONES.deliver.x1)/2,z:(ZONES.deliver.z0+ZONES.deliver.z1)/2,n:'Zona de entrega'}; const q=m.nearPal; return q?{x:q.g.position.x,z:q.g.position.z,n:'Pallet de materiales'}:{x:ZONES.whs.x,z:ZONES.whs.z-7,n:'Bodega'}; }
  if(JOB.k==='topa'){ let best=null,bd=1e9; for(const h of HEAPS){ if(h.done) continue; const d=Math.hypot(h.x-m.x,h.z-m.z); if(d<bd){ bd=d; best=h; } } const P=ZONES.pad; const near=best&&bd<6; return near?{x:0,z:(P.z0+P.z1)/2,n:'Área de acopio'}:best?{x:best.x,z:best.z,n:'Montón de tierra'}:null; } }
 function renderJob(){ const m=MC_; if(!JOB) return; let h='',pg=0;
  if(JOB.k==='tolva'){ h=JOB.phase==='load'?`<b>📋 Cargar material</b>Ve a la tolva de carga de la Cantera y detente bajo ella hasta llenar.`:`<b>📋 Llevar a ${JOB.dest.n}</b>Maneja hasta el círculo amarillo y mantén <b style="display:inline;font-size:14px">Volcar</b> para descargar.`; pg=m.cargo; }
  if(JOB.k==='retro'){ h=`<b>📋 Excavar la zanja · ${JOB.n}/${JOB.need} cucharas</b>${m.bucket>0?'Cuchara llena: gira el brazo sobre la tolva del camión y abre la cuchara.':'Baja el brazo dentro de la zanja (tierra oscura) y cierra la cuchara para llenarla.'}`; pg=JOB.n/JOB.need; }
- if(JOB.k==='grua'){ h=JOB.mode==='store'?`<b>📋 Guardar pallet en ${JOB.slot.name}</b>${JOB.pal.att?`Levanta la horquilla a la altura del nivel ${JOB.slot.lv+1}, entra al estante y bájala.`:'Mete la horquilla bajo el pallet marcado con el anillo verde y súbela.'}`:`<b>📋 Despachar pallet</b>${JOB.pal.att?'Llévalo al andén de despacho (frente a la bodega) y déjalo en el suelo.':'Saca el pallet marcado del estante: horquilla a su altura, entra y sube.'}`; showSlot(JOB.mode==='store'?JOB.slot:null); }
+ if(JOB.k==='grua'){ h=m.carried?`<b>📋 Llevar materiales a la obra</b>Sigue la flecha hasta la zona verde junto al edificio y mantén <b style="display:inline;font-size:14px">Bajar</b> para dejar el pallet.`:`<b>📋 Abastecer la obra</b>Acércate a cualquier pallet de la bodega con la horquilla abajo y mantén <b style="display:inline;font-size:14px">Subir</b>.`; }
  if(JOB.k==='topa'){ h=`<b>📋 Despejar la explanada · ${JOB.n}/${JOB.need}</b>Baja la hoja y empuja montones de tierra hasta el área de acopio (rectángulo amarillo).`; pg=JOB.n/JOB.need; }
  $('job').innerHTML=h+`<div class="pg"><i style="width:${Math.round(clamp(pg,0,1)*100)}%"></i></div>`; }
 function pay(n,why,kind){ if(kind) addProg(kind); SAVE.credits+=n; SAVE.jobs++; SAVE.fav=MC_.k; saveLocal(); pushBoard(); $('crv').textContent=SAVE.credits.toLocaleString('es-CL'); msg('+'+n+' créditos',why); sfx('pay'); floatText('+'+n); }
@@ -321,18 +325,18 @@ function workUpdate(m,dt){ const T=JOB; if(!T) return; if(m.k==='retro'||m.k==='
     if(onTruck){ PARKED.cargo=Math.min(1,(PARKED.cargo||0)+1/T.need); PARKED.load.visible=true; PARKED.load.scale.set(1,Math.max(0.05,PARKED.cargo),1); PARKED.load.position.y=0.15+0.5*PARKED.cargo; T.n++; pay(T.pay,'Cuchara en el camión','retro');
       if(T.n>=T.need){ setTimeout(()=>{ pay(T.bonus,'¡Camión lleno! Sale a botadero'); truckLeave(); newJob(); },900); } }
     else tipT('La tierra cayó fuera del camión'); renderJob(); } }
- if(m.k==='grua'){ const v=(HOLD('f+')?1:0)-(HOLD('f-')?1:0); const prev=m.fork; m.fork=clamp(m.fork+v*dt*0.9,0.06,3.4); m.car.position.y=m.fork; m.hydr=v?1:0; m.g.updateMatrixWorld(true);
-  const fw=new THREE.Vector3(0,0,0.65); m.car.localToWorld(fw); // centro de la horquilla
-  if(!m.carried){ for(const p of PALLETS){ if(p.att) continue; const dx=fw.x-p.g.position.x, dz=fw.z-p.g.position.z; const cs=Math.cos(-p.yaw), sn=Math.sin(-p.yaw); const lx=dx*cs+dz*sn, lz=-dx*sn+dz*cs;
-     const rel=fw.y-p.g.position.y; if(Math.abs(lx)<0.45&&Math.abs(lz)<0.5&&rel>0.05&&rel<0.3&&m.fork>prev){ m.carried=p; p.att=true; if(p.slot){ p.slot.pal=null; p.slot=null; } sfx('clunk'); if(JOB&&p===JOB.pal) renderJob(); break; } } }
-  else { const p=m.carried; const pw=new THREE.Vector3(0,0.02,0.6); m.car.localToWorld(pw); p.g.position.copy(pw); p.g.position.y=fw.y-0.12; p.g.rotation.y=m.yaw; p.yaw=m.yaw;
-   // apoyo bajo el pallet: suelo o estante
-   let sup=0, slot=null; for(const r of RACKS){ if(Math.abs(p.g.position.x-r.x)<0.7&&Math.abs(p.g.position.z-r.z)<0.6&&p.g.position.y>=r.y-0.15&&r.y>sup){ sup=r.y; slot=r; } }
-   if(p.g.position.y<=sup+0.005&&m.fork<prev+1e-6&&v<0){ p.g.position.y=sup; p.att=false; m.carried=null; sfx('clunk'); if(slot&&!slot.pal){ slot.pal=p; p.slot=slot; }
-     if(JOB&&p===JOB.pal){ if(JOB.mode==='store'&&slot===JOB.slot){ pay(JOB.pay,'Pallet guardado en '+slot.name,'grua'); newJob(); }
-       else if(JOB.mode==='dock'&&!slot&&Math.abs(p.g.position.x-ZONES.whs.x)<9&&p.g.position.z<ZONES.whs.z-4&&p.g.position.z>ZONES.whs.z-13){ pay(JOB.pay,'Pallet despachado','grua'); newJob(); }
-       else { tipT(JOB.mode==='store'?'Ese no es el estante indicado':'Déjalo en el andén frente a la bodega'); renderJob(); } } } }
-  if(palMark&&palMark.userData.p){ const p=palMark.userData.p; palMark.visible=!p.att; palMark.position.set(p.g.position.x,p.g.position.y+1.15+Math.sin(perfT*4)*0.1,p.g.position.z); } }
+ if(m.k==='grua'){ const v=(HOLD('f+')?1:0)-(HOLD('f-')?1:0); m.fork=clamp(m.fork+v*dt*0.9,0.06,2.2); m.car.position.y=m.fork; m.hydr=v?1:0; m.g.updateMatrixWorld(true);
+  const fw=new THREE.Vector3(0,0,0.65); m.car.localToWorld(fw); const Z=ZONES.deliver;
+  if(!m.carried){ let near=null,nd=1e9; for(const p of PALLETS){ if(p.att||p.busy) continue; const d=Math.hypot(fw.x-p.g.position.x,fw.z-p.g.position.z); if(d<nd){ nd=d; near=p; } }
+   m.nearPal=near; if(near&&nd<1.35&&m.fork<0.6){ if(v>0){ m.carried=near; near.att=true; sfx('clunk'); tipT('¡Pallet cargado! Llévalo a la obra'); renderJob(); } else tipT('Pallet al alcance: mantén Subir'); } }
+  else { const p=m.carried; const pw=new THREE.Vector3(0,0,0.6); m.car.localToWorld(pw); p.g.position.set(pw.x,Math.max(0,m.fork-0.06),pw.z); p.g.rotation.y=m.yaw; p.yaw=m.yaw;
+   const inZ=pw.x>Z.x0&&pw.x<Z.x1&&pw.z>Z.z0&&pw.z<Z.z1;
+   if(v<0&&m.fork<=0.08){ p.g.position.y=0; p.att=false; m.carried=null; sfx('clunk');
+     if(inZ){ p.busy=true; pay(T.pay,'Materiales entregados en la obra','grua'); setTimeout(()=>{ p.g.position.set(p.home.x,0,p.home.z); p.g.rotation.y=0; p.yaw=0; p.busy=false; },6000); newJob(); }
+     else { tipT('Aún no es la zona de entrega: sigue la flecha'); renderJob(); } }
+   else if(inZ) tipT('Zona de entrega: mantén Bajar'); }
+  if(!palMark){ palMark=new THREE.Mesh(new THREE.TorusGeometry(0.9,0.07,8,32),new THREE.MeshBasicMaterial({color:0x50ff8a})); palMark.rotation.x=Math.PI/2; scene.add(palMark); }
+  const q=m.nearPal; palMark.visible=!m.carried&&!!q; if(q) palMark.position.set(q.g.position.x,1.15+Math.sin(perfT*4)*0.1,q.g.position.z); }
  if(m.k==='topa'){ const v=(HOLD('h+')?1:0)-(HOLD('h-')?1:0); m.bladeY=clamp(m.bladeY+v*dt*0.9,0,1.2); m.blade.position.y=0.2+m.bladeY; m.hydr=v?1:0;
   if(m.bladeY<0.35&&m.v>0.2){ const s=Math.sin(m.yaw), c=Math.cos(m.yaw);
    for(const h of HEAPS){ if(h.done) continue; const dx=h.x-m.x, dz=h.z-m.z; const lx=dx*c-dz*s, lz=dx*s+dz*c; if(Math.abs(lx)<1.9&&lz>1.6&&lz<3.0+h.r){ const nz=3.0+h.r*0.7; h.x=m.x+s*nz+c*lx; h.z=m.z+c*nz-s*lx; h.g.position.set(h.x,0.5,h.z); h.g.rotation.y+=dt*m.v*0.3; if(Math.random()<dt*10) pour(h.x,0.4,h.z,0.2,false,1); } } }
@@ -350,13 +354,13 @@ let pI=0; function pour(x,y,z,amount,spread,dust){ const n=dust?1:Math.ceil(amou
 function updParts(dt){ for(const p of PARTS){ if(p.l<=0) continue; p.l-=dt; p.vy-=14*dt; p.o.position.x+=p.vx*dt; p.o.position.y+=p.vy*dt; p.o.position.z+=p.vz*dt; p.o.rotation.x+=dt*4; if(p.o.position.y<0.05){ p.o.position.y=0.05; p.vy=0; p.vx*=0.5; p.vz*=0.5; } if(p.l<=0) p.o.visible=false; } }
 
 /* ================= CÁMARA ================= */
-const CAM={yaw:0,pitch:0.32,dist:13,off:0,manual:0,shake:0,tx:0,ty:0,tz:0};
+const CAM={yaw:0,pitch:0.32,dist:13,off:0,manual:0,shake:0,tx:0,ty:0,tz:0,free:false,fy:0};
+function camFree(on){ CAM.free=on; if(on) CAM.fy=CAM.yaw; else { CAM.pitch=0.32; CAM.zoom=1; } $('bCam').classList.toggle('act',on); if(on) tipT('Cámara libre · toca 🎥 para volver a la principal'); }
 function updCam(dt){ const m=MC_; if(!m) return; const D=m.D;
  let tx=m.x, ty=1.8, tz=m.z, yawT=m.yaw+Math.PI, dist=D.cam[0], h=D.cam[1], pitch=CAM.pitch;
- if(m.k==='retro'&&perfT-(m.lastArm||-9)<4&&Math.abs(m.v)<0.6){ yawT=m.yaw; tx=m.x-Math.sin(m.yaw)*3.6; tz=m.z-Math.cos(m.yaw)*3.6; dist=8.5; ty=1.2; pitch=0.62; }
+ if(!CAM.free&&m.k==='retro'&&perfT-(m.lastArm||-9)<4&&Math.abs(m.v)<0.6){ yawT=m.yaw; tx=m.x-Math.sin(m.yaw)*3.6; tz=m.z-Math.cos(m.yaw)*3.6; dist=8.5; ty=1.2; pitch=0.62; }
  if(m.k==='grua'){ ty=1.6+m.fork*0.4; }
- if(CAM.manual>0) CAM.manual-=dt; else CAM.off=lerp(CAM.off,0,dt*1.2);
- CAM.yaw=lerpAng(CAM.yaw,yawT+CAM.off,dt*3);
+ if(CAM.free) CAM.yaw=lerpAng(CAM.yaw,CAM.fy,dt*14); else CAM.yaw=lerpAng(CAM.yaw,yawT,dt*3);
  const k=1-Math.exp(-dt*7); CAM.tx=lerp(CAM.tx,tx,k); CAM.ty=lerp(CAM.ty,ty,k); CAM.tz=lerp(CAM.tz,tz,k);
  CAM.d=lerp(CAM.d||dist,dist*(CAM.zoom||1),dt*3); CAM.p=lerp(CAM.p||pitch,pitch,dt*3);
  let sx=0,sy=0; if(CAM.shake>0){ CAM.shake-=dt; sx=(Math.random()-0.5)*CAM.shake; sy=(Math.random()-0.5)*CAM.shake; }
@@ -390,7 +394,7 @@ const WORK={
  retro:[{k:'sw+',l:'Girar ◀',i:'↶',key:'J'},{k:'sw-',l:'Girar ▶',i:'↷',key:'L'},{k:'b+',l:'Pluma ↑',i:'⬆',key:'I'},{k:'b-',l:'Pluma ↓',i:'⬇',key:'K'},{k:'s+',l:'Brazo afuera',i:'↗',key:'U'},{k:'s-',l:'Brazo adentro',i:'↙',key:'O'},{k:'c+',l:'Cerrar cuchara',i:'⤵',key:'N'},{k:'c-',l:'Abrir cuchara',i:'⤴',key:'M'}],
  grua:[{k:'f+',l:'Subir',i:'⬆',key:'R'},{k:'f-',l:'Bajar',i:'⬇',key:'F'}],
  topa:[{k:'h+',l:'Subir hoja',i:'⬆',key:'R'},{k:'h-',l:'Bajar hoja',i:'⬇',key:'F'}]};
-addEventListener('keydown',e=>{ if(mode==='play'&&e.code==='KeyH'&&!e.repeat) honk(); });
+addEventListener('keydown',e=>{ if(mode==='play'&&e.code==='KeyH'&&!e.repeat) honk(); if(mode==='play'&&e.code==='KeyV') camFree(false); });
 const KEYMAP={Space:'dump',KeyJ:'sw+',KeyL:'sw-',KeyI:'b+',KeyK:'b-',KeyU:'s+',KeyO:'s-',KeyN:'c+',KeyM:'c-',KeyR:null,KeyF:null};
 function buildWorkUI(){ const m=MC_; const L=WORK[m.k]; const w=$('work'); w.style.gridTemplateColumns=`repeat(${L.length>2?2:L.length},auto)`;
  w.innerHTML=L.map(b=>`<div class="wb" data-k="${b.k}"><span>${b.i}</span>${b.l}${IS_TOUCH?'':`<kbd>${b.key}</kbd>`}</div>`).join('');
@@ -410,7 +414,7 @@ async function showBoard(){ $('board').style.display='flex'; $('blist').textCont
  $('blist').innerHTML='<table>'+L.map((r,i)=>`<tr class="${r.vid===VID?'me':''}"><td>${i<3?['🥇','🥈','🥉'][i]:i+1}</td><td>${(DEF[r.fav]||{}).ic||'👷'} ${String(r.name).replace(/[<>&]/g,'')}</td><td style="text-align:right">💰 ${Number(r.credits).toLocaleString('es-CL')}</td><td style="text-align:right;opacity:.7">${r.jobs} trabajos</td></tr>`).join('')+'</table>'; }
 $('bBoard').onclick=showBoard; $('selBoard').onclick=showBoard; $('bClose').onclick=()=>$('board').style.display='none';
 $('bSnd').onclick=()=>{ auInit(); muted=!muted; $('bSnd').textContent=muted?'🔇':'🔊'; if(mast) mast.gain.setTargetAtTime(muted?0:0.5,AC.currentTime,0.1); };
-$('bSwap').onclick=()=>{ showSel(); }; $('bHorn').onclick=honk; $('bWave').onclick=wave; $('onl').onclick=()=>$('onl').classList.toggle('open'); $('bMus').onclick=()=>{ auInit(); musInit(); setMusic(!musicOn); }; $('obra').onclick=()=>$('obra').classList.toggle('open'); $('obra').style.pointerEvents='auto';
+$('bSwap').onclick=()=>{ showSel(); }; $('bCam').onclick=()=>{ camFree(false); sfx('ui'); tipT('Cámara principal'); }; $('bHorn').onclick=honk; $('bWave').onclick=wave; $('onl').onclick=()=>$('onl').classList.toggle('open'); $('bMus').onclick=()=>{ auInit(); musInit(); setMusic(!musicOn); }; $('obra').onclick=()=>$('obra').classList.toggle('open'); $('obra').style.pointerEvents='auto';
 
 /* ================= ENTRADA ================= */
 const K={}; addEventListener('keydown',e=>{ if(document.activeElement===$('nm')) return; auInit(); K[e.code]=true; const h=KEYMAP[e.code]; if(e.code==='KeyR') CTRL.hold[MC_&&MC_.k==='topa'?'h+':'f+']=true; else if(e.code==='KeyF') CTRL.hold[MC_&&MC_.k==='topa'?'h-':'f-']=true; else if(h) CTRL.hold[h]=true; if(e.code==='Space') e.preventDefault(); });
@@ -421,7 +425,7 @@ cv.addEventListener('pointerdown',e=>{ auInit(); if(mode!=='play') return;
  if(e.pointerType!=='mouse'&&e.clientX<innerWidth*0.45&&stick.id==null){ stick.id=e.pointerId; stick.ox=e.clientX; stick.oy=e.clientY; stick.x=stick.y=0; const s=$('stick'); s.style.display='block'; s.style.left=e.clientX+'px'; s.style.top=e.clientY+'px'; $('knob').style.transform=''; }
  else if(look.id==null){ look.id=e.pointerId; look.x=e.clientX; look.y=e.clientY; } try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
 cv.addEventListener('pointermove',e=>{ if(e.pointerId===stick.id){ let dx=e.clientX-stick.ox, dy=e.clientY-stick.oy; const d=Math.hypot(dx,dy), R=55; if(d>R){ dx*=R/d; dy*=R/d; } stick.x=dx/R; stick.y=dy/R; $('knob').style.transform=`translate(${dx}px,${dy}px)`; }
- else if(e.pointerId===look.id){ CAM.off-=(e.clientX-look.x)*0.007; CAM.pitch=clamp(CAM.pitch+(e.clientY-look.y)*0.004,0.1,1.1); look.x=e.clientX; look.y=e.clientY; CAM.manual=2.5; } });
+ else if(e.pointerId===look.id){ if(!CAM.free){ if(Math.hypot(e.clientX-look.x,e.clientY-look.y)<6) return; camFree(true); } CAM.fy-=(e.clientX-look.x)*0.007; CAM.pitch=clamp(CAM.pitch+(e.clientY-look.y)*0.004,0.1,1.3); look.x=e.clientX; look.y=e.clientY; } });
 const pend=e=>{ if(e.pointerId===stick.id){ stick.id=null; stick.x=stick.y=0; $('stick').style.display='none'; } if(e.pointerId===look.id) look.id=null; }; cv.addEventListener('pointerup',pend); cv.addEventListener('pointercancel',pend);
 addEventListener('wheel',e=>{ CAM.zoom=clamp((CAM.zoom||1)+e.deltaY*0.001,0.6,1.8); },{passive:true});
 function readInput(){ let thr=(K.KeyW||K.ArrowUp?1:0)-(K.KeyS||K.ArrowDown?1:0), st=(K.KeyD||K.ArrowRight?1:0)-(K.KeyA||K.ArrowLeft?1:0);
@@ -438,7 +442,7 @@ $('goB').onclick=()=>{ auInit(); const n=$('nm').value.trim(); if(n.length<2){ $
  if(preview){ scene.remove(preview.g); preview=null; } $('sel').style.display='none'; $('hud').style.display='block'; mode='play'; spawnMachine(selK); $('crv').textContent=SAVE.credits.toLocaleString('es-CL'); msg(DEF[selK].n,'¡A trabajar, '+SAVE.name+'!'); };
 
 /* ================= AVANCE DE LA OBRA MAESTRA ================= */
-const OBRA_T={tolva:{n:'Rellenos',ic:'🚛',t:20},retro:{n:'Excavación',ic:'🦾',t:50},grua:{n:'Bodega',ic:'📦',t:30},topa:{n:'Explanada',ic:'🚜',t:40}};
+const OBRA_T={tolva:{n:'Rellenos',ic:'🚛',t:20},retro:{n:'Excavación',ic:'🦾',t:50},grua:{n:'Materiales',ic:'📦',t:30},topa:{n:'Explanada',ic:'🚜',t:40}};
 if(!SAVE.prog) SAVE.prog={tolva:0,retro:0,grua:0,topa:0}; if(!SAVE.obra) SAVE.obra=1; if(!SAVE.aportes) SAVE.aportes=0;
 // estado de la OBRA COMUNITARIA (compartida por todos los operadores); sin conexión se usa el avance local
 let COM=null, COMQ=[], comBusy=false, lastObra=null;
@@ -589,6 +593,6 @@ function frame(now){ const dt=Math.min(0.05,(now-last)/1000); last=now; perfT+=d
  if(window.TOWER) TOWER.rotation.y+=dt*0.05;
  updParts(dt); updFW(dt); musicTick(); updPeers(dt); netTick(dt); const rr=rearPre(); renderer.render(scene,camera); if(rr) rearPost(); requestAnimationFrame(frame); }
 requestAnimationFrame(frame);
-window.__ob={get M(){return MC_},CTRL,K,spawnMachine,get JOB(){return JOB},PALLETS,RACKS,HEAPS,ZONES,PARKED:()=>PARKED,step:(s)=>{ const n=Math.round(s*60); for(let i=0;i<n;i++){ perfT+=1/60; readInput(); drive(MC_,1/60); workUpdate(MC_,1/60); updParked(1/60); } updCam(0.016); updHUD(); },setMode:(m)=>mode=m};
+window.__ob={get M(){return MC_},CTRL,K,CAM,camFree,spawnMachine,get JOB(){return JOB},PALLETS,RACKS,HEAPS,ZONES,PARKED:()=>PARKED,step:(s)=>{ const n=Math.round(s*60); for(let i=0;i<n;i++){ perfT+=1/60; readInput(); drive(MC_,1/60); workUpdate(MC_,1/60); updParked(1/60); } updCam(0.016); updHUD(); },setMode:(m)=>mode=m};
 </script>
 </body></html>
