@@ -195,7 +195,7 @@ function buildWorld(){
  for(let a=0;a<Math.PI*2;a+=0.05){ const x=Math.cos(a)*140, z=Math.sin(a)*140; BOX(0.15,2,0.15,STEEL,x,1,z,null,false); }
  const fence=new THREE.Mesh(new THREE.CylinderGeometry(140,140,2,90,1,true),M(0x7a9aa0,{transparent:true,opacity:0.25,side:THREE.DoubleSide,wireframe:true})); fence.position.y=1; scene.add(fence);
  const treeM=M(0x3a7a3a,{flatShading:true}); for(let i=0;i<60;i++){ const a=Math.random()*6.28, r=150+Math.random()*120; const x=Math.cos(a)*r, z=Math.sin(a)*r; if((r>186&&r<234)||(Math.abs(z)<115&&Math.abs(x)>140)||(Math.abs(x)<8&&z>0)) continue; CYL(0.4,0.5,3,M(0x6a4a2a),x,1.5,z,null,6); const t=new THREE.Mesh(new THREE.ConeGeometry(3+Math.random()*2,7+Math.random()*4,7),treeM); t.position.set(x,7,z); scene.add(t); }
- for(let i=0;i<8;i++){ const a=i/8*6.28; const m=new THREE.Mesh(new THREE.ConeGeometry(60+Math.random()*30,50+Math.random()*40,6),M(0x8aa0b8,{flatShading:true})); m.position.set(Math.cos(a)*420,20,Math.sin(a)*420); scene.add(m); }
+ for(let i=0;i<8;i++){ const a=i/8*6.28; if(Math.cos(a)<-0.5) continue; const m=new THREE.Mesh(new THREE.ConeGeometry(60+Math.random()*30,50+Math.random()*40,6),M(0x8aa0b8,{flatShading:true})); m.position.set(Math.cos(a)*420,20,Math.sin(a)*420); scene.add(m); }
  cones(-6,4,3,5); cones(6,-30,2.5,4);
 }
 function cones(x,z,r,n){ for(let i=0;i<n;i++){ const a=i/n*Math.PI*2; const c=CYL(0.02,0.3,0.75,M(0xff6a1a),x+Math.cos(a)*r,0.375,z+Math.sin(a)*r,null,10); BOX(0.5,0.06,0.5,M(0x1a1a1a),c.position.x,0.03,c.position.z,null,false); } }
@@ -256,6 +256,7 @@ const DEF={
  retro:{n:'Retroexcavadora',ic:'🦾',d:'Excava la zanja con el brazo trasero y carga cada cuchara en el camión estacionado.',make:makeBackhoe,maxV:8,acc:3,wb:2.8,steer:0.6,circ:[[0,1.2,1.4],[0,-1.4,1.4]],spawn:[-50,38,Math.PI],cam:[10,5]},
  grua:{n:'Montacargas',ic:'📦',d:'Recoge pallets de materiales en la bodega y llévalos a la zona de entrega junto al edificio.',make:makeForklift,maxV:6,acc:3,wb:1.6,steer:0.75,circ:[[0,-0.3,0.95]],spawn:[57,44,-Math.PI/2],cam:[8,4.2],rear:true},
  conte:{n:'Camión de contenedores',ic:'🚚',d:'Maneja el camión grande por la ruta y lleva contenedores entre Puerto Aurora y Ciudad Central.',make:makeSemi,maxV:21,acc:3.4,wb:4.4,steer:0.42,circ:[[0,1.8,1.6],[0,-1.0,1.6]],spawn:[-210,-6,Math.PI],cam:[18,6.5],route:true},
+ barco:{n:'Barco carguero',ic:'🚢',d:'Navega libre por el mar: lleva los contenedores del puerto a Isla Esmeralda y cumple tareas en el camino (faro, rescates, carga a la deriva).',make:makeShip,maxV:13,acc:1.8,wb:10,steer:0,circ:[[0,8,5],[0,-8,5]],spawn:[-385,95,-Math.PI/2],cam:[44,13],boat:true},
  topa:{n:'Topadora',ic:'🚜',d:'Baja la hoja y empuja los montones de tierra hasta el área de acopio.',make:makeDozer,maxV:6,acc:2.5,wb:2.5,steer:0.6,circ:[[0,0.4,1.9]],spawn:[0,-50,Math.PI],cam:[11,5.5],tracked:true}};
 let MC_=null; // máquina activa
 const CTRL={thr:0,st:0,hold:{}};
@@ -289,7 +290,6 @@ function buildRoute(){
   C.hx=C.x+sg*5.5; C.hz=C.z; C.hang=contMesh(rndCol(),true); C.hang.position.set(C.hx,9,C.hz); scene.add(C.hang); C.drop=contMesh(rndCol(),true); C.drop.visible=false; scene.add(C.drop);
   if(ci===0){ // puerto: patio de contenedores, mar y barco
    for(let gx=0;gx<9;gx++) for(const gz of [-62,-48,-34,34,48,62]){ const hN=1+Math.floor(Math.random()*3); for(let k=0;k<hN;k++){ const c=contMesh(rndCol()); c.position.set(-236-gx*6.2,1.3+k*2.6,gz); scene.add(c); } }
-   const sea=flat(new THREE.PlaneGeometry(320,900),M(0x2a7ac8,{roughness:0.25,metalness:0.2}),0.06); sea.position.set(-460,0.06,0);
    BOX(18,8,96,M(0x8a2a2a),-324,3,0); BOX(14,11,9,WHITE,-324,12,-40); BOX(4,5,4,M(0xe86a2a),-324,19,-40); for(let k=0;k<3;k++) for(let j=0;j<5;j++) for(const sx of [-4,0,4]){ if(Math.random()<0.2) continue; const c=contMesh(rndCol()); c.position.set(-324+sx,8.3+k*2.6,-22+j*13); scene.add(c); }
    for(const cz of [-20,24]){ for(const sx of [-6,6]) for(const sz of [-5,5]) BOX(1,26,1,YEL,-302+sx,13,cz+sz,null,false); BOX(46,1.6,1.6,YEL,-312,26.5,cz,null,false); BOX(4,3,4,WHITE,-300,24.5,cz,null,false); }
    for(let i=0;i<5;i++) BOX(22,7+Math.random()*3,16,M([0xb8c0c8,0x9aa4b0,0xc8b89a][i%3]),-172-Math.random()*10,4,-70+i*35,null,false);
@@ -307,17 +307,64 @@ function makeSemi(){ const g=new THREE.Group(), m={g,kind:'conte'}; const RED=M(
  [[1.1,-9.2],[-1.1,-9.2],[1.1,-10.5],[-1.1,-10.5]].forEach(([x,z])=>m.wheels.push(wheel(0.55,0.5,tr,x,0.55,z))); BOX(2.5,0.5,0.15,M(0xd8402a),0,0.9,-12.0,tr);
  m.cont=contMesh(CCOL[0],true); m.cont.position.set(0,2.75,-5.6); m.cont.visible=false; tr.add(m.cont); m.tyaw=0; return m; }
 
+/* ================= MAR: barco carguero, islas y tareas libres ================= */
+const SEA={port:{n:'Puerto Aurora',x:-385,z:95,r:28},isla:{n:'Isla Esmeralda',x:-938,z:210,r:30},faro:{x:-700,z:-430,ready:0},isl:[],crates:[],bote:null};
+function pillar(col,h){ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:GLOW,color:col,transparent:true,depthWrite:false,fog:false,blending:THREE.AdditiveBlending,opacity:0.8})); s.scale.set(7,h||70,1); return s; }
+function seaSpot(){ for(let k=0;k<40;k++){ const x=-460-Math.random()*900, z=-700+Math.random()*1400; if(SEA.isl.every(I=>Math.hypot(x-I.x,z-I.z)>I.r+25)&&Math.hypot(x-SEA.isla.x,z-SEA.isla.z)>50) return [x,z]; } return [-600,0]; }
+function buildSea(){
+ const sea=new THREE.Mesh(new THREE.PlaneGeometry(2700,2700),M(0x2a7ac8,{roughness:0.25,metalness:0.2})); sea.rotation.x=-Math.PI/2; sea.position.set(-1650,0.06,0); sea.receiveShadow=true; scene.add(sea);
+ // muelle del puerto
+ BOX(60,2.4,8,M(0xb0b0aa),-330,0.6,95); addObs(-330,95,60,8); for(const sx of [-3,3]) BOX(0.6,9,0.6,YEL,-352+sx,5.5,95); BOX(1,1,16,YEL,-352,10,99); BOX(2.4,2.4,2.4,WHITE,-352,9,93);
+ const ringM=new THREE.MeshBasicMaterial({color:0x40e070,transparent:true,opacity:0.75,side:THREE.DoubleSide});
+ for(const D of [SEA.port,SEA.isla]){ const r=new THREE.Mesh(new THREE.RingGeometry(D.r-1,D.r,48),ringM); r.rotation.x=-Math.PI/2; r.position.set(D.x,0.12,D.z); scene.add(r); for(let i=0;i<8;i++){ const a=i/8*6.28; CYL(0.5,0.7,1.4,M(i%2?0xff5a2a:0xf0f0f0),D.x+Math.cos(a)*D.r,0.5,D.z+Math.sin(a)*D.r,null,8); } }
+ // Isla Esmeralda
+ { const X=-1050, Z=210; SEA.isl.push({x:X,z:Z,r:84}); CYL(82,90,2.4,M(0xe8d8a0,{roughness:1}),X,0.6,Z,null,28); const hill=new THREE.Mesh(new THREE.SphereGeometry(62,20,10,0,6.3,0,1.57),M(0x4aa858,{flatShading:true})); hill.scale.y=0.42; hill.position.set(X-8,1.6,Z); scene.add(hill);
+   for(let i=0;i<16;i++){ const a=i/16*6.28+0.2, r=66+Math.random()*10, x=X+Math.cos(a)*r, z=Z+Math.sin(a)*r; if(Math.cos(a)>0.75) continue; const t=CYL(0.25,0.4,6,M(0x8a6a3a),x,4.6,z,null,6); t.rotation.z=(Math.random()-0.5)*0.3; for(let k=0;k<5;k++){ const lf=BOX(3.4,0.12,0.9,M(0x3a9a4a),x,7.7,z,null,false); lf.rotation.y=k*1.26; lf.rotation.z=0.35; } }
+   const hc=[0xf0e0c0,0xe8a070,0xa8d0e8,0xf0c0d0]; for(let i=0;i<8;i++){ const x=X+52+Math.random()*20, z=Z-34+i*9; BOX(5,3.4,5,M(hc[i%4]),x,3.4,z); const rf=new THREE.Mesh(new THREE.ConeGeometry(4.2,2.4,4),M(0xb8482a)); rf.rotation.y=Math.PI/4; rf.position.set(x,6.3,z); scene.add(rf); }
+   BOX(40,2.2,8,M(0x9a7a4a),X+100,0.5,Z); for(const sx of [-3,3]) BOX(0.5,7,0.5,YEL,X+112+sx,4.5,Z); BOX(1,0.8,12,YEL,X+112,8,Z+3);
+   const sg=new THREE.Sprite(new THREE.SpriteMaterial({fog:false,map:tex(512,128,(x,w,h)=>{ x.fillStyle='rgba(20,96,58,.9)'; x.fillRect(0,0,w,h); x.fillStyle='#fff'; x.font='bold 60px Archivo Black,sans-serif'; x.textAlign='center'; x.fillText('ISLA ESMERALDA',w/2,84); })})); sg.scale.set(40,10,1); sg.position.set(X,42,Z); scene.add(sg); }
+ // faro
+ { const F=SEA.faro; SEA.isl.push({x:F.x,z:F.z,r:20}); CYL(18,22,3,M(0x7a7a80,{flatShading:true}),F.x,1,F.z,null,9); for(let i=0;i<5;i++) CYL(3.2-i*0.3,3.5-i*0.3,5,M(i%2?0xd8402a:0xf4f4f4),F.x,5+i*5,F.z,null,14); CYL(2.2,2.2,2.4,M(0xfff4a0,{emissive:0xffe060,emissiveIntensity:1}),F.x,28.6,F.z,null,12); const cap=new THREE.Mesh(new THREE.ConeGeometry(2.8,2.4,12),M(0xd8402a)); cap.position.set(F.x,31,F.z); scene.add(cap);
+   F.beam=BOX(0.6,0.6,60,new THREE.MeshBasicMaterial({color:0xfff4a0,transparent:true,opacity:0.35,fog:false}),F.x,28.6,F.z,null,false); F.mark=pillar(0xffe066,60); F.mark.position.set(F.x,60,F.z); scene.add(F.mark); }
+ // roqueríos
+ [[-620,260,14],[-820,-120,18],[-560,-640,12],[-1240,-260,20],[-1180,620,16],[-760,560,13]].forEach(([x,z,r])=>{ SEA.isl.push({x,z,r}); const m=new THREE.Mesh(new THREE.DodecahedronGeometry(r,0),M(0x6a6a72,{flatShading:true})); m.scale.y=0.45; m.position.set(x,1,z); scene.add(m); });
+ // cajas a la deriva
+ for(let i=0;i<8;i++){ const g=new THREE.Group(); BOX(2.2,1.6,2.2,M(0xc89a5a),0,0.3,0,g); BOX(2.3,0.2,0.4,M(0x8a5a2a),0,0.9,0,g,false); const p=pillar(0xff9a2a,34); p.position.y=18; g.add(p); const [x,z]=seaSpot(); g.position.set(x,0,z); scene.add(g); SEA.crates.push({g,x,z,ph:Math.random()*6}); }
+ // bote a la deriva
+ { const g=new THREE.Group(); BOX(2.6,1.2,7,M(0xf0f0f0),0,0.5,0,g); BOX(2.2,1.4,2.2,M(0x2a8ad8),0,1.7,-1.2,g); CYL(0.06,0.06,4,STEEL,0,3.2,1,g,6); const fl=pillar(0xff3a3a,50); fl.position.y=26; g.add(fl); const [x,z]=seaSpot(); g.position.set(x,0,z); scene.add(g); SEA.bote={g,x,z,t:0}; } }
+function makeShip(){ const g=new THREE.Group(), m={g,kind:'barco'}; const H=M(0x1f3a5a,{roughness:0.5}), RD=M(0x9a2a2a);
+ BOX(9,3.2,26,H,0,1.2,-3,g); const bow=BOX(6.36,3.2,6.36,H,0,1.2,10,g); bow.rotation.y=Math.PI/4; BOX(9.1,0.9,26,RD,0,-0.05,-3,g); const b2=BOX(6.44,0.9,6.44,RD,0,-0.05,10,g); b2.rotation.y=Math.PI/4;
+ BOX(8.6,0.2,25.6,M(0x6a6a70),0,2.85,-3,g); BOX(7.6,5,4.6,WHITE,0,5.4,-13.4,g); BOX(7.7,1.1,0.1,M(0x2a4a6a,{roughness:0.2}),0,6.9,-11.05,g,false); BOX(9,0.3,5.4,WHITE,0,8,-13.4,g); CYL(0.9,1.1,3,M(0xe86a2a),0,9.6,-14.6,g,10); CYL(0.08,0.08,4,STEEL,0,10.2,-12,g,6);
+ for(const s of [-1,1]) BOX(0.1,0.9,25,STEEL,s*4.4,3.4,-3,g,false);
+ m.beacon=beacon(g,0,12.3,-12); m.wheels=[]; m.front=[]; m.stack=[];
+ for(let lv=0;lv<2;lv++) for(const bz of [-5,5.5]) for(const sx of [-2.7,0,2.7]){ const c=contMesh(CCOL[(m.stack.length*5)%6],true); c.scale.z=0.85; c.position.set(sx,4.25+lv*2.6,bz); c.visible=false; g.add(c); m.stack.push(c); }
+ m.foam=new THREE.Mesh(new THREE.PlaneGeometry(11,26),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false,map:tex(64,128,(x,w,h)=>{ const gr=x.createLinearGradient(0,0,0,h); gr.addColorStop(0,'rgba(255,255,255,0)'); gr.addColorStop(1,'rgba(255,255,255,.9)'); x.fillStyle=gr; x.beginPath(); x.moveTo(0,0); x.lineTo(w,0); x.lineTo(w*0.62,h); x.lineTo(w*0.38,h); x.fill(); })})); m.foam.rotation.x=-Math.PI/2; m.foam.position.set(0,0.14,-28.5); g.add(m.foam);
+ m.boxes=0; return m; }
+function shipBoxes(m,k){ m.boxes=k; m.stack.forEach((c,i)=>c.visible=i<k); }
+function shipWork(m,dt,T){ m.g.position.y=Math.sin(perfT*1.3)*0.12; m.g.rotation.z=Math.sin(perfT*0.9)*0.015+CTRL.st*clamp(m.v/13,-1,1)*-0.04; m.foam.material.opacity=clamp(Math.abs(m.v)/13,0,1)*0.75; m.hydr=0;
+ const stop=Math.abs(m.v)<0.7, C=T.phase==='haul'?T.to:T.from, d=Math.hypot(m.x-C.x,m.z-C.z);
+ if(d<C.r&&stop){ m.hydr=1; T.prog+=dt/4; const tot=T.n*3;
+   if(T.phase==='load'){ shipBoxes(m,Math.round(clamp(T.prog,0,1)*tot)); tipT('Cargando el barco… '+Math.round(clamp(T.prog,0,1)*100)+'%'); if(T.prog>=1){ T.phase='haul'; T.prog=0; if(C===SEA.port){ SAVE.portStock=Math.max(0,(SAVE.portStock||0)-(T.n-1)); saveLocal(); } sfx('ok'); msg('¡Carga completa!','Rumbo a '+T.to.n); } }
+   else { shipBoxes(m,Math.round((1-clamp(T.prog,0,1))*tot)); tipT('Descargando… '+Math.round(clamp(T.prog,0,1)*100)+'%'); if(T.prog>=1){ shipBoxes(m,0); m.at=C; pay(T.pay,T.n+' contenedor'+(T.n>1?'es':'')+' en '+C.n,'conte'); newJob(); } }
+   renderJob(); }
+ else if(d<C.r+10&&!stop) tipT('Detén el barco dentro del círculo de boyas');
+ // tareas libres
+ for(const c of SEA.crates){ c.g.position.y=Math.sin(perfT*1.6+c.ph)*0.25; c.g.rotation.y+=dt*0.2; if(Math.hypot(m.x-c.x,m.z-c.z)<9){ const [x,z]=seaSpot(); c.x=x; c.z=z; c.g.position.set(x,0,z); pay(40,'Carga a la deriva recuperada'); } }
+ const F=SEA.faro; F.beam.rotation.y=perfT*0.6; const fr=perfT>=F.ready; F.mark.visible=fr; if(fr&&stop&&Math.hypot(m.x-F.x,m.z-F.z)<50){ F.t=(F.t||0)+dt; tipT('Entregando suministros al faro… '+Math.round(F.t/3*100)+'%'); if(F.t>=3){ F.t=0; F.ready=perfT+90; pay(150,'Suministros entregados al farero'); renderJob(); } } else if(fr&&Math.hypot(m.x-F.x,m.z-F.z)<50) tipT('Detén el barco junto al faro');
+ const B=SEA.bote; if(B.g.visible){ B.g.position.y=Math.sin(perfT*1.9)*0.2; B.g.rotation.z=Math.sin(perfT*1.4)*0.08; const bd=Math.hypot(m.x-B.x,m.z-B.z); if(bd<18&&stop){ B.t+=dt; tipT('Rescatando a los pescadores… '+Math.round(B.t/2.5*100)+'%'); if(B.t>=2.5){ B.t=0; B.g.visible=false; pay(180,'Pescadores rescatados'); setTimeout(()=>{ const [x,z]=seaSpot(); B.x=x; B.z=z; B.g.position.set(x,0,z); B.g.visible=true; },30000); } } else if(bd<18) tipT('Detente junto al bote para ayudar'); } }
+
 /* ================= CONDUCCIÓN ================= */
 function collide(m){ let hit=false; const s=Math.sin(m.yaw), c=Math.cos(m.yaw);
  for(const [ox,oz,r] of m.D.circ){ const px=m.x+s*oz+c*ox, pz=m.z+c*oz-s*ox; let qx=px,qz=pz;
   for(const o of OBS){ const nx=clamp(qx,o.x0,o.x1), nz=clamp(qz,o.z0,o.z1); const dx=qx-nx, dz=qz-nz, d2=dx*dx+dz*dz; if(d2<r*r){ hit=true; if(d2>1e-6){ const d=Math.sqrt(d2); qx=nx+dx/d*r; qz=nz+dz/d*r; } else { qx+= (qx<(o.x0+o.x1)/2?-1:1)*0.2; } } }
   for(const [ex,ez,er] of peerObs()){ const dx=qx-ex, dz=qz-ez, d=Math.hypot(dx,dz), RR=r+er; if(d<RR&&d>1e-4){ qx=ex+dx/d*RR; qz=ez+dz/d*RR; hit=true; } }
-  const R=Math.hypot(qx,qz); if(m.D.route){ const lo=RING-11, hi=RING+11; if(R<lo){ qx*=lo/R; qz*=lo/R; hit=true; } else if(R>hi){ qx*=hi/R; qz*=hi/R; hit=true; } } else if(R>136){ qx*=136/R; qz*=136/R; hit=true; }
+  const R=Math.hypot(qx,qz); if(m.D.boat){ for(const I of SEA.isl){ const dx=qx-I.x, dz=qz-I.z, d=Math.hypot(dx,dz), RR=r+I.r; if(d<RR&&d>1e-4){ qx=I.x+dx/d*RR; qz=I.z+dz/d*RR; hit=true; } } const bx=clamp(qx,-1500,-347), bz=clamp(qz,-900,900); if(bx!==qx||bz!==qz){ qx=bx; qz=bz; hit=true; } } else if(m.D.route){ const lo=RING-11, hi=RING+11; if(R<lo){ qx*=lo/R; qz*=lo/R; hit=true; } else if(R>hi){ qx*=hi/R; qz*=hi/R; hit=true; } } else if(R>136){ qx*=136/R; qz*=136/R; hit=true; }
   m.x+=qx-px; m.z+=qz-pz; } return hit; }
 function drive(m,dt){ const D=m.D; let thr=CTRL.thr, st=CTRL.st; if(m.lock) thr=0;
  const tv=thr*D.maxV*(thr<0?0.55:1); const a=thr!==0?(Math.sign(tv-m.v)===Math.sign(m.v)||m.v===0?D.acc:D.acc*2):3.5;
  m.v+=clamp(tv-m.v,-a*dt,a*dt);
- if(m.tracked){ m.yaw-=st*0.9*dt*(m.v<-0.2?-1:1); }
+ if(D.boat){ m.yaw-=st*0.5*dt*clamp(m.v/4,-1,1); }
+ else if(m.tracked){ m.yaw-=st*0.9*dt*(m.v<-0.2?-1:1); }
  else { m.steerA=lerp(m.steerA,st*D.steer,Math.min(1,dt*4)); m.yaw-=m.v*Math.tan(m.steerA)/D.wb*dt; }
  m.x+=Math.sin(m.yaw)*m.v*dt; m.z+=Math.cos(m.yaw)*m.v*dt;
  if(m.trailer){ m.tyaw+=(m.v/9)*Math.sin(m.yaw-m.tyaw)*dt; let rel=((m.tyaw-m.yaw+Math.PI)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)-Math.PI; if(Math.abs(rel)>1.25){ rel=Math.sign(rel)*1.25; m.tyaw=m.yaw+rel; } m.trailer.rotation.y=rel; }
@@ -335,6 +382,7 @@ function newJob(){ const m=MC_; if(!m) return;
  if(m.k==='retro'){ JOB={k:'retro',n:0,need:5,pay:45,bonus:120}; PARKED.cargo=PARKED.cargo||0; }
  if(m.k==='grua'){ JOB={k:'grua',pay:130}; }
  if(m.k==='conte'){ const from=m.city||CITIES[0]; JOB={k:'conte',phase:m.cont.visible?'haul':'load',from,to:CITIES[1-CITIES.indexOf(from)],pay:260,prog:0}; }
+ if(m.k==='barco'){ const from=m.at||SEA.port; const n=from===SEA.port?1+Math.min(3,SAVE.portStock||0):2; JOB={k:'barco',phase:'load',from,to:from===SEA.port?SEA.isla:SEA.port,n,pay:300+80*(n-1),prog:0}; shipBoxes(m,0); }
  if(m.k==='topa'){ JOB={k:'topa',n:0,need:3,pay:60,bonus:80}; }
  renderJob(); }
 let palMark=null; function markPallet(p){ if(!palMark){ palMark=new THREE.Mesh(new THREE.TorusGeometry(0.9,0.07,8,32),new THREE.MeshBasicMaterial({color:0x50ff8a})); palMark.rotation.x=Math.PI/2; scene.add(palMark); } palMark.userData.p=p; }
@@ -344,12 +392,14 @@ function jobTarget(){ const m=MC_; if(!JOB||!m) return null;
  if(JOB.k==='retro') return m.bucket>0?{x:PARKED.g.position.x,z:PARKED.g.position.z,n:'Camión estacionado'}:{x:(ZONES.trench.x0+ZONES.trench.x1)/2,z:(ZONES.trench.z0+ZONES.trench.z1)/2,n:'Zanja'};
  if(JOB.k==='grua'){ if(m.carried) return {x:(ZONES.deliver.x0+ZONES.deliver.x1)/2,z:(ZONES.deliver.z0+ZONES.deliver.z1)/2,n:'Zona de entrega'}; const q=m.nearPal; return q?{x:q.g.position.x,z:q.g.position.z,n:'Pallet de materiales'}:{x:ZONES.whs.x,z:ZONES.whs.z-7,n:'Bodega'}; }
  if(JOB.k==='conte'){ const C=JOB.phase==='haul'?JOB.to:JOB.from; return {x:C.x,z:C.z,n:(JOB.phase==='haul'?'':'Grúa de ')+C.n}; }
+ if(JOB.k==='barco'){ const C=JOB.phase==='haul'?JOB.to:JOB.from; return {x:C.x,z:C.z,n:'Muelle de '+C.n}; }
  if(JOB.k==='topa'){ let best=null,bd=1e9; for(const h of HEAPS){ if(h.done) continue; const d=Math.hypot(h.x-m.x,h.z-m.z); if(d<bd){ bd=d; best=h; } } const P=ZONES.pad; const near=best&&bd<6; return near?{x:0,z:(P.z0+P.z1)/2,n:'Área de acopio'}:best?{x:best.x,z:best.z,n:'Montón de tierra'}:null; } }
 function renderJob(){ const m=MC_; if(!JOB) return; let h='',pg=0;
  if(JOB.k==='tolva'){ h=JOB.phase==='load'?`<b>📋 Cargar material</b>Ve a la tolva de carga de la Cantera y detente bajo ella hasta llenar.`:`<b>📋 Llevar a ${JOB.dest.n}</b>Maneja hasta el círculo amarillo y mantén <b style="display:inline;font-size:14px">Volcar</b> para descargar.`; pg=m.cargo; }
  if(JOB.k==='retro'){ h=`<b>📋 Excavar la zanja · ${JOB.n}/${JOB.need} cucharas</b>${m.bucket>0?'Cuchara llena: gira el brazo sobre la tolva del camión y abre la cuchara.':'Baja el brazo dentro de la zanja (tierra oscura) y cierra la cuchara para llenarla.'}`; pg=JOB.n/JOB.need; }
  if(JOB.k==='grua'){ h=m.carried?`<b>📋 Llevar materiales a la obra</b>Sigue la flecha hasta la zona verde junto al edificio y mantén <b style="display:inline;font-size:14px">Bajar</b> para dejar el pallet.`:`<b>📋 Abastecer la obra</b>Acércate a cualquier pallet de la bodega con la horquilla abajo y mantén <b style="display:inline;font-size:14px">Subir</b>.`; }
  if(JOB.k==='conte'){ h=JOB.phase==='load'?`<b>📋 Cargar contenedor en ${JOB.from.n}</b>Detén el camión bajo la grúa pórtico (círculo verde) y espera a que baje el contenedor.`:`<b>📋 Llevar contenedor a ${JOB.to.n}</b>Sigue la ruta hasta la otra ciudad y detente bajo su grúa pórtico para descargar.`; pg=JOB.prog||0; }
+ if(JOB.k==='barco'){ h=(JOB.phase==='load'?`<b>📋 Cargar en ${JOB.from.n} · ${JOB.n} contenedor${JOB.n>1?'es':''}</b>Mantén el barco detenido dentro del círculo de boyas.${JOB.from===SEA.port?` En el puerto hay ${SAVE.portStock||0} traídos por camión.`:''}`:`<b>📋 Navegar a ${JOB.to.n} · ${JOB.pay} créditos</b>Sigue la flecha y detente en su muelle para descargar.`)+`<div style="margin-top:4px;font-size:.92em;opacity:.85">Tareas libres: 📦 cajas a la deriva (luz naranja) · 🗼 suministros al faro${perfT>=SEA.faro.ready?' (luz amarilla)':' ⏳'} · 🚤 pescadores a la deriva (luz roja)</div>`; pg=JOB.prog||0; }
  if(JOB.k==='topa'){ h=`<b>📋 Despejar la explanada · ${JOB.n}/${JOB.need}</b>Baja la hoja y empuja montones de tierra hasta el área de acopio (rectángulo amarillo).`; pg=JOB.n/JOB.need; }
  $('job').innerHTML=h+`<div class="pg"><i style="width:${Math.round(clamp(pg,0,1)*100)}%"></i></div>`; }
 function pay(n,why,kind){ if(kind) addProg(kind); SAVE.credits+=n; SAVE.jobs++; SAVE.fav=MC_.k; saveLocal(); pushBoard(); $('crv').textContent=SAVE.credits.toLocaleString('es-CL'); msg('+'+n+' créditos',why); sfx('pay'); floatText('+'+n); }
@@ -392,11 +442,12 @@ function workUpdate(m,dt){ const T=JOB; if(!T) return; if(m.k==='retro'||m.k==='
   const inBay=Math.min(Math.hypot(cx-C.x,cz-C.z),Math.hypot(m.x-C.x,m.z-C.z))<11, stop=Math.abs(m.v)<0.5; m.hydr=0;
   if(inBay&&stop){
    if(T.phase==='haul'){ if(!T.un){ T.un=true; m.cont.visible=false; C.drop.material=m.cont.material; C.drop.visible=true; sfx('clunk'); } m.lock=true; m.hydr=1; T.prog+=dt/3; C.drop.position.set(cx,lerp(2.75,9,ez(T.prog)),cz); C.drop.rotation.y=m.tyaw; tipT('Descargando… '+Math.round(clamp(T.prog,0,1)*100)+'%');
-    if(T.prog>=1){ m.lock=false; const dr=C.drop; setTimeout(()=>{ dr.visible=false; },2500); m.city=C; pay(T.pay,'Contenedor entregado en '+C.n,'conte'); newJob(); } else renderJob(); }
+    if(T.prog>=1){ m.lock=false; const dr=C.drop; setTimeout(()=>{ dr.visible=false; },2500); m.city=C; if(C===CITIES[0]){ SAVE.portStock=Math.min(9,(SAVE.portStock||0)+1); } pay(T.pay,'Contenedor entregado en '+C.n,'conte'); newJob(); } else renderJob(); }
    else if(!C.hang.visible){ tipT('La grúa prepara el siguiente contenedor…'); }
    else { m.lock=true; m.hydr=1; T.prog+=dt/3; const k=ez(T.prog); C.hang.position.set(lerp(C.hx,cx,ez(T.prog*2)),lerp(9,2.75,ez(T.prog*1.6-0.6)),lerp(C.hz,cz,ez(T.prog*2))); C.hang.rotation.y=T.prog>0.3?m.tyaw:0; tipT('Cargando… '+Math.round(clamp(T.prog,0,1)*100)+'%');
     if(T.prog>=1){ m.lock=false; m.cont.material=C.hang.material; m.cont.visible=true; C.hang.visible=false; const hg=C.hang; setTimeout(()=>{ hg.material=cmat(rndCol()); hg.position.set(C.hx,9,C.hz); hg.rotation.y=0; hg.visible=true; },9000); T.phase='haul'; T.prog=0; sfx('clunk'); msg('¡Contenedor cargado!','Destino: '+T.to.n); } renderJob(); } }
   else { m.lock=false; if(inBay) tipT('Detente bajo la grúa pórtico'); } }
+ if(m.k==='barco') shipWork(m,dt,T);
  if(m.k==='topa'){ const v=(HOLD('h+')?1:0)-(HOLD('h-')?1:0); m.bladeY=clamp(m.bladeY+v*dt*0.9,0,1.2); m.blade.position.y=0.2+m.bladeY; m.hydr=v?1:0;
   if(m.bladeY<0.35&&m.v>0.2){ const s=Math.sin(m.yaw), c=Math.cos(m.yaw);
    for(const h of HEAPS){ if(h.done) continue; const dx=h.x-m.x, dz=h.z-m.z; const lx=dx*c-dz*s, lz=dx*s+dz*c; if(Math.abs(lx)<1.9&&lz>1.6&&lz<3.0+h.r){ const nz=3.0+h.r*0.7; h.x=m.x+s*nz+c*lx; h.z=m.z+c*nz-s*lx; h.g.position.set(h.x,0.5,h.z); h.g.rotation.y+=dt*m.v*0.3; if(Math.random()<dt*10) pour(h.x,0.4,h.z,0.2,false,1); } } }
@@ -444,7 +495,7 @@ function sfx(k){ if(!AC) return; const t=AC.currentTime;
  if(k==='beep'){ tone(1150,t,0.22,'square',0.05); }
  if(k==='ui'){ tone(880,t,0.05,'square',0.04); } }
 function audioTick(dt){ if(!AC||!MC_) return; const m=MC_; const rpm=0.25+Math.min(1,Math.abs(m.v)/m.D.maxV)*0.6+Math.abs(CTRL.thr)*0.15+m.hydr*0.25;
- const t=AC.currentTime; eng.frequency.setTargetAtTime((m.k==='grua'?55:m.k==='conte'?32:38)+rpm*55,t,0.1); eng.e2.frequency.setTargetAtTime((m.k==='grua'?55:38)*1.5+rpm*80,t,0.1); engF.frequency.setTargetAtTime(250+rpm*700,t,0.1); engG.gain.setTargetAtTime(muted?0:0.05+rpm*0.05,t,0.1);
+ const t=AC.currentTime; eng.frequency.setTargetAtTime((m.k==='grua'?55:m.k==='conte'?32:m.k==='barco'?26:38)+rpm*55,t,0.1); eng.e2.frequency.setTargetAtTime((m.k==='grua'?55:38)*1.5+rpm*80,t,0.1); engF.frequency.setTargetAtTime(250+rpm*700,t,0.1); engG.gain.setTargetAtTime(muted?0:0.05+rpm*0.05,t,0.1);
  hydG.gain.setTargetAtTime(muted?0:m.hydr*0.05,t,0.08); AC.pourG.gain.setTargetAtTime(muted?0:(sndPour>0?0.12:0),t,0.1); sndPour-=dt;
  if(m.v<-0.3){ beepT-=dt; if(beepT<=0){ beepT=0.55; sfx('beep'); } } else beepT=0; }
 
@@ -454,6 +505,7 @@ const WORK={
  retro:[{k:'sw+',l:'Girar ◀',i:'↶',key:'J'},{k:'sw-',l:'Girar ▶',i:'↷',key:'L'},{k:'b+',l:'Pluma ↑',i:'⬆',key:'I'},{k:'b-',l:'Pluma ↓',i:'⬇',key:'K'},{k:'s+',l:'Brazo afuera',i:'↗',key:'U'},{k:'s-',l:'Brazo adentro',i:'↙',key:'O'},{k:'c+',l:'Cerrar cuchara',i:'⤵',key:'N'},{k:'c-',l:'Abrir cuchara',i:'⤴',key:'M'}],
  grua:[{k:'f+',l:'Subir',i:'⬆',key:'R'},{k:'f-',l:'Bajar',i:'⬇',key:'F'}],
  conte:[],
+ barco:[],
  topa:[{k:'h+',l:'Subir hoja',i:'⬆',key:'R'},{k:'h-',l:'Bajar hoja',i:'⬇',key:'F'}]};
 addEventListener('keydown',e=>{ if(mode==='play'&&e.code==='KeyH'&&!e.repeat) honk(); if(mode==='play'&&e.code==='KeyV') camFree(false); });
 const _=0;
@@ -588,7 +640,7 @@ function musicTick(){ if(!AC||!MUS) return; const beat=60/MUS.bpm, eighth=beat/2
 function setMusic(on){ musicOn=on; try{ localStorage.setItem('obras_music',on?'1':'0'); }catch(e){} if(MUS) MUS.bus.gain.setTargetAtTime(on?0.22:0,AC.currentTime,0.4); $('bMus').style.opacity=on?1:0.45; }
 
 /* ================= CÁMARA DE RETROCESO ================= */
-const REARD={tolva:{rb:4.1,h:2.7,hw:1.4},retro:{rb:2.7,h:3.4,hw:1.2},grua:{rb:1.6,h:2.1,hw:0.7},conte:{rb:13.2,h:3.6,hw:1.3},topa:{rb:2.2,h:2.3,hw:1.6}};
+const REARD={tolva:{rb:4.1,h:2.7,hw:1.4},retro:{rb:2.7,h:3.4,hw:1.2},grua:{rb:1.6,h:2.1,hw:0.7},conte:{rb:13.2,h:3.6,hw:1.3},barco:{rb:17,h:7,hw:4.5},topa:{rb:2.2,h:2.3,hw:1.6}};
 const REAR={a:0,rt:new THREE.WebGLRenderTarget(512,288),cam:new THREE.PerspectiveCamera(78,16/9,0.1,300),ov:new THREE.Scene(),oc:new THREE.OrthographicCamera(-1,1,1,-1,-1,1)};
 REAR.rt.texture.encoding=renderer.outputEncoding;
 REAR.quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.MeshBasicMaterial({map:REAR.rt.texture,side:THREE.DoubleSide,transparent:true,depthTest:false})); REAR.quad.scale.x=-1; REAR.ov.add(REAR.quad);
@@ -617,7 +669,7 @@ function netInit(){ try{ if(typeof supabase==='undefined'||!supabase.createClien
   const ch=sb.channel('obras-faena',{config:{broadcast:{self:false},presence:{key:NET.id}}});
   ch.on('broadcast',{event:'st'},({payload})=>onPeer(payload)); ch.on('broadcast',{event:'fx'},({payload})=>onFx(payload)); ch.on('presence',{event:'leave'},({key})=>dropPeer(key));
   ch.subscribe(st=>{ if(st==='SUBSCRIBED'){ NET.ok=true; ch.track({n:SAVE.name||'operador'}).catch(()=>{}); updOnline(); } }); NET.ch=ch; }catch(e){ console.warn('sin multijugador',e); } }
-function extra(m){ if(m.k==='tolva') return [+m.bedA.toFixed(2)]; if(m.k==='retro'){ const A=m.arm; return [+A.sw.toFixed(2),+A.b.toFixed(2),+A.s.toFixed(2),+A.c.toFixed(2),m.bucket]; } if(m.k==='grua') return [+m.fork.toFixed(2),m.carried?1:0]; if(m.k==='conte') return [+m.trailer.rotation.y.toFixed(2),m.cont.visible?1:0,m.cont.material.color.getHex()]; return [+(m.bladeY||0).toFixed(2)]; }
+function extra(m){ if(m.k==='tolva') return [+m.bedA.toFixed(2)]; if(m.k==='retro'){ const A=m.arm; return [+A.sw.toFixed(2),+A.b.toFixed(2),+A.s.toFixed(2),+A.c.toFixed(2),m.bucket]; } if(m.k==='grua') return [+m.fork.toFixed(2),m.carried?1:0]; if(m.k==='barco') return [m.boxes|0]; if(m.k==='conte') return [+m.trailer.rotation.y.toFixed(2),m.cont.visible?1:0,m.cont.material.color.getHex()]; return [+(m.bladeY||0).toFixed(2)]; }
 function netTick(dt){ if(!NET.ok||!MC_||mode!=='play') return; NET.t-=dt; if(NET.t>0) return; NET.t=0.12; const m=MC_;
   NET.ch.send({type:'broadcast',event:'st',payload:{id:NET.id,n:(SAVE.name||'Operador').slice(0,18),k:m.k,x:+m.x.toFixed(2),z:+m.z.toFixed(2),y:+m.yaw.toFixed(3),v:+m.v.toFixed(2),st:+(m.steerA||0).toFixed(2),e:extra(m),c:+(m.cargo||0).toFixed(2),o:Math.round(obraPct()),cr:SAVE.credits|0}}).catch(()=>{}); }
 function nameTag(name,k){ const t=tex(512,128,(x,w,h)=>{ x.fillStyle='rgba(20,20,24,.82)'; x.beginPath(); x.roundRect?x.roundRect(4,14,w-8,h-28,40):x.rect(4,14,w-8,h-28); x.fill(); x.lineWidth=6; x.strokeStyle='#f5b301'; x.stroke(); x.fillStyle='#fff'; x.font='bold 54px Nunito,sans-serif'; x.textAlign='center'; x.textBaseline='middle'; x.fillText((DEF[k]?DEF[k].ic+' ':'')+name,w/2,h/2+2); });
@@ -637,18 +689,19 @@ function updPeers(dt){ const k=1-Math.exp(-dt*8);
     if(s.k==='retro'){ const A=m.arm; A.base.rotation.y=x[0]||0; A.boom.rotation.x=x[1]??0.75; A.stick.rotation.x=x[2]??-1.7; A.bk.rotation.x=x[3]??-0.4; m.bLoad.visible=!!x[4]; }
     if(s.k==='grua'){ m.car.position.y=x[0]||0.12; if(x[1]&&!e.pal){ e.pal=new THREE.Group(); BOX(1.2,0.14,1.0,M(0xb88a54),0,0.07,0,e.pal); BOX(1.1,0.8,0.9,M(0x8a9ac8),0,0.55,0,e.pal); m.car.add(e.pal); e.pal.position.set(0,-0.1,0.6); } if(!x[1]&&e.pal){ m.car.remove(e.pal); e.pal=null; } }
     if(s.k==='topa'){ m.blade.position.y=0.2+(x[0]||0); }
+    if(s.k==='barco'){ if(m.boxes!==(x[0]|0)) shipBoxes(m,x[0]|0); m.g.position.y=Math.sin(perfT*1.3)*0.12; m.foam.material.opacity=clamp(Math.abs(s.v)/13,0,1)*0.75; }
     if(s.k==='conte'){ m.trailer.rotation.y=x[0]||0; m.cont.visible=!!x[1]; if(x[2]) m.cont.material=cmat(x[2]); }
-    e.tag.position.set(e.x,(s.k==='grua'?3.6:s.k==='tolva'?5:4.6),e.z); if(e.horn>0){ e.horn-=dt; e.tag.material.color.setHex(Math.floor(perfT*8)%2?0xffe066:0xffffff); } else e.tag.material.color.setHex(0xffffff); } }
-function peerObs(){ const L=[]; for(const e of NET.peers.values()) L.push([e.x,e.z,e.k==='grua'?1.1:2.0]); return L; }
+    e.tag.position.set(e.x,(s.k==='barco'?15:s.k==='grua'?3.6:s.k==='tolva'?5:4.6),e.z); if(e.horn>0){ e.horn-=dt; e.tag.material.color.setHex(Math.floor(perfT*8)%2?0xffe066:0xffffff); } else e.tag.material.color.setHex(0xffffff); } }
+function peerObs(){ const L=[]; for(const e of NET.peers.values()) L.push([e.x,e.z,e.k==='barco'?7:e.k==='grua'?1.1:2.0]); return L; }
 function honk(){ auInit(); playHorn(1); if(NET.ok) NET.ch.send({type:'broadcast',event:'fx',payload:{id:NET.id,t:'horn'}}).catch(()=>{}); }
 function wave(){ if(NET.ok) NET.ch.send({type:'broadcast',event:'fx',payload:{id:NET.id,t:'wave',n:SAVE.name}}).catch(()=>{}); toastNet('👋 Saludaste a la faena'); }
-function onFx(p){ if(p.t==='ap'&&COM&&OBRA_T[p.k]){ COM.c[p.k]=(COM.c[p.k]||0)+1; updObraUI(); setBuilding(obraPct()); if(Math.random()<0.5) toastNet(`🏗️ ${String(p.n||'Alguien').slice(0,18)} aportó a la obra (${OBRA_T[p.k].n})`); return; } const e=NET.peers.get(p.id); if(!e) return; if(p.t==='horn'){ e.horn=1.2; const d=MC_?Math.hypot(e.x-MC_.x,e.z-MC_.z):30; playHorn(clamp(1-d/120,0.15,1)); } if(p.t==='wave') toastNet(`👋 ${e.n} te saluda`); }
+function onFx(p){ if(p.t==='ap'&&p.k==='conte'){ SAVE.portStock=Math.min(9,(SAVE.portStock||0)+1); } if(p.t==='ap'&&COM&&OBRA_T[p.k]){ COM.c[p.k]=(COM.c[p.k]||0)+1; updObraUI(); setBuilding(obraPct()); if(Math.random()<0.5) toastNet(`🏗️ ${String(p.n||'Alguien').slice(0,18)} aportó a la obra (${OBRA_T[p.k].n})`); return; } const e=NET.peers.get(p.id); if(!e) return; if(p.t==='horn'){ e.horn=1.2; const d=MC_?Math.hypot(e.x-MC_.x,e.z-MC_.z):30; playHorn(clamp(1-d/120,0.15,1)); } if(p.t==='wave') toastNet(`👋 ${e.n} te saluda`); }
 function playHorn(vol){ if(!AC||muted) return; const t=AC.currentTime; for(const f of [311,392]){ const o=AC.createOscillator(), g=AC.createGain(), fl=AC.createBiquadFilter(); o.type='sawtooth'; o.frequency.value=f; fl.type='lowpass'; fl.frequency.value=1400; g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.07*vol,t+0.03); g.gain.setValueAtTime(0.07*vol,t+0.55); g.gain.exponentialRampToValueAtTime(0.0001,t+0.75); o.connect(fl); fl.connect(g); g.connect(mast); o.start(t); o.stop(t+0.8); } }
 let netTT=null; function toastNet(t){ const el=$('ntoast'); el.textContent=t; el.classList.add('on'); clearTimeout(netTT); netTT=setTimeout(()=>el.classList.remove('on'),2800); }
 function updOnline(){ const L=[...NET.peers.values()]; $('onl').innerHTML=NET.ok?`👷 En la faena: <b>${L.length+1}</b>`+(L.length?`<div class="ol">${L.map(e=>`<div>${DEF[e.k].ic} ${String(e.n).replace(/[<>&]/g,'')} <small>${e.s?e.s.o+'%':''}</small></div>`).join('')}</div>`:'<div class="ol"><small>Por ahora trabajas solo. Comparte el enlace para que otros se sumen.</small></div>'):'<small>Modo individual</small>'; }
 
 /* ================= BUCLE ================= */
-buildWorld(); buildRoute(); buildBuilding(); makeTgt(); netInit(); updOnline(); comFetch(); renderSel(); setPreview(); updObraUI(); $('bMus').style.opacity=musicOn?1:0.45;
+buildWorld(); buildRoute(); buildSea(); buildBuilding(); makeTgt(); netInit(); updOnline(); comFetch(); renderSel(); setPreview(); updObraUI(); $('bMus').style.opacity=musicOn?1:0.45;
 let last=performance.now(), perfT=0;
 function frame(now){ const dt=Math.min(0.05,(now-last)/1000); last=now; perfT+=dt; bumpT-=dt;
  if(mode==='play'&&MC_){ readInput(); drive(MC_,dt); workUpdate(MC_,dt); updParked(dt); updCam(dt); updHUD(); audioTick(dt); }
