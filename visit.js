@@ -7,3 +7,6 @@
   window.MVO_VISIT=rpc('mvo_visit',{p_game:game,p_visitor:v});
   window.MVO_STATS=function(){ return rpc('mvo_visit_stats',{}); };
 })();
+
+/* Modo sin internet: registra el service worker (permite instalar y abrir sin conexión) */
+try{ if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){ window.addEventListener('load',function(){ navigator.serviceWorker.register('/sw.js').catch(function(){}); }); } }catch(e){}
