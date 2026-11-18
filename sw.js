@@ -1,9 +1,9 @@
 /* Multiverso · modo sin internet. Sube VERSION cuando quieras forzar una recarga completa. */
-const VERSION='mvo-v1';
+const VERSION='mvo-v2';
 const THREE='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
 const SUPA='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
 const LOCAL=['/','/index.html','/visit.js','/manifest.webmanifest','/icons/icon-192.png','/icons/icon-512.png','/icons/apple-touch-icon.png',
- '/juegos/','/juegos/dj/','/juegos/guitarra/','/juegos/rap/','/juegos/kart/','/juegos/runner/','/juegos/pompon/','/juegos/vuelo/','/juegos/mega-robot/','/juegos/mega-robot-3d/','/juegos/obras/',
+ '/juegos/','/juegos/dj/','/juegos/guitarra/','/juegos/rap/','/juegos/kart/','/juegos/runner/','/juegos/pompon/','/juegos/vuelo/','/juegos/vuelo/escuadron.html','/juegos/mega-robot/','/juegos/mega-robot-3d/','/juegos/obras/',
  ...['dj-1','dj-2','guitarra-1','guitarra-2','kart-1','kart-2','kart-3','mega-robot-1','mega-robot-2','mega-robot-3','mega-robot-3d-1','mega-robot-3d-2','mega-robot-3d-3','mega-robot-3d-4','mmo-1','mmo-2','mmo-3','obras-1','obras-2','obras-3','obras-4','obras-5','obras-6','pompon-1','pompon-2'].map(n=>'/juegos/img/'+n+'.webp')];
 const FONTHOSTS=['fonts.googleapis.com','fonts.gstatic.com'];
 
