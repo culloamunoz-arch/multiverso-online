@@ -132,6 +132,16 @@ input.name{background:#0a0818;border:2px solid var(--line);color:#fff;border-rad
  #topb .sec{display:none} #topb.more .sec{display:inline-block} #moreb{display:inline-block}
  #topb button{width:34px;height:34px;font-size:15px}
 }
+/* ===== HUD ordenado (v18f) ===== */
+#mm{height:auto!important;padding-bottom:5px}
+#zone{max-width:100%;line-height:1.12;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word}
+#party{max-width:220px}#party .pm{margin-top:3px}
+#quest.tight .qsum{display:none}
+@media (max-width:820px),(max-height:520px){
+ #zone{font-size:9.5px!important;margin-top:2px!important}
+ #party{width:200px;padding:4px 7px;font-size:11px}#party .sbtn{font-size:11px}
+ #tf{padding:4px 8px 4px 4px} #tf .portrait{width:36px;height:36px;font-size:18px} #tf .bars{width:120px} #tf .bars .nm{font-size:12px}
+}
 /* ===== portada y menús ===== */
 #title{position:fixed;inset:0;z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;background:radial-gradient(ellipse at 50% 60%,rgba(80,30,140,.55),rgba(8,4,20,.92) 70%),linear-gradient(#05030c,#120624);user-select:none}
 #title.out{animation:tout .65s ease forwards}@keyframes tout{to{opacity:0;transform:scale(1.15);filter:blur(6px)}}
@@ -1743,7 +1753,7 @@ function renderParty(force){ const el=$('party'); const mates=partyMates(); cons
   if(!party.id){ el.style.display='none'; $('online').classList.remove('hid'); document.body.classList.remove('inparty'); return; }
   el.style.display='block'; $('online').classList.add('hid'); document.body.classList.add('inparty');
   if(force||!el.dataset.built){ el.dataset.built=1; el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><b style="color:var(--gold)">👥 Grupo</b><button class="sbtn red" id="pleave" style="padding:1px 6px">Salir</button></div><div id="pmem"></div>`; $('pleave').onclick=leaveParty; }
-  $('pmem').innerHTML=mates.length?mates.map(e=>{ const p=e.pres; const f=clamp((p.hp||0)/(p.mh||1),0,1); const near=dist2(p.x,p.z,me.x,me.z)<80*80; return `<div class="pm"><span>${(CLASSES[p.c]||{}).icon||''} ${esc(clean(p.n))} <small>nv ${p.lv}</small>${near?'':' <small style="opacity:.6">(lejos)</small>'}</span><div class="bar" style="height:7px"><i style="width:${f*100}%"></i></div></div>`; }).join(''):'<small style="opacity:.7">Esperando a que acepten tu invitación…<br>Selecciona a un jugador y toca ➕ para invitar.</small>'; }
+  $('pmem').innerHTML=mates.length?mates.map(e=>{ const p=e.pres; const f=clamp((p.hp||0)/(p.mh||1),0,1); const near=dist2(p.x,p.z,me.x,me.z)<80*80; return `<div class="pm"><span>${(CLASSES[p.c]||{}).icon||''} ${esc(clean(p.n))} <small>nv ${p.lv}</small>${near?'':' <small style="opacity:.6">(lejos)</small>'}</span><div class="bar" style="height:7px"><i style="width:${f*100}%"></i></div></div>`; }).join(''):'<small style="opacity:.7">Esperando… toca a un jugador y ➕ para invitar.</small>'; }
 function partyNearCount(x,z){ let n=1; for(const e of partyMates()){ if(!e.pres.dead&&dist2(e.pres.x,e.pres.z,x,z)<80*80) n++; } return n; }
 /* ---- puntos disponibles ---- */
 function updDot(){ $('chardot').style.display=(me.stp>0||me.skp>0)?'block':'none'; }
@@ -2047,15 +2057,16 @@ function useWay(id,near){ const W=WAYS.find(w=>w.id===id); if(!W) return; if(!ne
   let h='<p style="margin-top:0">Elige un destino que ya hayas descubierto.</p>'; for(const w of WAYS){ const ok=me.wp[w.id]; h+=`<div class="srow"><span>${ok?'🗿':'🔒'} <b>${w.n}</b><br><small>${w.id===id?'Estás aquí':ok?dirName(w.x,w.z):'Sin descubrir: llega a pie una vez'}</small></span>${ok&&w.id!==id?`<button class="sbtn" data-w="${w.id}">Viajar</button>`:''}</div>`; }
   dialog('🗿 Piedra de viaje',h,[]); $('menu').querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{ const w=WAYS.find(q=>q.id===b.dataset.w); $('menu').style.display='none'; if(me.dead) return; travel(w.x+2.5,w.z+2.5,w.n); }); }
 function updateQuest(){ if(!me) return; me.sq=me.sq||{}; const Q=QUESTS[me.q]; let h='';
-  if(Q){ const npc=qNpc(Q), p=npcPos(npc); h+=`<h4>📜 ${Q.t}</h4><div>${Q.d}</div>`;
+  if(Q){ const npc=qNpc(Q), p=npcPos(npc); h+=`<h4>📜 ${Q.t}</h4>`;
     if(Q.k==='talk') h+=`<div class="done">🗣️ Habla con ${NPCN(npc)} — ${dirName(p.x,p.z)}</div>`;
-    else { const lbl=Q.k==='item'?(Q.itn||'Fragmentos'):Q.k==='visit'?'Explorado':'Derrotados', ok=me.qp>=Q.n; h+=`<div class="${ok?'done':''}">${lbl}: ${me.qp}/${Q.n}${ok?` ✔ — vuelve con ${NPCN(npc)}${npc==='lumi'?' (F)':' ('+dirName(p.x,p.z)+')'}`:''}</div>`; } }
+    else { const lbl=Q.k==='item'?(Q.itn||'Fragmentos'):Q.k==='visit'?'Explorado':'Derrotados', ok=me.qp>=Q.n; h+=`<div class="${ok?'done':''}">${lbl}: ${me.qp}/${Q.n}${ok?` ✔ — vuelve con ${NPCN(npc)}${npc==='lumi'?' (F)':' ('+dirName(p.x,p.z)+')'}`:''}</div>`; }
+    h+=`<div style="opacity:.85;margin-top:2px">${Q.d}</div>`; }
   else h+='<h4>📜 Sin misiones</h4><div>¡Completaste la historia! Caza con tus amigos.</div>';
   const side=[]; for(const c in me.sq){ const S=SIDE[c], st=me.sq[c]; if(!S||st.s>=S.steps.length) continue; const T=S.steps[st.s], F=FAR[c]; let line;
     if(T.k==='talk') line='habla con '+NPCN(T.npc); else if(st.p>=T.n) line='✔ vuelve con '+F.n; else line=(T.k==='visit'?'busca '+VISITS[T.at].n:(T.itn||'derrotados'))+`: ${st.p}/${T.n}`;
     side.push(`<div style="margin-top:3px">${F.ic} <b>${T.t}</b> · ${line}</div>`); }
   if(side.length) h+=`<div style="margin-top:6px;border-top:1px solid rgba(255,224,102,.25);padding-top:4px"><b style="color:var(--gold)">Encargos</b>${side.join('')}</div>`;
-  if(!(LS_GET('mvo_mapseen'))) h+='<div style="margin-top:5px;opacity:.6;font-size:10.5px">🗺️ Toca el minimapa o pulsa M: mapa completo</div>';
+  if(!(LS_GET('mvo_mapseen'))) h+='<div style="margin-top:5px;opacity:.6;font-size:10.5px">🗺️ '+(isTouch?'Toca el minimapa':'Toca el minimapa o pulsa M')+': mapa completo</div>';
   const Q2=QUESTS[me.q]; const sum=Q2?(Q2.k==='talk'?'🗣️ '+NPCN(qNpc(Q2)):(me.qp>=Q2.n?'✔ entregar a '+NPCN(qNpc(Q2)):(Q2.k==='item'?(Q2.itn||'Fragmentos'):Q2.k==='visit'?'Explorar':'Derrotados')+' '+me.qp+'/'+Q2.n)):'';
   const nS=side.length;
   $('quest').innerHTML=`<div class="fold" data-fold="quest"><b style="font-family:Cinzel,serif;color:var(--gold);font-size:13px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📜 ${Q2?Q2.t:'Misiones'}${nS?` <small style="opacity:.8">+${nS}</small>`:''}</b><span class="car">▾</span></div><div class="qsum">${sum}</div><div class="fbody">`+h.replace(/^<h4>[^<]*<\/h4>/,'')+'</div>'; }
@@ -2063,8 +2074,26 @@ function updateQuest(){ if(!me) return; me.sq=me.sq||{}; const Q=QUESTS[me.q]; l
 function LS_GET(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function LS_SET(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
 const SMALLSCR=()=>innerWidth<=820||innerHeight<=520;
+/* ---- acomodo automático del HUD: apila los paneles sin que se tapen ---- */
+function hudLayout(){ const ui=$('ui'); if(!ui||ui.style.display==='none') return; const G=6, H=innerHeight, small=SMALLSCR();
+  const vis=el=>el&&el.offsetParent!==null&&getComputedStyle(el).display!=='none';
+  const bot=el=>el.getBoundingClientRect().bottom;
+  // columna izquierda: ficha del jugador → grupo / en línea → (misiones en pantallas chicas)
+  let y=bot($('pf'))+G;
+  for(const id of ['party','online']){ const el=$(id); if(vis(el)){ el.style.top=y+'px'; y=bot(el)+G; } }
+  const q=$('quest'); if(!q) return; let lim;
+  if(small){ q.style.top=y+'px';
+    const joy=$('joy'), ch=$('chat'); lim=H-G;
+    if(vis(joy)) lim=Math.min(lim,joy.getBoundingClientRect().top-G);
+    if(vis(ch)&&ch.getBoundingClientRect().left<220) lim=Math.min(lim,ch.getBoundingClientRect().top-G);
+    if(!isTouch) lim=Math.min(lim,$('bar').getBoundingClientRect().top-G);
+  } else { const mm=$('mm'); const t=bot(mm)+8; q.style.top=t+'px'; y=t;
+    const ah=$('arenahud'); lim=H-G; if(vis(ah)) lim=Math.min(lim,ah.getBoundingClientRect().top-G); if(vis($('mobbtns'))) lim=Math.min(lim,$('mobbtns').getBoundingClientRect().top-G); }
+  q.style.maxHeight=Math.max(40,lim-y)+'px';
+  q.classList.toggle('tight',lim-y<46); }
+addEventListener('resize',()=>setTimeout(hudLayout,60));
 function foldInit(id,defClosed){ const el=$(id); if(!el) return; const v=LS_GET('mvo_fold_'+id); const closed=v==null?defClosed:v==='1'; el.classList.toggle('closed',closed); }
-function foldToggle(id){ const el=$(id); const c=!el.classList.contains('closed'); el.classList.toggle('closed',c); LS_SET('mvo_fold_'+id,c?'1':'0'); }
+function foldToggle(id){ const el=$(id); const c=!el.classList.contains('closed'); el.classList.toggle('closed',c); LS_SET('mvo_fold_'+id,c?'1':'0'); hudLayout(); }
 function setupFolds(){ foldInit('quest',SMALLSCR()); foldInit('online',SMALLSCR()); foldInit('chat',false);
   $('quest').addEventListener('click',e=>{ if(e.target.closest('[data-fold]')){ e.stopPropagation(); foldToggle('quest'); } });
   $('online').addEventListener('click',e=>{ if(e.target.closest('[data-fold]')){ e.stopPropagation(); foldToggle('online'); } });
@@ -2610,7 +2639,7 @@ function updHUD(){
   const on=[...peersMap.values()].filter(e=>!e.isMe&&e.pres&&e.pres.inw&&e.pres.v===VER);
   $('online').innerHTML=`<div class="fold" data-fold="online"><b style="color:var(--gold)">🌐 En línea: ${on.length+1}</b><span class="car">▾</span></div>${room?'':'<div style="opacity:.7">(modo individual)</div>'}`+[{n:me.name,lv:me.lv,c:me.cls,me:1},...on.map(e=>({n:clean(e.pres.n),lv:e.pres.lv,c:e.pres.c}))].slice(0,8).map(p=>`<div class="p"><span>${(CLASSES[p.c]||{}).icon||''} ${esc(p.n)}${p.me?' (tú)':''}</span><span>nv ${p.lv}</span></div>`).join('');
   if(toastT>0){ toastT-=1/30; $('toast').style.opacity=Math.min(1,toastT*2); } else $('toast').style.opacity=0;
-  $('zone').textContent=(NIGHT>0.5?'🌙 ':'')+zoneAt(me.x,me.z).name; renderBuffBar(); renderParty(); updDot();
+  $('zone').textContent=(NIGHT>0.5?'🌙 ':'')+zoneAt(me.x,me.z).name; renderBuffBar(); renderParty(); updDot(); hudLayout();
 }
 let hudT=0;
 function drawMinimap(){ drawMinimap0(); mmCompass($('mmc').getContext('2d'),280); }
@@ -2767,7 +2796,7 @@ function startGame(){
   unlockAudio(); $('menu').style.display='none'; if(previewHero){ scene.remove(previewHero.g); previewHero=null; }
   migrate(); me.st=stats(); me.hp=me.st.mhp; me.mp=me.st.mmp; me.y=heightAt(me.x,me.z); me.vy=0; me.ground=true; me.ry=Math.PI; me.dead=false; me.anim='idle';
   hero=buildHero(me.cls,me.race,me.ci,me.skin,me.jp||[],me.sex); scene.add(hero.g); camYaw=0; camInit=false;
-  buildBar(); if(!window.__folds){ window.__folds=1; setupFolds(); } updateQuest(); $('ui').style.display='block';
+  { const vl=$('verlbl'); if(vl) vl.style.display='none'; } buildBar(); if(!window.__folds){ window.__folds=1; setupFolds(); } updateQuest(); $('ui').style.display='block';
   if(isTouch){ $('joy').style.display='block'; $('mobbtns').style.display='flex'; }
   state='play'; sysMsg(`Bienvenido a Multiverso Online, ${me.name}.`); sysMsg('Habla con la Capitana Lumi (signo ! amarillo) junto a la fuente. El Maestro Tornillo (herrero) mejora y forja equipo.'); if(me.stp||me.skp) sysMsg('Tienes puntos sin asignar: abre 👤 (tecla C).');
   if(!room) sysMsg('Modo individual: no hay conexión con el servidor de jugadores en este momento.');
@@ -3007,7 +3036,7 @@ showTitle();
 requestAnimationFrame(frame);
 window.__mmo={setTarget:(t)=>{target=t},dbg:()=>({acts:myActs.length,seen:JSON.stringify(actSeqSeen),cds:cds.slice(),gcd,mp:me.mp,tgt:target}),get me(){return me},get state(){return state},get amHost(){return amHost},get myPeer(){return myPeer},peersMap,mobState,useAbility,autoTarget,startGame:()=>{ me=newChar('Prueba','guerrero','humano',0,0); startGame(); },setMe:(o)=>Object.assign(me,o),get target(){return target}};
 </script>
-<div style="position:fixed;left:6px;bottom:4px;font-size:10px;opacity:.45;color:#fff;pointer-events:none;z-index:99">v2026.11.18e · mapa ampliado</div>
+<div id="verlbl" style="position:fixed;left:6px;bottom:4px;font-size:10px;opacity:.45;color:#fff;pointer-events:none;z-index:99">v2026.11.18f · pantalla ordenada</div>
 <div id="wmap"><div class="wmbox"><div id="wmhead"><span>🗺️ Mapa del Multiverso <small id="wmhere"></small></span><button id="wmx">✕</button></div><canvas id="wmc" width="600" height="600"></canvas><div id="wmleg">⭐ misión principal · <span style="color:#7affb0">★</span> encargo · ❗/❓ personaje con trabajo · 🗿 piedra de viaje (celeste = descubierta) · 🌀 portal de mazmorra · 📍 lugar por explorar</div></div></div>
 <script>
 const openMap=e=>{ e.stopPropagation(); if(e.cancelable) e.preventDefault(); if(state==='play'&&me) toggleWorldMap(true); };
