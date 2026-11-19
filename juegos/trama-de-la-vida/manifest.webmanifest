@@ -1,0 +1,19 @@
+{
+  "name": "La Trama de la Vida — Universo Gao Yu",
+  "short_name": "Trama de la Vida",
+  "description": "Un viaje tridimensional por el ser humano, la tecnología, las plantas, los hongos y la conciencia.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#04060f",
+  "theme_color": "#04060f",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "scope": "./"
+}
