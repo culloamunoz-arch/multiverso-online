@@ -1,5 +1,5 @@
 /* Multiverso · modo sin internet. Sube VERSION cuando quieras forzar una recarga completa. */
-const VERSION='mvo-v3';
+const VERSION='mvo-v4';
 const THREE='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
 const SUPA='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
 const LOCAL=['/','/index.html','/visit.js','/manifest.webmanifest','/icons/icon-192.png','/icons/icon-512.png','/icons/apple-touch-icon.png',
@@ -35,7 +35,7 @@ self.addEventListener('fetch',e=>{
   e.respondWith((async()=>{
    const c=await caches.open(VERSION);
    try{
-    const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),4000);
+    const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),9000);
     const res=await fetch(r,{signal:ctl.signal});clearTimeout(t);
     if(res&&res.ok)c.put(r,res.clone());
     return res;

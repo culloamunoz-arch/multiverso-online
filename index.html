@@ -2974,11 +2974,12 @@ showTitle();
 requestAnimationFrame(frame);
 window.__mmo={setTarget:(t)=>{target=t},dbg:()=>({acts:myActs.length,seen:JSON.stringify(actSeqSeen),cds:cds.slice(),gcd,mp:me.mp,tgt:target}),get me(){return me},get state(){return state},get amHost(){return amHost},get myPeer(){return myPeer},peersMap,mobState,useAbility,autoTarget,startGame:()=>{ me=newChar('Prueba','guerrero','humano',0,0); startGame(); },setMe:(o)=>Object.assign(me,o),get target(){return target}};
 </script>
-<div style="position:fixed;left:6px;bottom:4px;font-size:10px;opacity:.45;color:#fff;pointer-events:none;z-index:99">v2026.11.18 · GitHub</div>
+<div style="position:fixed;left:6px;bottom:4px;font-size:10px;opacity:.45;color:#fff;pointer-events:none;z-index:99">v2026.11.18b · mapa ampliado</div>
 <div id="wmap"><div class="wmbox"><div id="wmhead"><span>🗺️ Mapa del Multiverso <small id="wmhere"></small></span><button id="wmx">✕</button></div><canvas id="wmc" width="600" height="600"></canvas><div id="wmleg">⭐ misión principal · <span style="color:#7affb0">★</span> encargo · ❗/❓ personaje con trabajo · 🗿 piedra de viaje (celeste = descubierta) · 🌀 portal de mazmorra · 📍 lugar por explorar</div></div></div>
 <script>
-$('mm').addEventListener('click',e=>{ e.stopPropagation(); if(state==='play'&&me) toggleWorldMap(true); });
-$('mapb').addEventListener('click',e=>{ e.stopPropagation(); if(state==='play'&&me) toggleWorldMap(); });
+const openMap=e=>{ e.stopPropagation(); if(e.cancelable) e.preventDefault(); if(state==='play'&&me) toggleWorldMap(true); };
+for(const el of [$('mm'),$('mmc'),$('zone')]){ el.addEventListener('pointerup',openMap); el.addEventListener('click',openMap); el.addEventListener('touchend',openMap,{passive:false}); el.style.cursor='pointer'; }
+$('mapb').addEventListener('click',e=>{ e.stopPropagation(); if(state==='play'&&me) toggleWorldMap(true); });
 $('wmx').addEventListener('click',()=>toggleWorldMap(false));
 $('wmap').addEventListener('pointerdown',e=>{ e.stopPropagation(); if(e.target.id==='wmap') toggleWorldMap(false); });
 addEventListener('resize',()=>{ if(wmOpen) renderWorldMap(); });
