@@ -1,57 +1,59 @@
-/* Multiverso · modo sin internet. Sube VERSION cuando quieras forzar una recarga completa. */
-const VERSION='mvo-v5';
+/* Multiverso · modo sin internet (versión segura).
+   Regla de oro: CON internet siempre se muestra lo más nuevo; la copia guardada solo se usa SIN internet.
+   Sube VERSION cuando quieras forzar una limpieza completa. */
+const VERSION='mvo-v6';
 const THREE='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
 const SUPA='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
-const LOCAL=['/','/index.html','/visit.js','/manifest.webmanifest','/icons/icon-192.png','/icons/icon-512.png','/icons/apple-touch-icon.png',
- '/juegos/','/juegos/dj/','/juegos/guitarra/','/juegos/rap/','/juegos/kart/','/juegos/runner/','/juegos/pompon/','/juegos/vuelo/','/juegos/vuelo/escuadron.html','/juegos/mega-robot/','/juegos/mega-robot-3d/','/juegos/obras/',
- ...['dj-1','dj-2','guitarra-1','guitarra-2','kart-1','kart-2','kart-3','mega-robot-1','mega-robot-2','mega-robot-3','mega-robot-3d-1','mega-robot-3d-2','mega-robot-3d-3','mega-robot-3d-4','mmo-1','mmo-2','mmo-3','obras-1','obras-2','obras-3','obras-4','obras-5','obras-6','pompon-1','pompon-2'].map(n=>'/juegos/img/'+n+'.webp')];
 const FONTHOSTS=['fonts.googleapis.com','fonts.gstatic.com'];
+// lo mínimo para abrir sin internet; el resto se guarda solo a medida que lo visitas
+const BASE=['/','/juegos/','/visit.js','/manifest.webmanifest','/icons/icon-192.png','/icons/apple-touch-icon.png'];
 
 self.addEventListener('install',e=>{
- e.waitUntil((async()=>{
-  const c=await caches.open(VERSION);
-  await Promise.allSettled([
-   ...LOCAL.map(u=>c.add(new Request(u,{cache:'reload'}))),
-   c.add(new Request(THREE,{mode:'no-cors'})),
-   c.add(new Request(SUPA,{mode:'no-cors'}))
-  ]);
-  self.skipWaiting();
- })());
+ self.skipWaiting(); // la versión nueva toma el control de inmediato
+ e.waitUntil(caches.open(VERSION).then(c=>Promise.allSettled([...BASE.map(u=>c.add(new Request(u,{cache:'reload'}))),...[THREE,SUPA].map(u=>fetch(u,{mode:'no-cors'}).then(res=>c.put(u,res)))])));
 });
 self.addEventListener('activate',e=>{
  e.waitUntil((async()=>{
-  for(const k of await caches.keys())if(k!==VERSION)await caches.delete(k);
+  for(const k of await caches.keys()) if(k!==VERSION) await caches.delete(k);
   await self.clients.claim();
+  // recarga las pestañas abiertas para que muestren la versión nueva (arregla las que quedaron pegadas)
+  for(const cl of await self.clients.matchAll({type:'window'})){ try{ cl.navigate(cl.url); }catch(err){} }
  })());
 });
+self.addEventListener('message',e=>{ if(e.data==='limpiar') e.waitUntil((async()=>{ for(const k of await caches.keys()) await caches.delete(k); await self.registration.unregister(); })()); });
+
+async function network(url,ms){ // pide por URL (Safari no permite copiar peticiones de navegación con opciones)
+ const ctl=new AbortController(), t=setTimeout(()=>ctl.abort(),ms);
+ try{ return await fetch(url,{signal:ctl.signal,cache:'no-cache',credentials:'same-origin'}); } finally{ clearTimeout(t); }
+}
 self.addEventListener('fetch',e=>{
- const r=e.request;if(r.method!=='GET')return;
+ const r=e.request; if(r.method!=='GET') return;
  const u=new URL(r.url);
  const same=u.origin===location.origin;
  const lib=u.href===THREE||u.href===SUPA||FONTHOSTS.includes(u.hostname);
- if(!same&&!lib)return; // Supabase (datos) y demás: siempre a la red
- if(same&&(r.mode==='navigate'||/\.(html|js|webmanifest)$/.test(u.pathname)||u.pathname.endsWith('/'))){
-  // páginas: primero la red (siempre lo más nuevo); sin internet, la copia guardada
+ if(!same&&!lib) return;                       // Supabase (datos, juego en línea) y demás: siempre directo a la red
+ if(same&&(u.pathname==='/sw.js'||u.pathname==='/version.json')) return; // nunca se guardan
+ if(same&&(r.mode==='navigate'||/\.(html|js|json|webmanifest)$/.test(u.pathname)||u.pathname.endsWith('/'))){
+  // páginas y código: primero internet; si no hay, la copia guardada
   e.respondWith((async()=>{
-   const c=await caches.open(VERSION);
+   const key=u.origin+u.pathname;
    try{
-    const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),9000);
-    // Ojo: no se puede copiar una petición de navegación con opciones (Safari/iPhone lanza error); se pide por URL
-    const res=await fetch(u.href,{signal:ctl.signal,cache:'no-cache',credentials:'same-origin',redirect:'follow'});clearTimeout(t);
-    if(res&&res.ok&&!res.redirected)c.put(u.pathname+u.search,res.clone());
+    const res=await network(u.href,10000);
+    if(res&&res.ok&&!res.redirected){ const c=await caches.open(VERSION); c.put(key,res.clone()).catch(()=>{}); }
     return res;
    }catch(err){
-    const hit=await c.match(u.pathname+u.search,{ignoreSearch:true})||await c.match(r,{ignoreSearch:true})||(r.mode==='navigate'?await c.match('/juegos/'):null);
-    return hit||new Response('Sin conexión',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
+    const c=await caches.open(VERSION);
+    const hit=await c.match(key,{ignoreSearch:true})||(r.mode==='navigate'?(await c.match(u.origin+'/juegos/')||await c.match(u.origin+'/')):null);
+    return hit||new Response('<meta charset="utf-8"><body style="font-family:sans-serif;background:#120624;color:#fff;text-align:center;padding:40px">Sin conexión y esta página aún no se había guardado.<br>Vuelve a intentarlo con internet.</body>',{status:503,headers:{'Content-Type':'text/html; charset=utf-8'}});
    }
   })());
   return;
  }
- // imágenes, iconos, librerías y fuentes: copia guardada primero
+ // imágenes, iconos, librerías y fuentes: copia guardada primero (no cambian)
  e.respondWith((async()=>{
   const c=await caches.open(VERSION);
-  const hit=await c.match(r);if(hit)return hit;
-  try{const res=await fetch(r);if(res&&(res.ok||res.type==='opaque'))c.put(r,res.clone());return res;}
-  catch(err){return new Response('',{status:504});}
+  const hit=await c.match(r); if(hit) return hit;
+  try{ const res=await fetch(r); if(res&&(res.ok||res.type==='opaque')) c.put(r,res.clone()).catch(()=>{}); return res; }
+  catch(err){ return new Response('',{status:504}); }
  })());
 });
