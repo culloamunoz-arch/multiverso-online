@@ -148,9 +148,8 @@ function buildWorld(){
  BOX(6,0.15,2.7,M(0x8a8a8a),12,2.68,10,null,false);
  const sign=new THREE.Mesh(new THREE.PlaneGeometry(6,1.6),new THREE.MeshBasicMaterial({map:tex(512,140,(x,w,h)=>{ x.fillStyle='#f5b301'; x.fillRect(0,0,w,h); x.fillStyle='#1a1a1a'; x.font='bold 64px Archivo Black,sans-serif'; x.textAlign='center'; x.fillText('OBRA MAESTRA',w/2,90); x.font='bold 26px Nunito,sans-serif'; x.fillText('Instalación de faena',w/2,126); })}));
  sign.position.set(12,4.4,8.7); scene.add(sign);
- // grúa torre decorativa
- const tw=new THREE.Group(); tw.position.set(-20,0,-20); scene.add(tw); for(let i=0;i<10;i++){ const f=BOX(1.6,4,1.6,M(0xf5b301,{wireframe:true}),0,2+i*4,0,tw); f.castShadow=false; } BOX(30,1.2,1.2,YEL,6,40.6,0,tw); BOX(4,1.5,2,DARK,-7,39.5,0,tw); BOX(3,2.5,2.4,YEL,0,38.5,1.5,tw); addObs(-20,-20,3,3); tw.userData.jib=true; window.TOWER=tw;
- const hook=CYL(0.05,0.05,18,STEEL,14,31,0,tw,6); BOX(0.8,0.8,0.8,M(0xe84a2a),14,22,0,tw);
+ // grúa torre principal (jugable) en el centro de la obra
+ buildTowerWorld();
  // cantera: cerros de tierra y tolva de carga
  const hill=M(0x9a7448,{roughness:1,flatShading:true});
  [[-85,-60,18,10],[-75,-82,14,8],[-95,-35,16,9],[-55,-75,10,6]].forEach(([x,z,r,h])=>{ const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,9),hill); m.position.set(x,h/2,z); m.castShadow=true; m.receiveShadow=true; scene.add(m); addObs(x,z,r*1.2,r*1.2); });
@@ -252,6 +251,7 @@ function makeDozer(){ const g=new THREE.Group(), m={g,kind:'topa'};
  for(const s of [-1,1]){ const a=BOX(0.15,0.15,2.0,DARK,s*1.15,0.4,-1.0,bl); a.rotation.x=-0.2; }
  m.bladeY=0; m.wheels=[]; m.front=[]; m.tracked=true; return m; }
 const DEF={
+ torre:{n:'Grúa torre',ic:'🏗️',d:'La grúa principal en el centro de la obra: gira la pluma, mueve el carro y sube vigas, paneles y hormigón a cada piso del edificio.',make:()=>makeTowerCrane(0.13),maxV:1,acc:1,wb:1,steer:0,circ:[],spawn:[4,-18,0],cam:[22,8],fixed:true},
  tolva:{n:'Camión tolva',ic:'🚛',d:'Carga material en la cantera y llévalo a los rellenos. Vuelca la tolva en el lugar marcado.',make:()=>makeTruck(false),maxV:14,acc:4,wb:5.6,steer:0.55,circ:[[0,2.4,1.5],[0,-2.4,1.5]],spawn:[-48,-20,Math.PI*1.1],cam:[13,5.2]},
  retro:{n:'Retroexcavadora',ic:'🦾',d:'Excava la zanja con el brazo trasero y carga cada cuchara en el camión estacionado.',make:makeBackhoe,maxV:8,acc:3,wb:2.8,steer:0.6,circ:[[0,1.2,1.4],[0,-1.4,1.4]],spawn:[-50,38,Math.PI],cam:[10,5]},
  grua:{n:'Montacargas',ic:'📦',d:'Recoge pallets de materiales en la bodega y llévalos a la zona de entrega junto al edificio.',make:makeForklift,maxV:6,acc:3,wb:1.6,steer:0.75,circ:[[0,-0.3,0.95]],spawn:[57,44,-Math.PI/2],cam:[8,4.2],rear:true},
@@ -260,7 +260,7 @@ const DEF={
  topa:{n:'Topadora',ic:'🚜',d:'Baja la hoja y empuja los montones de tierra hasta el área de acopio.',make:makeDozer,maxV:6,acc:2.5,wb:2.5,steer:0.6,circ:[[0,0.4,1.9]],spawn:[0,-50,Math.PI],cam:[11,5.5],tracked:true}};
 let MC_=null; // máquina activa
 const CTRL={thr:0,st:0,hold:{}};
-function spawnMachine(k){ if(MC_){ scene.remove(MC_.g); } const D=DEF[k]; const m=D.make(); m.D=D; m.k=k; m.x=D.spawn[0]; m.z=D.spawn[1]; m.yaw=D.spawn[2]; m.v=0; m.steerA=0; m.hydr=0; m.tracked=!!D.tracked; m.tyaw=m.yaw; m.g.position.set(m.x,0,m.z); m.g.rotation.y=m.yaw; scene.add(m.g); m.g.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); MC_=m; if(palMark) palMark.visible=false; if(slotBox) slotBox.visible=false; CAM.yaw=m.yaw+Math.PI; CAM.off=0; camFree(false); buildWorkUI(); newJob(); return m; }
+function spawnMachine(k){ if(MC_&&MC_.k!=='torre'){ scene.remove(MC_.g); } towerRelease(); if(k==='torre') return spawnTower(); const D=DEF[k]; const m=D.make(); m.D=D; m.k=k; m.x=D.spawn[0]; m.z=D.spawn[1]; m.yaw=D.spawn[2]; m.v=0; m.steerA=0; m.hydr=0; m.tracked=!!D.tracked; m.tyaw=m.yaw; m.g.position.set(m.x,0,m.z); m.g.rotation.y=m.yaw; scene.add(m.g); m.g.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); MC_=m; if(palMark) palMark.visible=false; if(slotBox) slotBox.visible=false; CAM.yaw=m.yaw+Math.PI; CAM.off=0; camFree(false); buildWorkUI(); newJob(); return m; }
 
 /* ================= RUTA DE CONTENEDORES: anillo vial entre dos ciudades ================= */
 const RING=210, CITIES=[{n:'Puerto Aurora',x:-RING,z:0},{n:'Ciudad Central',x:RING,z:0}];
@@ -360,7 +360,7 @@ function collide(m){ let hit=false; const s=Math.sin(m.yaw), c=Math.cos(m.yaw);
   for(const [ex,ez,er] of peerObs()){ const dx=qx-ex, dz=qz-ez, d=Math.hypot(dx,dz), RR=r+er; if(d<RR&&d>1e-4){ qx=ex+dx/d*RR; qz=ez+dz/d*RR; hit=true; } }
   const R=Math.hypot(qx,qz); if(m.D.boat){ for(const I of SEA.isl){ const dx=qx-I.x, dz=qz-I.z, d=Math.hypot(dx,dz), RR=r+I.r; if(d<RR&&d>1e-4){ qx=I.x+dx/d*RR; qz=I.z+dz/d*RR; hit=true; } } const bx=clamp(qx,-1500,-347), bz=clamp(qz,-900,900); if(bx!==qx||bz!==qz){ qx=bx; qz=bz; hit=true; } } else if(m.D.route){ const lo=RING-11, hi=RING+11; if(R<lo){ qx*=lo/R; qz*=lo/R; hit=true; } else if(R>hi){ qx*=hi/R; qz*=hi/R; hit=true; } } else if(R>136){ qx*=136/R; qz*=136/R; hit=true; }
   m.x+=qx-px; m.z+=qz-pz; } return hit; }
-function drive(m,dt){ const D=m.D; let thr=CTRL.thr, st=CTRL.st; if(m.lock) thr=0;
+function drive(m,dt){ const D=m.D; if(D.fixed) return; let thr=CTRL.thr, st=CTRL.st; if(m.lock) thr=0;
  const tv=thr*D.maxV*(thr<0?0.55:1); const a=thr!==0?(Math.sign(tv-m.v)===Math.sign(m.v)||m.v===0?D.acc:D.acc*2):3.5;
  m.v+=clamp(tv-m.v,-a*dt,a*dt);
  if(D.boat){ m.yaw-=st*0.5*dt*clamp(m.v/4,-1,1); }
@@ -374,6 +374,93 @@ function drive(m,dt){ const D=m.D; let thr=CTRL.thr, st=CTRL.st; if(m.lock) thr=
  if(m.beacon) m.beacon.material.opacity=0.4+0.6*Math.max(0,Math.sin(perfT*9)); }
 let bumpT=0; function bump(){ if(bumpT>0) return; bumpT=0.6; sfx('bump'); CAM.shake=0.25; }
 
+/* ================= GRÚA TORRE PRINCIPAL (centro de la obra) ================= */
+const TCX=4, TCZ=-18, TCH=32, JIB=42, TR_MIN=5, TR_MAX=40;
+function rod(par,ax,ay,az,bx,by,bz,r,mat){ const dx=bx-ax, dy=by-ay, dz=bz-az, L=Math.hypot(dx,dy,dz); const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,L,5),mat); o.position.set((ax+bx)/2,(ay+by)/2,(az+bz)/2); o.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(dx/L,dy/L,dz/L)); o.castShadow=false; par.add(o); return o; }
+function makeTowerCrane(sc){ const root=new THREE.Group(), g=new THREE.Group(); root.add(g); g.scale.setScalar(sc||1); const C={g:root,inner:g};
+ const CON=M(0xb8b8b4,{roughness:0.9}), RED=M(0xd8402a,{roughness:0.5});
+ BOX(7,1.2,7,CON,0,0.6,0,g); for(const sx of [-1,1]) for(const sz of [-1,1]) BOX(1.6,1.2,1.6,M(0x8a8a86),sx*2.4,1.8,sz*2.4,g);
+ // mástil de celosía
+ const S=4, n=Math.round(TCH/S); for(const sx of [-1,1]) for(const sz of [-1,1]) BOX(0.28,TCH,0.28,YEL,sx,TCH/2+1.2,sz,g);
+ for(let i=0;i<n;i++){ const y0=1.2+i*S, y1=y0+S;
+  for(const s of [-1,1]){ rod(g,-1,y0,s,1,y1,s,0.07,YEL); rod(g,s,y0,-1,s,y1,1,0.07,YEL); BOX(2,0.12,0.12,YEL,0,y1,s,g,false); BOX(0.12,0.12,2,YEL,s,y1,0,g,false); } }
+ // escalera
+ for(let i=0;i<n*4;i++) BOX(0.5,0.05,0.05,STEEL,0,1.6+i,1.15,g,false);
+ // parte giratoria
+ const sl=new THREE.Group(); sl.position.y=TCH+1.2; g.add(sl); C.slew=sl;
+ CYL(1.7,1.7,0.6,DARK,0,0.3,0,sl,20); BOX(3,0.4,3,YEL,0,0.8,0,sl);
+ // cabina del operador
+ const cab=new THREE.Group(); cab.position.set(1.9,0.4,1.4); sl.add(cab); BOX(1.8,2,2.2,YEL,0,1,0,cab); BOX(1.6,1.3,0.06,GLASS,0,1.3,1.12,cab,false); BOX(0.06,1.3,1.8,GLASS,0.92,1.3,0.1,cab,false); BOX(1.4,0.06,1.6,GLASS,0,-0.02,0.2,cab,false);
+ // torre de cabeza (punta)
+ rod(sl,-1,1,0,0,9,0,0.14,YEL); rod(sl,1,1,0,0,9,0,0.14,YEL); rod(sl,0,1,-1,0,9,0,0.14,YEL); rod(sl,0,1,1,0,9,0,0.14,YEL);
+ const top=new THREE.Sprite(new THREE.SpriteMaterial({map:GLOW,color:0xff3020,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending})); top.scale.setScalar(2.2); top.position.y=9.4; sl.add(top); C.lights=[top];
+ // pluma (jib) de celosía triangular hacia +z
+ const J=JIB; for(const s of [-1,1]) BOX(0.18,0.18,J,YEL,s*0.85,1.2,J/2+1,sl); BOX(0.18,0.18,J,YEL,0,2.8,J/2+1,sl);
+ for(let z=1;z<J+1;z+=3){ rod(sl,-0.85,1.2,z,0,2.8,z+1.5,0.06,YEL); rod(sl,0.85,1.2,z,0,2.8,z+1.5,0.06,YEL); rod(sl,0,2.8,z+1.5,-0.85,1.2,z+3,0.06,YEL); rod(sl,0,2.8,z+1.5,0.85,1.2,z+3,0.06,YEL); BOX(1.7,0.08,0.08,YEL,0,1.2,z,sl,false); }
+ const tip=new THREE.Sprite(top.material); tip.scale.setScalar(1.8); tip.position.set(0,3.2,J+1); sl.add(tip); C.lights.push(tip);
+ // contrapluma con contrapesos
+ BOX(2.4,0.3,14,YEL,0,1.2,-7,sl); for(const s of [-1,1]) BOX(0.12,0.9,14,YEL,s*1.2,1.7,-7,sl,false);
+ for(let k=0;k<4;k++) BOX(2.6,2.6,0.8,CON,0,0,-11.2-k*0.85,sl); BOX(1.6,1.2,2,DARK,0,1.95,-5,sl); CYL(0.6,0.6,1.8,STEEL,0,1.95,-7.2,sl,12).rotation.z=Math.PI/2;
+ // tirantes
+ rod(sl,0,9,0,0,2.8,26,0.05,STEEL); rod(sl,0,9,0,0,2.8,12,0.05,STEEL); rod(sl,0,9,0,0,1.4,-12,0.05,STEEL);
+ // letrero en la pluma
+ const sg=new THREE.Mesh(new THREE.PlaneGeometry(9,1.4),new THREE.MeshBasicMaterial({side:THREE.DoubleSide,map:tex(512,80,(x,w,h)=>{ x.fillStyle='#f5b301'; x.fillRect(0,0,w,h); x.fillStyle='#1a1a1a'; x.font='bold 46px Archivo Black,sans-serif'; x.textAlign='center'; x.fillText('GRÚA MAESTRA',w/2,56); })})); sg.position.set(1.05,2,10); sg.rotation.y=Math.PI/2; sl.add(sg); const sg2=sg.clone(); sg2.position.x=-1.05; sl.add(sg2);
+ // carro, cable y gancho
+ const tr=new THREE.Group(); tr.position.set(0,1.0,20); sl.add(tr); C.trolley=tr; BOX(2,0.5,1.6,RED,0,0,0,tr); for(const s of [-1,1]) for(const z of [-0.6,0.6]) CYL(0.18,0.18,0.15,DARK,s*0.85,0.3,z,tr,10).rotation.z=Math.PI/2;
+ const cable=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,1,6),DARK); sl.add(cable); C.cable=cable;
+ const hk=new THREE.Group(); sl.add(hk); C.hook=hk; BOX(1.1,0.9,0.6,RED,0,0.45,0,hk); BOX(1.15,0.18,0.62,YEL,0,0.3,0,hk); const hc=new THREE.Mesh(new THREE.TorusGeometry(0.32,0.09,8,16,Math.PI*1.4),STEEL); hc.position.y=-0.25; hc.rotation.z=Math.PI*0.8; hk.add(hc);
+ C.ang=0.6; C.tr=20; C.hy=8; C.sx=0; C.sz=0; setCrane(C);
+ root.traverse(o=>{ if(o.isMesh&&o.castShadow===undefined) o.castShadow=true; });
+ return C; }
+function setCrane(C){ C.slew.rotation.y=C.ang; C.trolley.position.z=C.tr; const hy=C.hy-(TCH+1.2); C.hook.position.set(C.sx,hy,C.tr+C.sz); const top=0.75, bot=hy+0.9, L=Math.max(0.2,top-bot); C.cable.scale.y=L; C.cable.position.set(C.sx*0.5,(top+bot)/2,C.tr+C.sz*0.5); C.cable.rotation.x=Math.atan2(C.sz,L)*0.5; C.cable.rotation.z=-Math.atan2(C.sx,L)*0.5; }
+function craneWorld(C,lx,ly,lz){ const a=C.ang, x=lx, z=lz; return {x:TCX+x*Math.cos(a)+z*Math.sin(a), y:ly, z:TCZ-x*Math.sin(a)+z*Math.cos(a)}; }
+function hookWorld(C){ return craneWorld(C,C.sx,C.hy,C.tr+C.sz); }
+let TC=null; const TLOADS=[]; const YARD={x:-14,z:-26};
+const LTYPES=[{n:'Viga de acero',h:0.6,mk:g=>{ BOX(0.5,0.6,7,M(0xc8502a,{roughness:0.5,metalness:0.4}),0,0.3,0,g); BOX(1.2,0.08,7,M(0xa8401a),0,0.04,0,g); BOX(1.2,0.08,7,M(0xa8401a),0,0.56,0,g); }},
+ {n:'Panel de hormigón',h:0.4,mk:g=>{ BOX(3.4,0.4,2.6,M(0xbcbcb6),0,0.2,0,g); }},
+ {n:'Balde de hormigón',h:1.6,mk:g=>{ CYL(0.9,0.6,1.4,M(0x7a7a80,{metalness:0.5}),0,0.75,0,g,14); CYL(0.95,0.95,0.12,DARK,0,1.45,0,g,14); BOX(0.1,0.5,1.9,DARK,0,1.75,0,g,false); }},
+ {n:'Atado de fierros',h:0.5,mk:g=>{ for(let i=0;i<7;i++) CYL(0.07,0.07,6,M(0x6a4a3a,{metalness:0.6}),(i%4-1.5)*0.18,0.12+Math.floor(i/4)*0.18,0,g,6).rotation.x=Math.PI/2; BOX(0.8,0.06,0.1,DARK,0,0.3,-2,g,false); BOX(0.8,0.06,0.1,DARK,0,0.3,2,g,false); }}];
+function buildTowerWorld(){ TC=makeTowerCrane(1); TC.g.position.set(TCX,0,TCZ); scene.add(TC.g); addObs(TCX,TCZ,7,7);
+ // patio de acopio de la grúa
+ const yd=new THREE.Mesh(new THREE.PlaneGeometry(18,12),new THREE.MeshBasicMaterial({color:0x4a8ad8,transparent:true,opacity:0.22})); yd.rotation.x=-Math.PI/2; yd.position.set(YARD.x,0.05,YARD.z); scene.add(yd);
+ const yb=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(18,0.01,12)),new THREE.LineBasicMaterial({color:0x4a8ad8})); yb.position.set(YARD.x,0.06,YARD.z); scene.add(yb);
+ for(let i=0;i<6;i++){ const col=i%3, row=Math.floor(i/3); spawnTLoad(i%LTYPES.length,YARD.x-6+col*6,YARD.z-3+row*6); }
+ for(let i=0;i<4;i++) BOX(0.4,0.3,10,M(0x8a6a44),YARD.x-7.5+i*5,0.15,YARD.z,null,false);
+ // marca de destino en el edificio
+ const tm=new THREE.Mesh(new THREE.BoxGeometry(3.6,0.5,3.0),new THREE.MeshBasicMaterial({color:0x40e070,transparent:true,opacity:0.35,depthWrite:false})); tm.visible=false; scene.add(tm); TC.mark=tm;
+ TC.ring=new THREE.Mesh(new THREE.TorusGeometry(1.4,0.08,8,32),new THREE.MeshBasicMaterial({color:0x50ff8a})); TC.ring.rotation.x=Math.PI/2; TC.ring.visible=false; scene.add(TC.ring);
+ const sh=new THREE.Mesh(new THREE.RingGeometry(0.5,0.75,24),new THREE.MeshBasicMaterial({color:0xffe060,transparent:true,opacity:0.8,depthWrite:false})); sh.rotation.x=-Math.PI/2; scene.add(sh); TC.drop=sh; }
+function spawnTLoad(t,x,z){ const g=new THREE.Group(); LTYPES[t].mk(g); g.position.set(x,0,z); g.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); scene.add(g); const L={g,t,h:LTYPES[t].h,x,y:0,z,home:{x,z},att:false,busy:false,yaw:0}; TLOADS.push(L); return L; }
+function towerFloorY(){ const p=obraPct(); const f=clamp(Math.floor((p-25)/9),0,3); return p<25?0.6:0.6+(f+1)*3.2+0.3; }
+const TSPOTS=[[-4,-2.5],[3.5,2.5],[0,0],[-3.5,2.5],[4,-2.5]];
+function towerMachine(){ const C=TC; return {g:C.g,crane:C,k:'torre',x:TCX,z:TCZ,yaw:0,v:0,steerA:0,hydr:0,tyaw:0,wheels:[],front:[],slewV:0,trV:0,carried:null,fixed:true}; }
+function spawnTower(){ if(TC.pl) TC.pl.visible=false; const m=towerMachine(); m.D=DEF.torre; MC_=m; if(palMark) palMark.visible=false; if(slotBox) slotBox.visible=false; CAM.yaw=TC.ang+Math.PI; CAM.off=0; camFree(false); buildWorkUI(); newJob(); return m; }
+function towerJob(){ const s=TSPOTS[Math.floor(Math.random()*TSPOTS.length)]; return {k:'torre',phase:'pick',spot:{x:BX+s[0],z:BZ+s[1]},pay:170}; }
+function towerTarget(m){ const T=JOB; if(m.carried){ return {x:T.spot.x,z:T.spot.z,n:'Piso '+(clamp(Math.floor((obraPct()-25)/9),0,3)+1)+' del edificio'}; } let best=null,bd=1e9; const h=hookWorld(TC); for(const L of TLOADS){ if(L.att||L.busy) continue; const d=Math.hypot(L.x-h.x,L.z-h.z); if(d<bd){ bd=d; best=L; } } m.nearL=best; return best?{x:best.x,z:best.z,n:LTYPES[best.t].n}:{x:YARD.x,z:YARD.z,n:'Acopio de la grúa'}; }
+function towerWork(m,dt){ const C=TC, T=JOB; if(!T) return;
+ // giro con inercia, carro y gancho
+ m.slewV=lerp(m.slewV,-CTRL.st*0.38,Math.min(1,dt*2.2)); C.ang+=m.slewV*dt;
+ m.trV=lerp(m.trV,CTRL.thr*5,Math.min(1,dt*3)); C.tr=clamp(C.tr+m.trV*dt,TR_MIN,TR_MAX); if(C.tr<=TR_MIN||C.tr>=TR_MAX) m.trV=0;
+ const v=(HOLD('h+')?1:0)-(HOLD('h-')?1:0); const lim=TCH-1.5, floor=m.carried?(m.carried.h+0.95):0.9; C.hy=clamp(C.hy+v*dt*4.5,floor,lim);
+ // balanceo de la carga
+ C.sx=lerp(C.sx,-m.slewV*C.tr*0.12,Math.min(1,dt*1.5)); C.sz=lerp(C.sz,-m.trV*0.12,Math.min(1,dt*1.5)); C.sx+=Math.sin(perfT*1.7)*0.002; setCrane(C);
+ m.hydr=(Math.abs(m.slewV)>0.02||Math.abs(m.trV)>0.2||v)?1:0;
+ const hw=hookWorld(C); const hookBot=C.hy-0.6;
+ TC.drop.position.set(hw.x,(m.carried?0:0)+0.07,hw.z); TC.drop.visible=true;
+ if(HOLD('dump')&&!m.hkPrev){ // enganchar / soltar
+  if(!m.carried){ const L=m.nearL; if(L&&Math.hypot(L.x-hw.x,L.z-hw.z)<1.8&&hookBot<L.y+L.h+1.4&&hookBot>L.y+L.h-0.6){ m.carried=L; L.att=true; sfx('clunk'); tipT('¡'+LTYPES[L.t].n+' enganchada! Súbela y llévala al edificio'); renderJob(); } else tipT('Baja el gancho justo encima de una carga'); }
+  else { const L=m.carried; const ty=towerFloorY(); const dx=hw.x-T.spot.x, dz=hw.z-T.spot.z; const by=C.hy-0.9-L.h; const ok=Math.hypot(dx,dz)<2.6&&by>ty-0.6&&by<ty+1.5;
+   m.carried=null; L.att=false; sfx('clunk');
+   if(ok){ L.y=ty; L.x=hw.x; L.z=hw.z; L.g.position.set(L.x,L.y,L.z); L.busy=true; pay(T.pay,LTYPES[L.t].n+' instalada en el edificio','torre'); setTimeout(()=>{ L.g.position.set(L.home.x,0,L.home.z); L.x=L.home.x; L.z=L.home.z; L.y=0; L.g.rotation.y=0; L.busy=false; },7000); JOB=towerJob(); renderJob(); }
+   else { L.y=0; L.x=hw.x; L.z=hw.z; L.g.position.set(L.x,0,L.z); if(Math.hypot(dx,dz)<2.6) tipT('Muy alto: bájala hasta el piso marcado antes de soltar'); else tipT('La carga quedó en el suelo: vuelve a engancharla'); renderJob(); } } }
+ m.hkPrev=HOLD('dump');
+ if(m.carried){ const L=m.carried; L.x=hw.x; L.z=hw.z; L.y=Math.max(0,C.hy-0.9-L.h); L.g.position.set(L.x,L.y,L.z); L.g.rotation.y=C.ang; }
+ // marcas
+ const ty=towerFloorY(); TC.mark.visible=!!m.carried; TC.mark.position.set(T.spot.x,ty+0.25,T.spot.z);
+ const q=m.nearL; TC.ring.visible=!m.carried&&!!q; if(q) TC.ring.position.set(q.x,q.y+q.h+0.25+Math.sin(perfT*4)*0.1,q.z);
+ if(m.carried){ const d=Math.hypot(hw.x-T.spot.x,hw.z-T.spot.z), by=C.hy-0.9-m.carried.h; if(d<2.6){ if(by>ty+1.5) tipT('Encima del piso: baja la carga'); else if(by>ty-0.6) tipT('¡Justo! Suelta la carga (🪝)'); } }
+ else if(q&&Math.hypot(q.x-hw.x,q.z-hw.z)<1.8){ if(hookBot>q.y+q.h+1.4) tipT('Baja el gancho'); else if(hookBot>q.y+q.h-0.6) tipT('Engancha la carga (🪝)'); } }
+function towerRelease(){ const m=MC_; if(m&&m.k==='torre'&&m.carried){ const L=m.carried; L.att=false; L.y=0; L.g.position.y=0; m.carried=null; } }
 /* ================= TRABAJOS ================= */
 let JOB=null;
 const HOLD=(k)=>!!CTRL.hold[k];
@@ -384,10 +471,12 @@ function newJob(){ const m=MC_; if(!m) return;
  if(m.k==='conte'){ const from=m.city||CITIES[0]; JOB={k:'conte',phase:m.cont.visible?'haul':'load',from,to:CITIES[1-CITIES.indexOf(from)],pay:260,prog:0}; }
  if(m.k==='barco'){ const from=m.at||SEA.port; const n=from===SEA.port?1+Math.min(3,SAVE.portStock||0):2; JOB={k:'barco',phase:'load',from,to:from===SEA.port?SEA.isla:SEA.port,n,pay:300+80*(n-1),prog:0}; shipBoxes(m,0); }
  if(m.k==='topa'){ JOB={k:'topa',n:0,need:3,pay:60,bonus:80}; }
+ if(m.k==='torre'){ JOB=towerJob(); }
  renderJob(); }
 let palMark=null; function markPallet(p){ if(!palMark){ palMark=new THREE.Mesh(new THREE.TorusGeometry(0.9,0.07,8,32),new THREE.MeshBasicMaterial({color:0x50ff8a})); palMark.rotation.x=Math.PI/2; scene.add(palMark); } palMark.userData.p=p; }
 let slotBox=null; function showSlot(s){ if(!slotBox){ slotBox=new THREE.Mesh(new THREE.BoxGeometry(1.5,1.4,1.2),new THREE.MeshBasicMaterial({color:0x50ff8a,transparent:true,opacity:0.25,depthWrite:false})); scene.add(slotBox); } slotBox.visible=!!s; if(s) slotBox.position.set(s.x,s.y+0.72,s.z); }
 function jobTarget(){ const m=MC_; if(!JOB||!m) return null;
+ if(JOB.k==='torre') return towerTarget(m);
  if(JOB.k==='tolva') return JOB.phase==='load'?{x:ZONES.chute.x,z:ZONES.chute.z,n:'Tolva de carga'}:{x:JOB.dest.x,z:JOB.dest.z,n:JOB.dest.n};
  if(JOB.k==='retro') return m.bucket>0?{x:PARKED.g.position.x,z:PARKED.g.position.z,n:'Camión estacionado'}:{x:(ZONES.trench.x0+ZONES.trench.x1)/2,z:(ZONES.trench.z0+ZONES.trench.z1)/2,n:'Zanja'};
  if(JOB.k==='grua'){ if(m.carried) return {x:(ZONES.deliver.x0+ZONES.deliver.x1)/2,z:(ZONES.deliver.z0+ZONES.deliver.z1)/2,n:'Zona de entrega'}; const q=m.nearPal; return q?{x:q.g.position.x,z:q.g.position.z,n:'Pallet de materiales'}:{x:ZONES.whs.x,z:ZONES.whs.z-7,n:'Bodega'}; }
@@ -401,9 +490,10 @@ function renderJob(){ const m=MC_; if(!JOB) return; let h='',pg=0;
  if(JOB.k==='conte'){ h=JOB.phase==='load'?`<b>📋 Cargar contenedor en ${JOB.from.n}</b>Detén el camión bajo la grúa pórtico (círculo verde) y espera a que baje el contenedor.`:`<b>📋 Llevar contenedor a ${JOB.to.n}</b>Sigue la ruta hasta la otra ciudad y detente bajo su grúa pórtico para descargar.`; pg=JOB.prog||0; }
  if(JOB.k==='barco'){ h=(JOB.phase==='load'?`<b>📋 Cargar en ${JOB.from.n} · ${JOB.n} contenedor${JOB.n>1?'es':''}</b>Mantén el barco detenido dentro del círculo de boyas.${JOB.from===SEA.port?` En el puerto hay ${SAVE.portStock||0} traídos por camión.`:''}`:`<b>📋 Navegar a ${JOB.to.n} · ${JOB.pay} créditos</b>Sigue la flecha y detente en su muelle para descargar.`)+`<div style="margin-top:4px;font-size:.92em;opacity:.85">Tareas libres: 📦 cajas a la deriva (luz naranja) · 🗼 suministros al faro${perfT>=SEA.faro.ready?' (luz amarilla)':' ⏳'} · 🚤 pescadores a la deriva (luz roja)</div>`; pg=JOB.prog||0; }
  if(JOB.k==='topa'){ h=`<b>📋 Despejar la explanada · ${JOB.n}/${JOB.need}</b>Baja la hoja y empuja montones de tierra hasta el área de acopio (rectángulo amarillo).`; pg=JOB.n/JOB.need; }
+ if(JOB.k==='torre'){ const fl=clamp(Math.floor((obraPct()-25)/9),0,3)+1; h=m.carried?`<b>📋 Subir ${LTYPES[m.carried.t].n.toLowerCase()} al piso ${fl}</b>Gira la pluma hasta el cuadro verde del edificio, bájala con cuidado y suelta con <b style="display:inline;font-size:14px">🪝</b>.`:`<b>📋 Abastecer el edificio con la grúa</b>Lleva el gancho sobre una carga del acopio azul, bájalo y engancha con <b style="display:inline;font-size:14px">🪝</b>. Girar: ◀ ▶ · Carro: ▲ ▼.`; }
  $('job').innerHTML=h+`<div class="pg"><i style="width:${Math.round(clamp(pg,0,1)*100)}%"></i></div>`; }
 function pay(n,why,kind){ if(kind) addProg(kind); SAVE.credits+=n; SAVE.jobs++; SAVE.fav=MC_.k; saveLocal(); pushBoard(); $('crv').textContent=SAVE.credits.toLocaleString('es-CL'); msg('+'+n+' créditos',why); sfx('pay'); floatText('+'+n); }
-function workUpdate(m,dt){ const T=JOB; if(!T) return; if(m.k==='retro'||m.k==='grua') m.g.updateMatrixWorld(true);
+function workUpdate(m,dt){ const T=JOB; if(!T) return; if(m.k==='torre'){ towerWork(m,dt); return; } if(m.k==='retro'||m.k==='grua') m.g.updateMatrixWorld(true);
  if(m.k==='tolva'){ // tolva
   const up=HOLD('dump'); m.bedA=clamp(m.bedA+(up?0.55:-0.8)*dt,0,0.95); m.bed.rotation.x=-m.bedA; m.tail.rotation.x=m.bedA*0.9; m.hydr=up&&m.bedA<0.95||(!up&&m.bedA>0)?1:0;
   const ch=ZONES.chute; const bx=m.x-Math.sin(m.yaw)*1, bz=m.z-Math.cos(m.yaw)*1;
@@ -471,13 +561,14 @@ function updCam(dt){ const m=MC_; if(!m) return; const D=m.D;
  let tx=m.x, ty=1.8, tz=m.z, yawT=m.yaw+Math.PI, dist=D.cam[0], h=D.cam[1], pitch=CAM.pitch;
  if(!CAM.free&&m.k==='retro'&&perfT-(m.lastArm||-9)<4&&Math.abs(m.v)<0.6){ yawT=m.yaw; tx=m.x-Math.sin(m.yaw)*3.6; tz=m.z-Math.cos(m.yaw)*3.6; dist=8.5; ty=1.2; pitch=0.62; }
  if(m.k==='grua'){ ty=1.6+m.fork*0.4; }
+ if(m.k==='torre'){ const hw=hookWorld(TC); tx=hw.x; tz=hw.z; ty=Math.max(1.5,TC.hy*0.65+TCH*0.3); yawT=TC.ang+Math.PI+1.05; dist=32; h=6; pitch=0.34; }
  if(CAM.free) CAM.yaw=lerpAng(CAM.yaw,CAM.fy,dt*14); else CAM.yaw=lerpAng(CAM.yaw,yawT,dt*3);
  const k=1-Math.exp(-dt*7); CAM.tx=lerp(CAM.tx,tx,k); CAM.ty=lerp(CAM.ty,ty,k); CAM.tz=lerp(CAM.tz,tz,k);
  CAM.d=lerp(CAM.d||dist,dist*(CAM.zoom||1),dt*3); CAM.p=lerp(CAM.p||pitch,pitch,dt*3);
  let sx=0,sy=0; if(CAM.shake>0){ CAM.shake-=dt; sx=(Math.random()-0.5)*CAM.shake; sy=(Math.random()-0.5)*CAM.shake; }
  camera.position.set(CAM.tx+Math.sin(CAM.yaw)*Math.cos(CAM.p)*CAM.d+sx, CAM.ty+h*0.3+Math.sin(CAM.p)*CAM.d+sy, CAM.tz+Math.cos(CAM.yaw)*Math.cos(CAM.p)*CAM.d);
  camera.lookAt(CAM.tx,CAM.ty+0.5,CAM.tz);
- sun.position.set(m.x+30,60,m.z+20); sun.target.position.set(m.x,0,m.z); }
+ sun.position.set(CAM.tx+30,60,CAM.tz+20); sun.target.position.set(CAM.tx,0,CAM.tz); }
 
 /* ================= AUDIO ================= */
 let AC=null,mast=null,eng=null,engG=null,engF=null,hyd=null,hydG=null,muted=false,sndPour=0,beepT=0;
@@ -504,6 +595,7 @@ const WORK={
  tolva:[{k:'dump',l:'Volcar',i:'⤴',key:'Espacio'}],
  retro:[{k:'sw+',l:'Girar ◀',i:'↶',key:'J'},{k:'sw-',l:'Girar ▶',i:'↷',key:'L'},{k:'b+',l:'Pluma ↑',i:'⬆',key:'I'},{k:'b-',l:'Pluma ↓',i:'⬇',key:'K'},{k:'s+',l:'Brazo afuera',i:'↗',key:'U'},{k:'s-',l:'Brazo adentro',i:'↙',key:'O'},{k:'c+',l:'Cerrar cuchara',i:'⤵',key:'N'},{k:'c-',l:'Abrir cuchara',i:'⤴',key:'M'}],
  grua:[{k:'f+',l:'Subir',i:'⬆',key:'R'},{k:'f-',l:'Bajar',i:'⬇',key:'F'}],
+ torre:[{k:'h+',l:'Subir gancho',i:'⬆',key:'R'},{k:'h-',l:'Bajar gancho',i:'⬇',key:'F'},{k:'dump',l:'Enganchar / soltar',i:'🪝',key:'Espacio'}],
  conte:[],
  barco:[],
  topa:[{k:'h+',l:'Subir hoja',i:'⬆',key:'R'},{k:'h-',l:'Bajar hoja',i:'⬇',key:'F'}]};
@@ -514,13 +606,13 @@ function buildWorkUI(){ const m=MC_; const L=WORK[m.k]; const w=$('work'); w.sty
  w.innerHTML=L.map(b=>`<div class="wb" data-k="${b.k}"><span>${b.i}</span>${b.l}${IS_TOUCH?'':`<kbd>${b.key}</kbd>`}</div>`).join('');
  w.querySelectorAll('.wb').forEach(el=>{ const k=el.dataset.k; const on=e=>{ e.preventDefault(); auInit(); CTRL.hold[k]=true; el.classList.add('on'); try{ el.setPointerCapture(e.pointerId); }catch(_){} }; const off=()=>{ CTRL.hold[k]=false; el.classList.remove('on'); };
   el.addEventListener('pointerdown',on); el.addEventListener('pointerup',off); el.addEventListener('pointercancel',off); });
- $('keys').textContent=IS_TOUCH?'':`W/S acelerar y retroceder · A/D girar · ${L.map(b=>b.key+' '+b.l.toLowerCase()).join(' · ')} · arrastra para mirar`; }
+ $('keys').textContent=IS_TOUCH?'':`${m.k==='torre'?'W/S carro afuera/adentro · A/D girar la pluma':'W/S acelerar y retroceder · A/D girar'} · ${L.map(b=>b.key+' '+b.l.toLowerCase()).join(' · ')} · arrastra para mirar`; }
 let msgT=null; function msg(a,b){ $('msg').innerHTML=a+(b?`<small>${b}</small>`:''); $('msg').classList.add('on'); clearTimeout(msgT); msgT=setTimeout(()=>$('msg').classList.remove('on'),2200); }
 let tipTm=null; function tipT(t){ $('tip').textContent=t; $('tip').classList.add('on'); clearTimeout(tipTm); tipTm=setTimeout(()=>$('tip').classList.remove('on'),1400); }
 function floatText(t){ const e=document.createElement('div'); e.className='fl'; e.textContent=t; e.style.left='50%'; e.style.top='50%'; e.style.transform='translate(-50%,0)'; document.body.appendChild(e); requestAnimationFrame(()=>{ e.style.transform='translate(-50%,-120px)'; e.style.opacity='0'; }); setTimeout(()=>e.remove(),1400); }
-function updHUD(){ const m=MC_; $('gsp').textContent=Math.round(Math.abs(m.v)*3.6); $('ggr').textContent=m.v<-0.2?'R':Math.abs(m.v)<0.2?'N':'D';
+function updHUD(){ const m=MC_; const tw=m.k==='torre'; $('gsp').textContent=tw?Math.round(TC.hy):Math.round(Math.abs(m.v)*3.6); $('gauge').querySelector('small').textContent=tw?'m gancho':'km/h'; $('ggr').textContent=tw?Math.round(TC.tr)+'m':m.v<-0.2?'R':Math.abs(m.v)<0.2?'N':'D';
  const T=jobTarget(); if(T){ const dx=T.x-m.x, dz=T.z-m.z, d=Math.hypot(dx,dz); const ang=Math.atan2(dx,dz)-(CAM.yaw+Math.PI); $('carr').style.transform=`rotate(${-ang}rad)`; $('cdist').textContent=d<4?T.n+' ✔':`${T.n} · ${Math.round(d)} m`; }
- if(TGT){ if(T){ TGT.visible=true; TGT.position.set(T.x,(m.k==='grua'&&JOB&&JOB.slot&&JOB.pal.att&&JOB.mode==='store')?6:5+Math.sin(perfT*3)*0.4,T.z); TGT.rotation.y+=0.03; } else TGT.visible=false; } }
+ if(TGT){ if(T){ TGT.visible=true; TGT.position.set(T.x,(m.k==='torre'?(m.carried?towerFloorY()+4.5:3.5):(m.k==='grua'&&JOB&&JOB.slot&&JOB.pal.att&&JOB.mode==='store')?6:5)+Math.sin(perfT*3)*0.4,T.z); TGT.rotation.y+=0.03; } else TGT.visible=false; } }
 let TGT=null; function makeTgt(){ TGT=new THREE.Group(); const c=new THREE.Mesh(new THREE.ConeGeometry(0.7,1.4,4),new THREE.MeshBasicMaterial({color:0xf5b301})); c.rotation.x=Math.PI; TGT.add(c); const s=new THREE.Sprite(new THREE.SpriteMaterial({map:GLOW,color:0xffd040,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending})); s.scale.setScalar(3); TGT.add(s); scene.add(TGT); }
 async function showBoard(){ $('board').style.display='flex'; $('blist').textContent='Cargando…'; const L=await rpc('obras_top',{});
  if(!L){ $('blist').innerHTML='<p>No se pudo conectar con el tablero ahora. Tus créditos quedan guardados en este dispositivo.</p>'; return; }
@@ -531,7 +623,7 @@ $('bSnd').onclick=()=>{ auInit(); muted=!muted; $('bSnd').textContent=muted?'�
 $('bSwap').onclick=()=>{ showSel(); }; $('bCam').onclick=()=>{ camFree(false); sfx('ui'); tipT('Cámara principal'); }; $('bHorn').onclick=honk; $('bWave').onclick=wave; $('onl').onclick=()=>$('onl').classList.toggle('open'); $('bMus').onclick=()=>{ auInit(); musInit(); setMusic(!musicOn); }; $('obra').onclick=()=>$('obra').classList.toggle('open'); $('obra').style.pointerEvents='auto';
 
 /* ================= ENTRADA ================= */
-const K={}; addEventListener('keydown',e=>{ if(document.activeElement===$('nm')) return; auInit(); K[e.code]=true; const h=KEYMAP[e.code]; if(e.code==='KeyR') CTRL.hold[MC_&&MC_.k==='topa'?'h+':'f+']=true; else if(e.code==='KeyF') CTRL.hold[MC_&&MC_.k==='topa'?'h-':'f-']=true; else if(h) CTRL.hold[h]=true; if(e.code==='Space') e.preventDefault(); });
+const K={}; addEventListener('keydown',e=>{ if(document.activeElement===$('nm')) return; auInit(); K[e.code]=true; const h=KEYMAP[e.code]; if(e.code==='KeyR') CTRL.hold[MC_&&(MC_.k==='topa'||MC_.k==='torre')?'h+':'f+']=true; else if(e.code==='KeyF') CTRL.hold[MC_&&(MC_.k==='topa'||MC_.k==='torre')?'h-':'f-']=true; else if(h) CTRL.hold[h]=true; if(e.code==='Space') e.preventDefault(); });
 addEventListener('keyup',e=>{ K[e.code]=false; const h=KEYMAP[e.code]; if(e.code==='KeyR'){ CTRL.hold['h+']=CTRL.hold['f+']=false; } else if(e.code==='KeyF'){ CTRL.hold['h-']=CTRL.hold['f-']=false; } else if(h) CTRL.hold[h]=false; });
 addEventListener('blur',()=>{ for(const k in K) K[k]=false; for(const k in CTRL.hold) CTRL.hold[k]=false; });
 const stick={id:null,ox:0,oy:0,x:0,y:0}, look={id:null,x:0,y:0}; const cv=$('gl');
@@ -550,13 +642,13 @@ let mode='sel', selK=SAVE.fav||'tolva', preview=null;
 function renderSel(){ $('mrow').innerHTML=Object.entries(DEF).map(([k,D])=>`<div class="card mc ${k===selK?'on':''}" data-m="${k}"><span class="ic">${D.ic}</span><b>${D.n}</b><p>${D.d}</p></div>`).join('');
  $('mdesc').textContent=DEF[selK].d; $('mrow').querySelectorAll('[data-m]').forEach(el=>el.onclick=()=>{ auInit(); selK=el.dataset.m; sfx('ui'); renderSel(); setPreview(); }); }
 function setPreview(){ if(preview) scene.remove(preview.g); preview=DEF[selK].make(); preview.g.position.set(-10,0,10); scene.add(preview.g); preview.g.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); if(preview.load) preview.load.visible=selK==='tolva'; if(preview.cargo!==undefined&&preview.load) preview.load.visible=true; }
-function showSel(){ mode='sel'; $('sel').style.display='flex'; $('hud').style.display='none'; if(MC_){ scene.remove(MC_.g); MC_=null; } if(TGT) TGT.visible=false; if(slotBox) slotBox.visible=false; if(palMark) palMark.visible=false; renderSel(); setPreview(); }
+function showSel(){ mode='sel'; $('sel').style.display='flex'; $('hud').style.display='none'; towerRelease(); if(TC){ TC.mark.visible=TC.ring.visible=TC.drop.visible=false; } if(MC_){ if(MC_.k!=='torre') scene.remove(MC_.g); MC_=null; } if(TGT) TGT.visible=false; if(slotBox) slotBox.visible=false; if(palMark) palMark.visible=false; renderSel(); setPreview(); }
 $('nm').value=SAVE.name||'';
 $('goB').onclick=()=>{ auInit(); const n=$('nm').value.trim(); if(n.length<2){ $('nm').focus(); $('nm').style.borderColor='#ff5a5a'; $('nm').placeholder='Escribe tu nombre (mín. 2 letras)'; return; } SAVE.name=n.slice(0,18); SAVE.fav=selK; saveLocal(); pushBoard();
  if(preview){ scene.remove(preview.g); preview=null; } $('sel').style.display='none'; $('hud').style.display='block'; mode='play'; spawnMachine(selK); $('crv').textContent=SAVE.credits.toLocaleString('es-CL'); msg(DEF[selK].n,'¡A trabajar, '+SAVE.name+'!'); };
 
 /* ================= AVANCE DE LA OBRA MAESTRA ================= */
-const OBRA_T={tolva:{n:'Rellenos',ic:'🚛',t:20},retro:{n:'Excavación',ic:'🦾',t:50},grua:{n:'Materiales',ic:'📦',t:30},conte:{n:'Contenedores',ic:'🚚',t:14},topa:{n:'Explanada',ic:'🚜',t:40}};
+const OBRA_T={torre:{n:'Estructura',ic:'🏗️',t:20},tolva:{n:'Rellenos',ic:'🚛',t:20},retro:{n:'Excavación',ic:'🦾',t:50},grua:{n:'Materiales',ic:'📦',t:30},conte:{n:'Contenedores',ic:'🚚',t:14},topa:{n:'Explanada',ic:'🚜',t:40}};
 if(!SAVE.prog) SAVE.prog={tolva:0,retro:0,grua:0,topa:0}; if(!SAVE.obra) SAVE.obra=1; if(!SAVE.aportes) SAVE.aportes=0;
 // estado de la OBRA COMUNITARIA (compartida por todos los operadores); sin conexión se usa el avance local
 let COM=null, COMQ=[], comBusy=false, lastObra=null;
@@ -656,7 +748,7 @@ function rearGuides(m){ const R=REARD[m.k], D=m.D; const pos=REAR.lines.geometry
     if(prevL){ put(prevL,L,C); put(prevR,Rt,C); } if(Math.abs(d-1.5)<0.01||Math.abs(d-3.5)<0.01||Math.abs(d-7)<0.01) put(L,Rt,C);
     prevL=L; prevR=Rt; if(m.tracked) yaw+=CTRL.st*0.12*ds; else yaw+=ds*Math.tan(m.steerA)/D.wb; x-=Math.sin(yaw)*ds; z-=Math.cos(yaw)*ds; }
   REAR.lines.geometry.setDrawRange(0,n); pos.needsUpdate=true; col.needsUpdate=true; }
-function rearPre(){ const m=MC_; const show=mode==='play'&&m&&(m.v<-0.15||CTRL.thr<-0.1); REAR.a=lerp(REAR.a,show?1:0,0.18); const el=$('rear'); el.style.opacity=REAR.a; el.style.display=REAR.a<0.03?'none':'block'; if(REAR.a<0.03) return false;
+function rearPre(){ const m=MC_; const show=mode==='play'&&m&&!m.D.fixed&&(m.v<-0.15||CTRL.thr<-0.1); REAR.a=lerp(REAR.a,show?1:0,0.18); const el=$('rear'); el.style.opacity=REAR.a; el.style.display=REAR.a<0.03?'none':'block'; if(REAR.a<0.03) return false;
   const R=REARD[m.k], s=Math.sin(m.yaw), c=Math.cos(m.yaw); REAR.cam.position.set(m.x-s*(R.rb+0.15),R.h,m.z-c*(R.rb+0.15)); REAR.cam.lookAt(m.x-s*(R.rb+6.5),0,m.z-c*(R.rb+6.5)); REAR.cam.updateMatrixWorld();
   const tgv=TGT&&TGT.visible; if(TGT) TGT.visible=false; renderer.setRenderTarget(REAR.rt); renderer.render(scene,REAR.cam); renderer.setRenderTarget(null); if(TGT) TGT.visible=tgv; rearGuides(m); return true; }
 function rearPost(){ if(REAR.a<0.03) return; const r=$('rear').getBoundingClientRect(); const pad=3; REAR.quad.material.opacity=REAR.a; REAR.lines.material.opacity=REAR.a;
@@ -669,13 +761,13 @@ function netInit(){ try{ if(typeof supabase==='undefined'||!supabase.createClien
   const ch=sb.channel('obras-faena',{config:{broadcast:{self:false},presence:{key:NET.id}}});
   ch.on('broadcast',{event:'st'},({payload})=>onPeer(payload)); ch.on('broadcast',{event:'fx'},({payload})=>onFx(payload)); ch.on('presence',{event:'leave'},({key})=>dropPeer(key));
   ch.subscribe(st=>{ if(st==='SUBSCRIBED'){ NET.ok=true; ch.track({n:SAVE.name||'operador'}).catch(()=>{}); updOnline(); } }); NET.ch=ch; }catch(e){ console.warn('sin multijugador',e); } }
-function extra(m){ if(m.k==='tolva') return [+m.bedA.toFixed(2)]; if(m.k==='retro'){ const A=m.arm; return [+A.sw.toFixed(2),+A.b.toFixed(2),+A.s.toFixed(2),+A.c.toFixed(2),m.bucket]; } if(m.k==='grua') return [+m.fork.toFixed(2),m.carried?1:0]; if(m.k==='barco') return [m.boxes|0]; if(m.k==='conte') return [+m.trailer.rotation.y.toFixed(2),m.cont.visible?1:0,m.cont.material.color.getHex()]; return [+(m.bladeY||0).toFixed(2)]; }
+function extra(m){ if(m.k==='torre') return [+TC.ang.toFixed(3),+TC.tr.toFixed(2),+TC.hy.toFixed(2),m.carried?1:0]; if(m.k==='tolva') return [+m.bedA.toFixed(2)]; if(m.k==='retro'){ const A=m.arm; return [+A.sw.toFixed(2),+A.b.toFixed(2),+A.s.toFixed(2),+A.c.toFixed(2),m.bucket]; } if(m.k==='grua') return [+m.fork.toFixed(2),m.carried?1:0]; if(m.k==='barco') return [m.boxes|0]; if(m.k==='conte') return [+m.trailer.rotation.y.toFixed(2),m.cont.visible?1:0,m.cont.material.color.getHex()]; return [+(m.bladeY||0).toFixed(2)]; }
 function netTick(dt){ if(!NET.ok||!MC_||mode!=='play') return; NET.t-=dt; if(NET.t>0) return; NET.t=0.12; const m=MC_;
   NET.ch.send({type:'broadcast',event:'st',payload:{id:NET.id,n:(SAVE.name||'Operador').slice(0,18),k:m.k,x:+m.x.toFixed(2),z:+m.z.toFixed(2),y:+m.yaw.toFixed(3),v:+m.v.toFixed(2),st:+(m.steerA||0).toFixed(2),e:extra(m),c:+(m.cargo||0).toFixed(2),o:Math.round(obraPct()),cr:SAVE.credits|0}}).catch(()=>{}); }
 function nameTag(name,k){ const t=tex(512,128,(x,w,h)=>{ x.fillStyle='rgba(20,20,24,.82)'; x.beginPath(); x.roundRect?x.roundRect(4,14,w-8,h-28,40):x.rect(4,14,w-8,h-28); x.fill(); x.lineWidth=6; x.strokeStyle='#f5b301'; x.stroke(); x.fillStyle='#fff'; x.font='bold 54px Nunito,sans-serif'; x.textAlign='center'; x.textBaseline='middle'; x.fillText((DEF[k]?DEF[k].ic+' ':'')+name,w/2,h/2+2); });
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthWrite:false})); s.scale.set(4.4,1.1,1); return s; }
 function onPeer(p){ if(!p||!p.id||p.id===NET.id||!DEF[p.k]) return; let e=NET.peers.get(p.id); const fresh=!e;
-  if(!e||e.k!==p.k||e.n!==p.n){ if(e){ scene.remove(e.m.g); scene.remove(e.tag); } const m=DEF[p.k].make(); m.D=DEF[p.k]; scene.add(m.g); m.g.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); if(m.load) m.load.visible=false;
+  if(!e||e.k!==p.k||e.n!==p.n){ if(e){ scene.remove(e.m.g); scene.remove(e.tag); } const m=p.k==='torre'?{g:new THREE.Group()}:DEF[p.k].make(); m.D=DEF[p.k]; scene.add(m.g); m.g.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); if(m.load) m.load.visible=false;
     const tag=nameTag(p.n||'Operador',p.k); scene.add(tag); e={k:p.k,n:p.n,m,tag,x:p.x,z:p.z,y:p.y,pal:null}; NET.peers.set(p.id,e); if(fresh){ toastNet(`👷 ${p.n} llegó a la faena con ${DEF[p.k].n.toLowerCase()}`); } }
   e.s=p; e.last=perfT; updOnline(); }
 function dropPeer(id){ const e=NET.peers.get(id); if(!e) return; scene.remove(e.m.g); scene.remove(e.tag); if(e.pal) scene.remove(e.pal); NET.peers.delete(id); updOnline(); }
@@ -689,9 +781,10 @@ function updPeers(dt){ const k=1-Math.exp(-dt*8);
     if(s.k==='retro'){ const A=m.arm; A.base.rotation.y=x[0]||0; A.boom.rotation.x=x[1]??0.75; A.stick.rotation.x=x[2]??-1.7; A.bk.rotation.x=x[3]??-0.4; m.bLoad.visible=!!x[4]; }
     if(s.k==='grua'){ m.car.position.y=x[0]||0.12; if(x[1]&&!e.pal){ e.pal=new THREE.Group(); BOX(1.2,0.14,1.0,M(0xb88a54),0,0.07,0,e.pal); BOX(1.1,0.8,0.9,M(0x8a9ac8),0,0.55,0,e.pal); m.car.add(e.pal); e.pal.position.set(0,-0.1,0.6); } if(!x[1]&&e.pal){ m.car.remove(e.pal); e.pal=null; } }
     if(s.k==='topa'){ m.blade.position.y=0.2+(x[0]||0); }
+    if(s.k==='torre'&&TC&&!(MC_&&MC_.k==='torre')){ TC.ang=lerpAng(TC.ang,x[0]||0,k); TC.tr=lerp(TC.tr,x[1]||20,k); TC.hy=lerp(TC.hy,x[2]||8,k); setCrane(TC); if(!TC.pl){ TC.pl=new THREE.Group(); BOX(0.5,0.6,6,M(0xc8502a),0,-1.3,0,TC.pl); TC.hook.add(TC.pl); } TC.pl.visible=!!x[3]; }
     if(s.k==='barco'){ if(m.boxes!==(x[0]|0)) shipBoxes(m,x[0]|0); m.g.position.y=Math.sin(perfT*1.3)*0.12; m.foam.material.opacity=clamp(Math.abs(s.v)/13,0,1)*0.75; }
     if(s.k==='conte'){ m.trailer.rotation.y=x[0]||0; m.cont.visible=!!x[1]; if(x[2]) m.cont.material=cmat(x[2]); }
-    e.tag.position.set(e.x,(s.k==='barco'?15:s.k==='grua'?3.6:s.k==='tolva'?5:4.6),e.z); if(e.horn>0){ e.horn-=dt; e.tag.material.color.setHex(Math.floor(perfT*8)%2?0xffe066:0xffffff); } else e.tag.material.color.setHex(0xffffff); } }
+    if(s.k==='torre'){ const cw=craneWorld(TC,1.9,TCH+4.5,1.4); e.tag.position.set(cw.x,cw.y,cw.z); } else e.tag.position.set(e.x,(s.k==='barco'?15:s.k==='grua'?3.6:s.k==='tolva'?5:4.6),e.z); if(e.horn>0){ e.horn-=dt; e.tag.material.color.setHex(Math.floor(perfT*8)%2?0xffe066:0xffffff); } else e.tag.material.color.setHex(0xffffff); } }
 function peerObs(){ const L=[]; for(const e of NET.peers.values()) L.push([e.x,e.z,e.k==='barco'?7:e.k==='grua'?1.1:2.0]); return L; }
 function honk(){ auInit(); playHorn(1); if(NET.ok) NET.ch.send({type:'broadcast',event:'fx',payload:{id:NET.id,t:'horn'}}).catch(()=>{}); }
 function wave(){ if(NET.ok) NET.ch.send({type:'broadcast',event:'fx',payload:{id:NET.id,t:'wave',n:SAVE.name}}).catch(()=>{}); toastNet('👋 Saludaste a la faena'); }
@@ -706,9 +799,9 @@ let last=performance.now(), perfT=0;
 function frame(now){ const dt=Math.min(0.05,(now-last)/1000); last=now; perfT+=dt; bumpT-=dt;
  if(mode==='play'&&MC_){ readInput(); drive(MC_,dt); workUpdate(MC_,dt); updParked(dt); updCam(dt); updHUD(); audioTick(dt); }
  else { const a=perfT*0.25; camera.position.set(-10+Math.sin(a)*12,5+Math.sin(perfT*0.3),10+Math.cos(a)*12); camera.lookAt(-10,1.6,10); sun.position.set(20,60,30); sun.target.position.set(-10,0,10); if(preview){ preview.g.rotation.y=0; } if(AC) engG&&engG.gain.setTargetAtTime(0,AC.currentTime,0.2); }
- if(window.TOWER) TOWER.rotation.y+=dt*0.05;
+ if(TC){ for(const l of TC.lights) l.material.opacity=0.35+0.65*Math.max(0,Math.sin(perfT*3)); }
  updParts(dt); updFW(dt); musicTick(); updPeers(dt); netTick(dt); const rr=rearPre(); renderer.render(scene,camera); if(rr) rearPost(); requestAnimationFrame(frame); }
 requestAnimationFrame(frame);
-window.__ob={get M(){return MC_},CTRL,K,CAM,camFree,spawnMachine,get JOB(){return JOB},PALLETS,RACKS,HEAPS,ZONES,PARKED:()=>PARKED,step:(s)=>{ const n=Math.round(s*60); for(let i=0;i<n;i++){ perfT+=1/60; readInput(); drive(MC_,1/60); workUpdate(MC_,1/60); updParked(1/60); } updCam(0.016); updHUD(); },setMode:(m)=>mode=m};
+window.__ob={get M(){return MC_},get TC(){return TC},TLOADS,towerFloorY,hookWorld,get BX(){return BX},obraPct,CTRL,K,CAM,camFree,spawnMachine,get JOB(){return JOB},PALLETS,RACKS,HEAPS,ZONES,PARKED:()=>PARKED,step:(s)=>{ const n=Math.round(s*60); for(let i=0;i<n;i++){ perfT+=1/60; readInput(); drive(MC_,1/60); workUpdate(MC_,1/60); updParked(1/60); } updCam(0.016); updHUD(); },setMode:(m)=>mode=m};
 </script>
 </body></html>
