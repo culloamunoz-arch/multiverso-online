@@ -1,12 +1,13 @@
 /* Multiverso · modo sin internet (versión segura).
    Regla de oro: CON internet siempre se muestra lo más nuevo; la copia guardada solo se usa SIN internet.
    Sube VERSION cuando quieras forzar una limpieza completa. */
-const VERSION='mvo-v6';
+const VERSION='mvo-v7';
 const THREE='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
 const SUPA='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
 const FONTHOSTS=['fonts.googleapis.com','fonts.gstatic.com'];
 // lo mínimo para abrir sin internet; el resto se guarda solo a medida que lo visitas
-const BASE=['/','/juegos/','/visit.js','/manifest.webmanifest','/icons/icon-192.png','/icons/apple-touch-icon.png'];
+const BASE=['./','./juegos/','./visit.js','./manifest.webmanifest','./icons/icon-192.png','./icons/apple-touch-icon.png'];
+const ROOT=new URL('./',self.location).href; // funciona en la raíz del dominio o en una subcarpeta (GitHub Pages)
 
 self.addEventListener('install',e=>{
  self.skipWaiting(); // la versión nueva toma el control de inmediato
@@ -32,7 +33,7 @@ self.addEventListener('fetch',e=>{
  const same=u.origin===location.origin;
  const lib=u.href===THREE||u.href===SUPA||FONTHOSTS.includes(u.hostname);
  if(!same&&!lib) return;                       // Supabase (datos, juego en línea) y demás: siempre directo a la red
- if(same&&(u.pathname==='/sw.js'||u.pathname==='/version.json')) return; // nunca se guardan
+ if(same&&(u.pathname.endsWith('/sw.js')||u.pathname.endsWith('/version.json'))) return; // nunca se guardan
  if(same&&(r.mode==='navigate'||/\.(html|js|json|webmanifest)$/.test(u.pathname)||u.pathname.endsWith('/'))){
   // páginas y código: primero internet; si no hay, la copia guardada
   e.respondWith((async()=>{
@@ -43,7 +44,7 @@ self.addEventListener('fetch',e=>{
     return res;
    }catch(err){
     const c=await caches.open(VERSION);
-    const hit=await c.match(key,{ignoreSearch:true})||(r.mode==='navigate'?(await c.match(u.origin+'/juegos/')||await c.match(u.origin+'/')):null);
+    const hit=await c.match(key,{ignoreSearch:true})||(r.mode==='navigate'?(await c.match(ROOT+'juegos/')||await c.match(ROOT)):null);
     return hit||new Response('<meta charset="utf-8"><body style="font-family:sans-serif;background:#120624;color:#fff;text-align:center;padding:40px">Sin conexión y esta página aún no se había guardado.<br>Vuelve a intentarlo con internet.</body>',{status:503,headers:{'Content-Type':'text/html; charset=utf-8'}});
    }
   })());

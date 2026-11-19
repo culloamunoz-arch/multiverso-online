@@ -73,8 +73,8 @@ canvas#gl{position:fixed;inset:0;width:100vw;height:100vh;display:block}
 
 #sel h1{top:calc(14px + env(safe-area-inset-top,0px))}
 </style>
-<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><meta name="theme-color" content="#1a1a1a">
-<script src="/visit.js" data-game="obras" defer></script>
+<link rel="manifest" href="../../manifest.webmanifest"><link rel="apple-touch-icon" href="../../icons/apple-touch-icon.png"><meta name="theme-color" content="#1a1a1a">
+<script src="../../visit.js" data-game="obras" defer></script>
 </head><body>
 <canvas id="gl"></canvas>
 <div id="hud">
@@ -90,7 +90,7 @@ canvas#gl{position:fixed;inset:0;width:100vw;height:100vh;display:block}
  <div class="hz" style="width:min(980px,100%)"></div>
  <div id="obraSel" class="card"></div><div class="mrow" id="mrow"></div><div id="mdesc"></div>
  <div class="srow"><input id="nm" maxlength="18" placeholder="Tu nombre de operador"><button class="go" id="goB">▶ A trabajar</button></div>
- <div class="srow"><button class="lnk" id="selBoard">🏆 Tablero de constructores</button><a class="lnk" href="/juegos/">🎮 Sala de juegos</a></div>
+ <div class="srow"><button class="lnk" id="selBoard">🏆 Tablero de constructores</button><a class="lnk" href="../../juegos/">🎮 Sala de juegos</a></div>
 </div>
 <div id="board"><div class="card"><h2>🏆 Constructores destacados</h2><div style="font-size:13px;opacity:.8">Sin competencias: es un registro de cuánto ha construido cada operador. ¡Todo aporta a la obra!</div><div id="blist">Cargando…</div><div style="text-align:center;margin-top:10px"><button class="go" id="bClose" style="font-size:16px;padding:8px 20px">Cerrar</button></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

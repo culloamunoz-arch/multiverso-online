@@ -43,31 +43,31 @@ main{max-width:1180px;margin:auto;padding:22px 16px 50px}
 .cta{align-self:flex-start;margin-top:6px;font-weight:900;padding:11px 22px;border-radius:12px;background:linear-gradient(#f5c542,#b8860b);color:#2a1800;box-shadow:0 0 20px rgba(245,197,66,.45)}
 @media (max-width:760px){.card.main{flex-direction:column}.card.main .shot{min-height:0;aspect-ratio:16/9;flex:none}.card.main .info{padding:15px}.play{opacity:.9;transform:scale(.8)}}
 @media (prefers-reduced-motion:reduce){.shot img{transition:opacity .5s}.shot img.on{transform:none}h1{animation:none}}
-</style><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><meta name="theme-color" content="#120624"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Multiverso"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="/visit.js" data-game="sala" defer></script></head><body>
+</style><link rel="manifest" href="../manifest.webmanifest"><link rel="apple-touch-icon" href="../icons/apple-touch-icon.png"><meta name="theme-color" content="#120624"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Multiverso"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="../visit.js" data-game="sala" defer></script></head><body>
 <div id="bg"></div>
 <header><h1>Sala de Juegos</h1><p class="sub">Todos los mundos del Multiverso en un solo lugar</p><div id="tot" class="tot">👥 Contando visitantes…</div></header>
 <main><div class="grid" id="grid"></div><h2 class="sec">🎵 Escuela de música</h2><div class="grid" id="grid2"></div></main>
 <script>
 const G=[
- {k:'mmo',n:3,href:'/',ic:'⚔️',t:'Multiverso Online',c:'#f5c542',badge:'En línea',main:true,
+ {k:'mmo',n:3,href:'../',ic:'⚔️',t:'Multiverso Online',c:'#f5c542',badge:'En línea',main:true,
   d:'MMORPG en el navegador. Crea tu cuenta, elige entre 7 especies y 24 destinos, recorre un mundo de 11 regiones y 5 mazmorras, cumple encargos de personajes lejanos hasta el nivel 30 y mide fuerzas en la arena con otros jugadores.',chips:['Multijugador','Nivel máximo 30','Mapa completo','Piedras de viaje']},
- {k:'kart',n:3,href:'/juegos/kart/',ic:'🏎️',t:'Multiverso Kart',c:'#3cc8ff',badge:'Carreras',
+ {k:'kart',n:3,href:'../juegos/kart/',ic:'🏎️',t:'Multiverso Kart',c:'#3cc8ff',badge:'Carreras',
   d:'Derrapes, mini-turbos e ítems en cuatro pistas: cañón, skatepark, autopista anime y arcoíris neón.',chips:['Copa Multiverso','50 · 100 · 150cc']},
- {k:'runner',n:3,href:'/juegos/runner/',ic:'🏃',t:'Multiverso Runner',c:'#ff8a3c',badge:'Corre sin parar',
+ {k:'runner',n:3,href:'../juegos/runner/',ic:'🏃',t:'Multiverso Runner',c:'#ff8a3c',badge:'Corre sin parar',
   d:'Corre, salta y deslízate entre universos juntando monedas, escudos e imanes.',chips:['Récords','Personajes y vehículos']},
- {k:'vuelo',n:4,href:'/juegos/vuelo/',ic:'🛩️',t:'Vuelo Libre',c:'#5ad0ff',badge:'¡Nuevo! · Escuadrón online',
+ {k:'vuelo',n:4,href:'../juegos/vuelo/',ic:'🛩️',t:'Vuelo Libre',c:'#5ad0ff',badge:'¡Nuevo! · Escuadrón online',
   d:'Despega, vuela sobre las Islas del Sol y aterriza para sellar tu pasaporte. Nuevo modo Escuadrón: 5 aviones de combate, power-ups, bombas especiales y jefes finales, con amigos en línea o contra la CPU.',chips:['Mundo abierto','Todos contra todos','Cooperativo vs CPU','Pruebas en equipo']},
- {k:'obras',n:6,href:'/juegos/obras/',ic:'🚧',t:'Obra Maestra',c:'#f5b301',badge:'¡Nuevo! · Pasatiempo',
+ {k:'obras',n:6,href:'../juegos/obras/',ic:'🚧',t:'Obra Maestra',c:'#f5b301',badge:'¡Nuevo! · Pasatiempo',
   d:'Elige tu máquina: camión tolva, retroexcavadora, montacargas, topadora, el camión de contenedores que une dos ciudades o el barco carguero que navega a Isla Esmeralda. Todos aportan a la misma obra comunitaria.',chips:['6 máquinas','Multijugador en vivo','Sin apuro']},
- {k:'mega-robot-3d',n:4,href:'/juegos/mega-robot-3d/',ic:'🤖',t:'Mega Robot Máximo 3D',c:'#ff5a5a',badge:'¡Nuevo! · 3D',
+ {k:'mega-robot-3d',n:4,href:'../juegos/mega-robot-3d/',ic:'🤖',t:'Mega Robot Máximo 3D',c:'#ff5a5a',badge:'¡Nuevo! · 3D',
   d:'Explora la Plaza del Multiverso y agáchate sobre los tubos para viajar a siete universos en 3D. Salto triple, barrida, salto largo, mortal y pisotón.',chips:['7 núcleos','Incluye versión clásica 2D']},
- {k:'pompon',n:2,href:'/juegos/pompon/',ic:'☁️',t:'Juega con Pompón',c:'#ff9ac8',badge:'Desde 3 años',
+ {k:'pompon',n:2,href:'../juegos/pompon/',ic:'☁️',t:'Juega con Pompón',c:'#ff9ac8',badge:'Desde 3 años',
   d:'Colores, formas, números y animales con Pompón. Sin anuncios ni enlaces.',chips:['Para niños','Pausa de pantalla']},
- {k:'guitarra',n:2,href:'/juegos/guitarra/',ic:'🎸',t:'Taller de Guitarra',c:'#e0883a',badge:'Curso',sec:2,
+ {k:'guitarra',n:2,href:'../juegos/guitarra/',ic:'🎸',t:'Taller de Guitarra',c:'#e0883a',badge:'Curso',sec:2,
   d:'Del mapa del mástil a la improvisación: teoría, armonía, oído, sacar canciones, pentatónica y solos, con metrónomo y retos que suenan.',chips:['9 módulos','Ejercicios con sonido']},
- {k:'rap',n:2,href:'/juegos/rap/',ic:'🎤',t:'Cypher Freestyle',c:'#ff6a2a',badge:'Curso',sec:2,
+ {k:'rap',n:2,href:'../juegos/rap/',ic:'🎤',t:'Cypher Freestyle',c:'#ff6a2a',badge:'Curso',sec:2,
   d:'Entrena freestyle sobre beats en vivo: boom bap, trap, drill, dembow, lo-fi y old school, con palabras al azar, temáticas y rimas.',chips:['6 estilos de beat','Rondas cronometradas']},
- {k:'dj',n:2,href:'/juegos/dj/',ic:'🎧',t:'DECKS · Escuela DJ',c:'#c8ff3c',badge:'Curso',sec:2,
+ {k:'dj',n:2,href:'../juegos/dj/',ic:'🎧',t:'DECKS · Escuela DJ',c:'#c8ff3c',badge:'Curso',sec:2,
   d:'Dos tornamesas, mezclador y una academia paso a paso. Doce pistas de práctica: house, deep, disco, afro, techno, trance, hip hop, reggaetón y drum & bass.',chips:['12 pistas','Academia guiada','Usa tu música']},
 ];
 const grid=document.getElementById('grid'), bg=document.getElementById('bg');
@@ -75,7 +75,7 @@ const glow=h=>{ const n=parseInt(h.slice(1),16); return `rgba(${n>>16},${n>>8&25
 G.forEach((g,i)=>{
   const a=document.createElement('a'); a.className='card'+(g.main?' main':''); a.href=g.href;
   a.style.setProperty('--c',g.c); a.style.setProperty('--g',glow(g.c)); a.style.setProperty('--i',i);
-  let imgs='',dots=''; for(let j=1;j<=g.n;j++){ imgs+=`<img src="/juegos/img/${g.k}-${j}.webp" alt="Vista de ${g.t}"${j===1?' class="on"':''}>`; dots+=`<i${j===1?' class="on"':''}></i>`; }
+  let imgs='',dots=''; for(let j=1;j<=g.n;j++){ imgs+=`<img src="../juegos/img/${g.k}-${j}.webp" alt="Vista de ${g.t}"${j===1?' class="on"':''}>`; dots+=`<i${j===1?' class="on"':''}></i>`; }
   a.innerHTML=`<div class="shot">${imgs}<span class="badge">${g.badge}</span><div class="dots">${dots}</div><div class="play">▶</div><span class="vis" data-g="${g.k}" style="display:none"></span><div class="title"><span class="ic">${g.ic}</span><b>${g.t}</b></div></div>
    <div class="info"><p>${g.d}</p><div class="chips">${g.chips.map(c=>`<span>${c}</span>`).join('')}</div>${g.main?'<span class="cta">Entrar al mundo ▶</span>':''}</div>`;
   (g.sec===2?document.getElementById('grid2'):grid).appendChild(a);
@@ -85,7 +85,7 @@ G.forEach((g,i)=>{
   a.addEventListener('mouseenter',()=>{ hover=true; bg.style.backgroundImage=`url(${im[cur].src})`; step(); hv=setInterval(step,1400); });
   a.addEventListener('mouseleave',()=>{ hover=false; clearInterval(hv); });
 });
-bg.style.backgroundImage='url(/juegos/img/mmo-3.webp)';
+bg.style.backgroundImage='url(../juegos/img/mmo-3.webp)';
 const fmtN=n=>Number(n||0).toLocaleString('es-CL');
 function showStats(st){ if(!st) { document.getElementById('tot').style.display='none'; return; }
   document.getElementById('tot').textContent=`👥 ${fmtN(st.total)} ${st.total==1?'persona ha':'personas han'} visitado Multiverso`;

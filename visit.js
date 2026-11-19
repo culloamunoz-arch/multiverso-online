@@ -9,11 +9,11 @@
 })();
 
 /* Modo sin internet + autoarreglo: si el sitio publicado es más nuevo que lo que tiene este teléfono, limpia la copia guardada y recarga */
-(function(){ var BUILD='2026.11.18c'; window.MVO_BUILD=BUILD;
+(function(){ var BUILD='2026.11.18d'; window.MVO_BUILD=BUILD; var cs=document.currentScript, BASE=new URL('.',(cs&&cs.src)||location.href).href;
   function heal(){ try{ if(sessionStorage.getItem('mvo_heal')===BUILD) return; sessionStorage.setItem('mvo_heal',BUILD); }catch(e){}
     var jobs=[]; try{ if(window.caches) jobs.push(caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return caches.delete(k); })); })); }catch(e){}
     try{ if(navigator.serviceWorker) jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); })); }catch(e){}
     Promise.all(jobs).catch(function(){}).then(function(){ location.reload(); }); }
-  try{ fetch('/version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){ return r.ok?r.json():null; }).then(function(d){ if(d&&d.v&&d.v!==BUILD) heal(); }).catch(function(){}); }catch(e){}
-  try{ if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){ window.addEventListener('load',function(){ navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'}).then(function(r){ try{ r.update(); }catch(e){} }).catch(function(){}); }); } }catch(e){}
+  try{ fetch(BASE+'version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){ return r.ok?r.json():null; }).then(function(d){ if(d&&d.v&&d.v!==BUILD) heal(); }).catch(function(){}); }catch(e){}
+  try{ if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){ window.addEventListener('load',function(){ navigator.serviceWorker.register(BASE+'sw.js',{updateViaCache:'none'}).then(function(r){ try{ r.update(); }catch(e){} }).catch(function(){}); }); } }catch(e){}
 })();

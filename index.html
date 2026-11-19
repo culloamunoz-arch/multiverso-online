@@ -183,7 +183,7 @@ input.name{background:#0a0818;border:2px solid var(--line);color:#fff;border-rad
 .gsk .gi .ico{width:40px;height:40px}.arow .ai .ico{width:34px;height:34px}
 #abtip b .ico{width:22px;height:22px}
 </style>
-<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><meta name="theme-color" content="#120624"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Multiverso"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="/visit.js" data-game="mmo" defer></script></head>
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><meta name="theme-color" content="#120624"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Multiverso"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="visit.js" data-game="mmo" defer></script></head>
 <body>
 <canvas id="gl"></canvas><div id="vig" style="position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 58%,rgba(10,5,30,.38) 100%)"></div><canvas id="ov"></canvas>
 <div id="ui">
@@ -2787,7 +2787,7 @@ function showLogin(err){ MENU.mode='login'; const m=$('menu'); m.style.display='
   m.innerHTML=`<div class="glass"><div class="mt">MULTIVERSO</div><div class="tabs2"><button id="tl" class="on">Ingresar</button><button id="tr">Crear cuenta</button></div>
    <input id="lu" maxlength="16" placeholder="Usuario" autocomplete="username"><input id="lp" type="password" maxlength="64" placeholder="Contraseña" autocomplete="current-password">
    <div class="err">${err?esc(err):''}</div><button class="btn big" id="lgo">Entrar</button><div class="small">Usuario: 3 a 16 letras, números o _ · Contraseña: mínimo 4 caracteres</div>
-   <button class="link" id="lguest">Jugar como invitado (se guarda solo en este dispositivo)</button><a class="link" href="/juegos/" style="text-align:center">🎮 Sala de juegos: más juegos del Multiverso</a></div>`;
+   <button class="link" id="lguest">Jugar como invitado (se guarda solo en este dispositivo)</button><a class="link" href="juegos/" style="text-align:center">🎮 Sala de juegos: más juegos del Multiverso</a></div>`;
   let reg=false; const set=r=>{ reg=r; $('tl').classList.toggle('on',!r); $('tr').classList.toggle('on',r); $('lgo').textContent=r?'Crear cuenta':'Entrar'; uiSnd('hover'); };
   $('tl').onclick=()=>set(false); $('tr').onclick=()=>set(true);
   const ERR={usuario_invalido:'Usuario inválido: usa 3 a 16 letras, números o _',clave_invalida:'La contraseña debe tener al menos 4 caracteres',usuario_existe:'Ese usuario ya existe: elige otro o ingresa',credenciales:'Usuario o contraseña incorrectos',sesion_invalida:'Tu sesión expiró: vuelve a ingresar'};
@@ -2974,7 +2974,7 @@ showTitle();
 requestAnimationFrame(frame);
 window.__mmo={setTarget:(t)=>{target=t},dbg:()=>({acts:myActs.length,seen:JSON.stringify(actSeqSeen),cds:cds.slice(),gcd,mp:me.mp,tgt:target}),get me(){return me},get state(){return state},get amHost(){return amHost},get myPeer(){return myPeer},peersMap,mobState,useAbility,autoTarget,startGame:()=>{ me=newChar('Prueba','guerrero','humano',0,0); startGame(); },setMe:(o)=>Object.assign(me,o),get target(){return target}};
 </script>
-<div style="position:fixed;left:6px;bottom:4px;font-size:10px;opacity:.45;color:#fff;pointer-events:none;z-index:99">v2026.11.18c · mapa ampliado</div>
+<div style="position:fixed;left:6px;bottom:4px;font-size:10px;opacity:.45;color:#fff;pointer-events:none;z-index:99">v2026.11.18d · mapa ampliado</div>
 <div id="wmap"><div class="wmbox"><div id="wmhead"><span>🗺️ Mapa del Multiverso <small id="wmhere"></small></span><button id="wmx">✕</button></div><canvas id="wmc" width="600" height="600"></canvas><div id="wmleg">⭐ misión principal · <span style="color:#7affb0">★</span> encargo · ❗/❓ personaje con trabajo · 🗿 piedra de viaje (celeste = descubierta) · 🌀 portal de mazmorra · 📍 lugar por explorar</div></div></div>
 <script>
 const openMap=e=>{ e.stopPropagation(); if(e.cancelable) e.preventDefault(); if(state==='play'&&me) toggleWorldMap(true); };
