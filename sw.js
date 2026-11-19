@@ -1,5 +1,5 @@
 /* Multiverso · modo sin internet. Sube VERSION cuando quieras forzar una recarga completa. */
-const VERSION='mvo-v4';
+const VERSION='mvo-v5';
 const THREE='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
 const SUPA='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
 const LOCAL=['/','/index.html','/visit.js','/manifest.webmanifest','/icons/icon-192.png','/icons/icon-512.png','/icons/apple-touch-icon.png',
@@ -36,11 +36,12 @@ self.addEventListener('fetch',e=>{
    const c=await caches.open(VERSION);
    try{
     const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),9000);
-    const res=await fetch(r,{signal:ctl.signal});clearTimeout(t);
-    if(res&&res.ok)c.put(r,res.clone());
+    // Ojo: no se puede copiar una petición de navegación con opciones (Safari/iPhone lanza error); se pide por URL
+    const res=await fetch(u.href,{signal:ctl.signal,cache:'no-cache',credentials:'same-origin',redirect:'follow'});clearTimeout(t);
+    if(res&&res.ok&&!res.redirected)c.put(u.pathname+u.search,res.clone());
     return res;
    }catch(err){
-    const hit=await c.match(r,{ignoreSearch:true})||(r.mode==='navigate'?await c.match('/juegos/'):null);
+    const hit=await c.match(u.pathname+u.search,{ignoreSearch:true})||await c.match(r,{ignoreSearch:true})||(r.mode==='navigate'?await c.match('/juegos/'):null);
     return hit||new Response('Sin conexión',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
    }
   })());

@@ -9,4 +9,4 @@
 })();
 
 /* Modo sin internet: registra el service worker (permite instalar y abrir sin conexión) */
-try{ if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){ window.addEventListener('load',function(){ navigator.serviceWorker.register('/sw.js').catch(function(){}); }); } }catch(e){}
+try{ if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){ window.addEventListener('load',function(){ navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'}).then(function(r){ try{ r.update(); }catch(e){} }).catch(function(){}); var rl=false; navigator.serviceWorker.addEventListener('controllerchange',function(){ if(rl) return; rl=true; location.reload(); }); }); } }catch(e){}
