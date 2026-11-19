@@ -1,7 +1,7 @@
 /* Multiverso · modo sin internet (versión segura).
    Regla de oro: CON internet siempre se muestra lo más nuevo; la copia guardada solo se usa SIN internet.
    Sube VERSION cuando quieras forzar una limpieza completa. */
-const VERSION='mvo-v7';
+const VERSION='mvo-v8';
 const THREE='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
 const SUPA='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
 const FONTHOSTS=['fonts.googleapis.com','fonts.gstatic.com'];

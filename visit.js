@@ -6,10 +6,25 @@
   function rpc(fn,body){ return fetch(U+fn,{method:'POST',headers:{'apikey':K,'Content-Type':'application/json'},body:JSON.stringify(body||{})}).then(function(r){ return r.ok?r.json():null; }).catch(function(){ return null; }); }
   window.MVO_VISIT=rpc('mvo_visit',{p_game:game,p_visitor:v});
   window.MVO_STATS=function(){ return rpc('mvo_visit_stats',{}); };
+  /* Geo-referencia aproximada (ciudad/país), 1 vez por semana. No se guarda la IP. */
+  var GEO=null;
+  try{ var gt=+localStorage.getItem('mvo_geo_t')||0; if(Date.now()-gt>7*864e5) GEO=geoLookup(); }catch(e){}
+  function tmo(p,ms){ return Promise.race([p,new Promise(function(_,r){ setTimeout(function(){ r('t'); },ms); })]); }
+  function getJ(u){ return tmo(fetch(u,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }),5000); }
+  function geoLookup(){
+    return getJ('https://ipwho.is/?fields=success,country_code,country,region,city,latitude,longitude')
+      .then(function(j){ if(!j||j.success===false) throw 0; return {cc:j.country_code,co:j.country,re:j.region,ci:j.city,la:j.latitude,lo:j.longitude}; })
+      .catch(function(){ return getJ('https://get.geojs.io/v1/ip/geo.json').then(function(j){ return {cc:j.country_code,co:j.country,re:j.region,ci:j.city,la:+j.latitude,lo:+j.longitude}; }); })
+      .then(function(g){ if(!g||g.la==null||isNaN(g.la)) return null;
+        return rpc('mvo_geo',{p_visitor:v,p_cc:g.cc||'',p_country:g.co||'',p_region:g.re||'',p_city:g.ci||'',p_lat:Math.round(g.la*10)/10,p_lon:Math.round(g.lo*10)/10})
+          .then(function(){ try{ localStorage.setItem('mvo_geo_t',Date.now()); }catch(e){} }); })
+      .catch(function(){ return null; });
+  }
+  if(GEO) window.MVO_VISIT=Promise.all([window.MVO_VISIT,tmo(GEO,6000).catch(function(){})]).then(function(a){ return a[0]; });
 })();
 
 /* Modo sin internet + autoarreglo: si el sitio publicado es más nuevo que lo que tiene este teléfono, limpia la copia guardada y recarga */
-(function(){ var BUILD='2026.11.18e'; window.MVO_BUILD=BUILD; var cs=document.currentScript, BASE=new URL('.',(cs&&cs.src)||location.href).href;
+(function(){ var BUILD='2026.11.19a'; window.MVO_BUILD=BUILD; var cs=document.currentScript, BASE=new URL('.',(cs&&cs.src)||location.href).href;
   function heal(){ try{ if(sessionStorage.getItem('mvo_heal')===BUILD) return; sessionStorage.setItem('mvo_heal',BUILD); }catch(e){}
     var jobs=[]; try{ if(window.caches) jobs.push(caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return caches.delete(k); })); })); }catch(e){}
     try{ if(navigator.serviceWorker) jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); })); }catch(e){}
