@@ -38,6 +38,7 @@ canvas#gl{position:fixed;inset:0;width:100vw;height:100vh;display:block}
 #sel h1 small{display:block;font-family:Nunito;font-weight:900;font-size:.32em;color:#fff;letter-spacing:.15em;margin-top:6px}
 .mrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%;max-width:980px}
 .mc{flex:1 1 200px;max-width:235px;padding:10px 12px;cursor:pointer;transition:transform .15s,border-color .15s;border-color:#555}
+.mc.busy{opacity:.5;filter:grayscale(.7)}.mc .inuse{display:block;margin-top:6px;font-size:12px;font-weight:800;color:#ff8a6a}
 .mc.on{border-color:#f5b301;transform:translateY(-4px);box-shadow:0 0 22px rgba(245,179,1,.45)}
 .mc b{font-family:'Archivo Black';font-size:16px;color:#f5b301}.mc p{margin:4px 0 0;font-size:12.5px;opacity:.88;line-height:1.3}.mc .ic{font-size:26px;float:right}
 .srow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
@@ -258,9 +259,9 @@ const DEF={
  conte:{n:'Camión de contenedores',ic:'🚚',d:'Maneja el camión grande por la ruta y lleva contenedores entre Puerto Aurora y Ciudad Central.',make:makeSemi,maxV:21,acc:3.4,wb:4.4,steer:0.42,circ:[[0,1.8,1.6],[0,-1.0,1.6]],spawn:[-210,-6,Math.PI],cam:[18,6.5],route:true},
  barco:{n:'Barco carguero',ic:'🚢',d:'Navega libre por el mar: lleva los contenedores del puerto a Isla Esmeralda y cumple tareas en el camino (faro, rescates, carga a la deriva).',make:makeShip,maxV:13,acc:1.8,wb:10,steer:0,circ:[[0,8,5],[0,-8,5]],spawn:[-385,95,-Math.PI/2],cam:[44,13],boat:true},
  topa:{n:'Topadora',ic:'🚜',d:'Baja la hoja y empuja los montones de tierra hasta el área de acopio.',make:makeDozer,maxV:6,acc:2.5,wb:2.5,steer:0.6,circ:[[0,0.4,1.9]],spawn:[0,-50,Math.PI],cam:[11,5.5],tracked:true}};
-let MC_=null; // máquina activa
+let MC_=null, MY_T0=0; // máquina activa
 const CTRL={thr:0,st:0,hold:{}};
-function spawnMachine(k){ if(MC_&&MC_.k!=='torre'){ scene.remove(MC_.g); } towerRelease(); if(k==='torre') return spawnTower(); const D=DEF[k]; const m=D.make(); m.D=D; m.k=k; m.x=D.spawn[0]; m.z=D.spawn[1]; m.yaw=D.spawn[2]; m.v=0; m.steerA=0; m.hydr=0; m.tracked=!!D.tracked; m.tyaw=m.yaw; m.g.position.set(m.x,0,m.z); m.g.rotation.y=m.yaw; scene.add(m.g); m.g.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); MC_=m; if(palMark) palMark.visible=false; if(slotBox) slotBox.visible=false; CAM.yaw=m.yaw+Math.PI; CAM.off=0; camFree(false); buildWorkUI(); newJob(); return m; }
+function spawnMachine(k){ MY_T0=Date.now(); if(MC_&&MC_.k!=='torre'){ scene.remove(MC_.g); } towerRelease(); if(k==='torre') return spawnTower(); const D=DEF[k]; const m=D.make(); m.D=D; m.k=k; m.x=D.spawn[0]; m.z=D.spawn[1]; m.yaw=D.spawn[2]; m.v=0; m.steerA=0; m.hydr=0; m.tracked=!!D.tracked; m.tyaw=m.yaw; m.g.position.set(m.x,0,m.z); m.g.rotation.y=m.yaw; scene.add(m.g); m.g.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); MC_=m; if(palMark) palMark.visible=false; if(slotBox) slotBox.visible=false; CAM.yaw=m.yaw+Math.PI; CAM.off=0; camFree(false); buildWorkUI(); newJob(); return m; }
 
 /* ================= RUTA DE CONTENEDORES: anillo vial entre dos ciudades ================= */
 const RING=210, CITIES=[{n:'Puerto Aurora',x:-RING,z:0},{n:'Ciudad Central',x:RING,z:0}];
@@ -639,12 +640,15 @@ function readInput(){ let thr=(K.KeyW||K.ArrowUp?1:0)-(K.KeyS||K.ArrowDown?1:0),
 
 /* ================= SELECCIÓN ================= */
 let mode='sel', selK=SAVE.fav||'tolva', preview=null;
-function renderSel(){ $('mrow').innerHTML=Object.entries(DEF).map(([k,D])=>`<div class="card mc ${k===selK?'on':''}" data-m="${k}"><span class="ic">${D.ic}</span><b>${D.n}</b><p>${D.d}</p></div>`).join('');
+function busyMap(){ const B={}; for(const e of NET.peers.values()){ if(perfT-e.last<6&&e.k&&!B[e.k]) B[e.k]=e.n||'Otro operador'; } return B; }
+let busySig='';
+function renderSel(){ const B=busyMap(); busySig=JSON.stringify(B); $('mrow').innerHTML=Object.entries(DEF).map(([k,D])=>`<div class="card mc ${k===selK?'on':''} ${B[k]?'busy':''}" data-m="${k}"><span class="ic">${D.ic}</span><b>${D.n}</b><p>${D.d}</p>${B[k]?`<span class="inuse">🔒 En uso por ${String(B[k]).replace(/[<>&]/g,'')}</span>`:''}</div>`).join('');
+ $('goB').style.opacity=B[selK]?0.5:1;
  $('mdesc').textContent=DEF[selK].d; $('mrow').querySelectorAll('[data-m]').forEach(el=>el.onclick=()=>{ auInit(); selK=el.dataset.m; sfx('ui'); renderSel(); setPreview(); }); }
 function setPreview(){ if(preview) scene.remove(preview.g); preview=DEF[selK].make(); preview.g.position.set(-10,0,10); scene.add(preview.g); preview.g.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); if(preview.load) preview.load.visible=selK==='tolva'; if(preview.cargo!==undefined&&preview.load) preview.load.visible=true; }
 function showSel(){ mode='sel'; $('sel').style.display='flex'; $('hud').style.display='none'; towerRelease(); if(TC){ TC.mark.visible=TC.ring.visible=TC.drop.visible=false; } if(MC_){ if(MC_.k!=='torre') scene.remove(MC_.g); MC_=null; } if(TGT) TGT.visible=false; if(slotBox) slotBox.visible=false; if(palMark) palMark.visible=false; renderSel(); setPreview(); }
 $('nm').value=SAVE.name||'';
-$('goB').onclick=()=>{ auInit(); const n=$('nm').value.trim(); if(n.length<2){ $('nm').focus(); $('nm').style.borderColor='#ff5a5a'; $('nm').placeholder='Escribe tu nombre (mín. 2 letras)'; return; } SAVE.name=n.slice(0,18); SAVE.fav=selK; saveLocal(); pushBoard();
+$('goB').onclick=()=>{ auInit(); const B=busyMap(); if(B[selK]){ msg('🔒 '+DEF[selK].n+' está en uso','La maneja '+B[selK]+'. Elige otra máquina libre.'); sfx('bump'); return; } const n=$('nm').value.trim(); if(n.length<2){ $('nm').focus(); $('nm').style.borderColor='#ff5a5a'; $('nm').placeholder='Escribe tu nombre (mín. 2 letras)'; return; } SAVE.name=n.slice(0,18); SAVE.fav=selK; saveLocal(); pushBoard();
  if(preview){ scene.remove(preview.g); preview=null; } $('sel').style.display='none'; $('hud').style.display='block'; mode='play'; spawnMachine(selK); $('crv').textContent=SAVE.credits.toLocaleString('es-CL'); msg(DEF[selK].n,'¡A trabajar, '+SAVE.name+'!'); };
 
 /* ================= AVANCE DE LA OBRA MAESTRA ================= */
@@ -763,13 +767,14 @@ function netInit(){ try{ if(typeof supabase==='undefined'||!supabase.createClien
   ch.subscribe(st=>{ if(st==='SUBSCRIBED'){ NET.ok=true; ch.track({n:SAVE.name||'operador'}).catch(()=>{}); updOnline(); } }); NET.ch=ch; }catch(e){ console.warn('sin multijugador',e); } }
 function extra(m){ if(m.k==='torre') return [+TC.ang.toFixed(3),+TC.tr.toFixed(2),+TC.hy.toFixed(2),m.carried?1:0]; if(m.k==='tolva') return [+m.bedA.toFixed(2)]; if(m.k==='retro'){ const A=m.arm; return [+A.sw.toFixed(2),+A.b.toFixed(2),+A.s.toFixed(2),+A.c.toFixed(2),m.bucket]; } if(m.k==='grua') return [+m.fork.toFixed(2),m.carried?1:0]; if(m.k==='barco') return [m.boxes|0]; if(m.k==='conte') return [+m.trailer.rotation.y.toFixed(2),m.cont.visible?1:0,m.cont.material.color.getHex()]; return [+(m.bladeY||0).toFixed(2)]; }
 function netTick(dt){ if(!NET.ok||!MC_||mode!=='play') return; NET.t-=dt; if(NET.t>0) return; NET.t=0.12; const m=MC_;
-  NET.ch.send({type:'broadcast',event:'st',payload:{id:NET.id,n:(SAVE.name||'Operador').slice(0,18),k:m.k,x:+m.x.toFixed(2),z:+m.z.toFixed(2),y:+m.yaw.toFixed(3),v:+m.v.toFixed(2),st:+(m.steerA||0).toFixed(2),e:extra(m),c:+(m.cargo||0).toFixed(2),o:Math.round(obraPct()),cr:SAVE.credits|0}}).catch(()=>{}); }
+  NET.ch.send({type:'broadcast',event:'st',payload:{id:NET.id,n:(SAVE.name||'Operador').slice(0,18),k:m.k,x:+m.x.toFixed(2),z:+m.z.toFixed(2),y:+m.yaw.toFixed(3),v:+m.v.toFixed(2),st:+(m.steerA||0).toFixed(2),e:extra(m),t0:MY_T0,c:+(m.cargo||0).toFixed(2),o:Math.round(obraPct()),cr:SAVE.credits|0}}).catch(()=>{}); }
 function nameTag(name,k){ const t=tex(512,128,(x,w,h)=>{ x.fillStyle='rgba(20,20,24,.82)'; x.beginPath(); x.roundRect?x.roundRect(4,14,w-8,h-28,40):x.rect(4,14,w-8,h-28); x.fill(); x.lineWidth=6; x.strokeStyle='#f5b301'; x.stroke(); x.fillStyle='#fff'; x.font='bold 54px Nunito,sans-serif'; x.textAlign='center'; x.textBaseline='middle'; x.fillText((DEF[k]?DEF[k].ic+' ':'')+name,w/2,h/2+2); });
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthWrite:false})); s.scale.set(4.4,1.1,1); return s; }
 function onPeer(p){ if(!p||!p.id||p.id===NET.id||!DEF[p.k]) return; let e=NET.peers.get(p.id); const fresh=!e;
   if(!e||e.k!==p.k||e.n!==p.n){ if(e){ scene.remove(e.m.g); scene.remove(e.tag); } const m=p.k==='torre'?{g:new THREE.Group()}:DEF[p.k].make(); m.D=DEF[p.k]; scene.add(m.g); m.g.traverse(o=>{ if(o.isMesh) o.castShadow=true; }); if(m.load) m.load.visible=false;
     const tag=nameTag(p.n||'Operador',p.k); scene.add(tag); e={k:p.k,n:p.n,m,tag,x:p.x,z:p.z,y:p.y,pal:null}; NET.peers.set(p.id,e); if(fresh){ toastNet(`👷 ${p.n} llegó a la faena con ${DEF[p.k].n.toLowerCase()}`); } }
-  e.s=p; e.last=perfT; updOnline(); }
+  e.s=p; e.last=perfT; updOnline();
+  if(mode==='play'&&MC_&&p.k===MC_.k&&(p.t0||0)&&((p.t0<MY_T0)||(p.t0===MY_T0&&p.id<NET.id))){ const who=p.n||'Otro operador'; showSel(); msg('🔒 '+DEF[p.k].n+' ya estaba en uso','La maneja '+who+'. Elige otra máquina libre.'); sfx('bump'); } }
 function dropPeer(id){ const e=NET.peers.get(id); if(!e) return; scene.remove(e.m.g); scene.remove(e.tag); if(e.pal) scene.remove(e.pal); NET.peers.delete(id); updOnline(); }
 function updPeers(dt){ const k=1-Math.exp(-dt*8);
   for(const [id,e] of NET.peers){ if(perfT-e.last>10){ dropPeer(id); continue; } const s=e.s, m=e.m;
@@ -796,7 +801,7 @@ function updOnline(){ const L=[...NET.peers.values()]; $('onl').innerHTML=NET.ok
 /* ================= BUCLE ================= */
 buildWorld(); buildRoute(); buildSea(); buildBuilding(); makeTgt(); netInit(); updOnline(); comFetch(); renderSel(); setPreview(); updObraUI(); $('bMus').style.opacity=musicOn?1:0.45;
 let last=performance.now(), perfT=0;
-function frame(now){ const dt=Math.min(0.05,(now-last)/1000); last=now; perfT+=dt; bumpT-=dt;
+function frame(now){ const dt=Math.min(0.05,(now-last)/1000); last=now; perfT+=dt; bumpT-=dt; if(mode==='sel'&&Math.floor(perfT)!==Math.floor(perfT-dt)&&JSON.stringify(busyMap())!==busySig) renderSel();
  if(mode==='play'&&MC_){ readInput(); drive(MC_,dt); workUpdate(MC_,dt); updParked(dt); updCam(dt); updHUD(); audioTick(dt); }
  else { const a=perfT*0.25; camera.position.set(-10+Math.sin(a)*12,5+Math.sin(perfT*0.3),10+Math.cos(a)*12); camera.lookAt(-10,1.6,10); sun.position.set(20,60,30); sun.target.position.set(-10,0,10); if(preview){ preview.g.rotation.y=0; } if(AC) engG&&engG.gain.setTargetAtTime(0,AC.currentTime,0.2); }
  if(TC){ for(const l of TC.lights) l.material.opacity=0.35+0.65*Math.max(0,Math.sin(perfT*3)); }
