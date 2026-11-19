@@ -1,0 +1,2 @@
+# Permite que la Trama de la Vida (compilada para GitHub Pages, bajo /multiverso-online/) funcione también en Netlify.
+/multiverso-online/*  /:splat  200
