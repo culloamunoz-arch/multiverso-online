@@ -158,26 +158,28 @@ a.seal{text-decoration:none}
 
 <section class="band lab"><div class="wrap">
   <h2>Laboratorio: dentro de la mente artificial</h2>
-  <p class="lead">El viaje por la IA llega hasta un transistor. Pero la IA tiene otro interior que no se ve con microscopio: la matemática. Aquí corre de verdad, en tu teléfono, una mente artificial diminuta. Escríbele y mira cómo lee.</p>
+  <p class="lead">El viaje por la IA llega hasta un transistor. Pero la IA tiene otro interior que no se ve con microscopio: la matemática. Aquí corre de verdad, en tu teléfono, una mente artificial diminuta: un transformer de verdad, entrenado con los textos de esta misma Trama. Escríbele y mira cómo lee.</p>
 
   <div class="sh"><span class="step">1</span><h3 style="margin:0">Leer: el texto se corta en fichas (tokens)</h3></div>
   <input type="text" id="txt" value="el micelio conecta los árboles del bosque" aria-label="Frase para la IA">
   <div class="toks" id="toks"></div>
-  <p class="note">Cada ficha se convierte en un vector: una lista de números que ubica su significado en un espacio. Las barras de colores son esos 12 números. Palabras parecidas tienen colores parecidos.</p>
+  <p class="note">Cada ficha se convierte en un vector: una lista de 48 números que ubica su significado en un espacio. Las barras de colores muestran 12 de esos números, tal como los aprendió el modelo. Una ficha con borde punteado es una palabra que nunca vio.</p>
 
   <div class="labgrid">
     <div>
       <div class="sh"><span class="step">2</span><h3 style="margin:0">Atender: cada palabra mira a las anteriores</h3></div>
-      <p>Toca una ficha. La matriz muestra cuánto “mira” cada palabra (fila) a cada palabra anterior (columna). Es un cálculo real: producto punto entre vectores y luego softmax.</p>
+      <p>Toca una ficha y elige una cabeza de atención. La matriz muestra cuánto “mira” cada palabra (fila) a cada palabra anterior (columna) dentro del modelo, mientras lee tu frase.</p>
+      <div class="toks" id="heads"></div>
       <div class="heat" id="heat"></div>
       <p class="note" id="attn"></p>
     </div>
     <div>
       <div class="sh"><span class="step">3</span><h3 style="margin:0">Predecir: ¿qué palabra sigue?</h3></div>
-      <p>La mente diminuta aprendió de los textos de la Trama. Toca una opción para agregarla y sigue escribiendo con ella.</p>
+      <p>La mente diminuta aprendió de los textos de la Trama. Toca una opción para agregarla, o deja que escriba sola.</p>
+      <p><button class="btn" id="gen" style="--c:#b9a3ff">Que escriba 12 palabras</button></p>
       <div class="preds" id="preds"></div>
       <label for="temp">Temperatura (creatividad) <span id="tv" style="float:right;color:var(--c)"></span></label>
-      <input type="range" id="temp" min="0.3" max="2" step="0.1" value="1">
+      <input type="range" id="temp" min="0.3" max="2" step="0.1" value="0.7">
       <p class="note" id="params"></p>
     </div>
   </div>
@@ -572,35 +574,46 @@ async function qresult(ph,d){const el=$(ph==='pre'?'qpreb':'qpostb');
   st.innerHTML=s.pair_n>0?`<b style="color:var(--ink)">Entre las ${s.pair_n} ${s.pair_n==1?'persona':'personas'} que respondieron antes y después, los aciertos pasaron de ${s.pair_pre}% a ${s.pair_post}%.</b> ${s.pair_n<20?'Todavía son pocas respuestas para sacar conclusiones.':''}`:'Aún nadie ha respondido antes y después. ¡Puedes ser el primero en sumar datos!'}}
 qform('pre');qform('post');
 
-/* ---------- LABORATORIO IA ---------- */
-const CORPUS=`el micelio conecta los árboles del bosque . los árboles dan azúcar al micelio . el micelio devuelve agua y nutrientes a los árboles . el corazón bombea la sangre por todo el cuerpo . la sangre lleva oxígeno a cada célula . la hoja convierte la luz en azúcar . la clorofila atrapa la luz del sol . la hemoglobina lleva oxígeno en la sangre . la neurona recibe señales y dispara un pulso . la sinapsis se fortalece cuando aprendes . la inteligencia artificial aprende patrones de los datos . la inteligencia artificial predice la siguiente palabra . el chip multiplica números por pesos . los pesos guardan lo que la red aprendió . la red conecta todos los sistemas . la vida es un flujo de energía . la energía fluye por la trama de la vida . la trama de la vida conecta el cuerpo la planta el hongo y la máquina . cada sistema necesita energía información y protección . el bosque es una red viva . el cuerpo es una red de sistemas . la batería guarda energía para el motor . el sensor envía señales al chip . aprender es cambiar las conexiones . la conciencia observa los patrones de la vida . el hongo descompone la materia y devuelve la vida al suelo . la luz del sol da energía a la hoja . la red de micelio lleva señales entre los árboles .`.split(' ').filter(Boolean);
-const big={},uni={};for(let i=0;i<CORPUS.length;i++){const w=CORPUS[i];uni[w]=(uni[w]||0)+1;if(i<CORPUS.length-1){(big[w]=big[w]||{});big[w][CORPUS[i+1]]=(big[w][CORPUS[i+1]]||0)+1}}
-const VOC=Object.keys(uni);let NB=0;for(const a in big)NB+=Object.keys(big[a]).length;
-const GR={vida:['vida','célula','cuerpo','sangre','hoja','planta','hongo','micelio','bosque','árboles','clorofila','hemoglobina','neurona'],red:['red','conecta','conexiones','sinapsis','señales','trama','sistemas','micelio'],energ:['energía','luz','sol','azúcar','oxígeno','batería','motor','bombea','fluye','flujo'],maq:['chip','inteligencia','artificial','pesos','números','datos','máquina','sensor','predice','multiplica','batería','motor'],mente:['aprende','aprendes','aprender','aprendió','conciencia','patrones','observa','palabra','información']};
-const GK=Object.keys(GR);
-function hsh(s){let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
-function emb(w,pos){const v=[];let h=hsh(w);for(let d=0;d<12;d++){h=Math.imul(h^(h>>>13),1274126177)>>>0;v.push(((h%2000)/1000-1)*.45)}GK.forEach((g,k)=>{if(GR[g].includes(w)){v[k]+=1.6;v[k+6]+=1.1}});v[5]+=Math.sin(pos*.7)*.3;v[11]+=Math.cos(pos*.7)*.3;return v}
-const col=x=>`hsl(${x>0?265:200} 80% ${50+Math.max(-1,Math.min(1,x))*25}%)`;
-let toks=[],E=[],QI=0;
-function tokenize(s){return s.toLowerCase().replace(/[^\p{L}\s]/gu,' ').split(/\s+/).filter(Boolean).slice(-10)}
-const AQ=[[.5,1,0,0,0],[1,.5,.8,0,0],[1,0,.5,.8,0],[0,0,1,.5,1],[0,1,0,1,.5]];
-function qv(v){const q=v.slice();for(let a=0;a<5;a++){let s=0;for(let b=0;b<5;b++)s+=AQ[a][b]*v[b];q[a]=s*.8}return q}
-function attnRow(i){const sc=[],q=qv(E[i]);for(let j=0;j<=i;j++){let s=0;for(let d=0;d<12;d++)s+=q[d]*E[j][d];sc.push(s/Math.sqrt(12)*1.6)}const m=Math.max(...sc),ex=sc.map(x=>Math.exp(x-m)),z=ex.reduce((a,b)=>a+b,0);return ex.map(x=>x/z)}
-function lab(){toks=tokenize($('txt').value);if(!toks.length)toks=['la'];E=toks.map((w,p)=>emb(w,p));QI=Math.min(QI,toks.length-1);
- $('toks').innerHTML=toks.map((w,i)=>`<button class="tok${i===QI?' q':''}" data-i="${i}">${w}<div class="vec">${E[i].map(x=>`<i style="background:${col(x)}"></i>`).join('')}</div></button>`).join('');
+/* ---------- LABORATORIO IA: transformer real entrenado con los textos de la Trama ---------- */
+let MD=null,toks=[],ids=[],QI=99,HL=0,HH=0,ATT=[];
+function deq(t){const bin=atob(t.b),a=new Float32Array(bin.length);for(let i=0;i<bin.length;i++){let v=bin.charCodeAt(i);if(v>127)v-=256;a[i]=v*t.k}return{d:a,s:t.s}}
+const W2={};
+function lnorm(x,g,b){const n=x.length,m=x.reduce((a,c)=>a+c,0)/n;let v=0;for(const c of x)v+=(c-m)**2;v/=n;const r=1/Math.sqrt(v+1e-5);return x.map((c,i)=>(c-m)*r*g.d[i]+b.d[i])}
+function mv(x,M,bias){const[r,c]=M.s,o=new Float32Array(c);for(let j=0;j<c;j++){let s=bias?bias.d[j]:0;for(let i=0;i<r;i++)s+=x[i]*M.d[i*c+j];o[j]=s}return Array.from(o)}
+const gelu=x=>.5*x*(1+Math.tanh(Math.sqrt(2/Math.PI)*(x+.044715*x*x*x)));
+function forward(x){const{D,H,L}=MD.cfg,hd=D/H,t=x.length,E=W2.wte,P=W2.wpe;ATT=[];
+ let h=x.map((id,p)=>Array.from({length:D},(_,j)=>E.d[id*D+j]+P.d[p*D+j]));
+ for(let l=0;l<L;l++){const g=n=>W2['l'+l+'.'+n],qkv=h.map(r=>mv(lnorm(r,g('ln1_g'),g('ln1_b')),g('qkv'),g('qkv_b')));const o=h.map(()=>new Array(D).fill(0)),A=[];
+  for(let k=0;k<H;k++){const M=[];for(let i=0;i<t;i++){const sc=[];for(let j=0;j<=i;j++){let s=0;for(let d=0;d<hd;d++)s+=qkv[i][k*hd+d]*qkv[j][D+k*hd+d];sc.push(s/Math.sqrt(hd))}const mx=Math.max(...sc),ex=sc.map(s=>Math.exp(s-mx)),z=ex.reduce((a,c)=>a+c,0),w=ex.map(e=>e/z);M.push(w);for(let d=0;d<hd;d++){let s=0;for(let j=0;j<=i;j++)s+=w[j]*qkv[j][2*D+k*hd+d];o[i][k*hd+d]=s}}A.push(M)}
+  ATT.push(A);h=h.map((r,i)=>{const pr=mv(o[i],g('proj'),g('proj_b')),r1=r.map((c,j)=>c+pr[j]),m=mv(lnorm(r1,g('ln2_g'),g('ln2_b')),g('fc'),g('fc_b')).map(gelu),f=mv(m,g('fc2'),g('fc2_b'));return r1.map((c,j)=>c+f[j])})}
+ const last=lnorm(h[t-1],W2.lnf_g,W2.lnf_b),V=MD.vocab.length,lg=new Float32Array(V);for(let v=0;v<V;v++){let s=0;for(let d=0;d<D;d++)s+=last[d]*E.d[v*D+d];lg[v]=s}return lg}
+const TRE=/[a-záéíóúüñ]+|[0-9]+(?:[.,][0-9]+)?|[.,:;¿?¡!()]/g;
+function probs(lg,T){const V=lg.length;let mx=-1e9;for(let i=1;i<V;i++)mx=Math.max(mx,lg[i]);const p=new Float32Array(V);let z=0;for(let i=1;i<V;i++){p[i]=Math.exp((lg[i]-mx)/T);z+=p[i]}for(let i=1;i<V;i++)p[i]/=z;return p}
+function lab(){if(!MD)return;const raw=($('txt').value.toLowerCase().match(TRE)||['la']);toks=raw.slice(-MD.cfg.C);ids=toks.map(w=>MD.vocab.indexOf(w)).map(i=>i<0?0:i);QI=Math.min(QI,toks.length-1);
+ const lg=forward(ids);
+ $('toks').innerHTML=toks.map((w,i)=>`<button class="tok${i===QI?' q':''}" data-i="${i}" ${ids[i]?'':'style="border-style:dashed" title="Palabra que no aprendió"'}>${w}${ids[i]?'':' ?'}<div class="vec">${Array.from({length:12},(_,d)=>W2.wte.d[ids[i]*MD.cfg.D+d]*6).map(x=>`<i style="background:${col(x)}"></i>`).join('')}</div></button>`).join('');
  $('toks').querySelectorAll('.tok').forEach(b=>b.onclick=()=>{QI=+b.dataset.i;lab()});
- const n=toks.length;let h=`<span class="lb"></span>`+toks.map(w=>`<span class="lb" style="justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);height:70px;aspect-ratio:auto">${w}</span>`).join('');
- for(let i=0;i<n;i++){const r=attnRow(i);h+=`<span class="lb" style="${i===QI?'color:var(--c)':''}">${toks[i]}</span>`;for(let j=0;j<n;j++){const a=j<=i?r[j]:0;h+=`<span style="background:${j<=i?`rgba(185,163,255,${.08+a*.92})`:'transparent'};${i===QI?'outline:1px solid var(--c)':''}">${j<=i&&a>.15?Math.round(a*100):''}</span>`}}
+ $('heads').innerHTML=[0,1].map(l=>[0,1,2].map(k=>`<button class="tok${l===HL&&k===HH?' q':''}" data-l="${l}" data-k="${k}">Capa ${l+1} · cabeza ${k+1}</button>`).join('')).join('');
+ $('heads').querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{HL=+b.dataset.l;HH=+b.dataset.k;lab()});
+ const A=ATT[HL][HH],n=toks.length;let h=`<span class="lb"></span>`+toks.map(w=>`<span class="lb" style="justify-content:center;writing-mode:vertical-rl;transform:rotate(180deg);height:70px;aspect-ratio:auto">${w}</span>`).join('');
+ for(let i=0;i<n;i++){h+=`<span class="lb" style="${i===QI?'color:var(--c)':''}">${toks[i]}</span>`;for(let j=0;j<n;j++){const a=j<=i?A[i][j]:0;h+=`<span style="background:${j<=i?`rgba(185,163,255,${.08+a*.92})`:'transparent'};${i===QI?'outline:1px solid var(--c)':''}">${j<=i&&a>.15?Math.round(a*100):''}</span>`}}
  $('heat').style.gridTemplateColumns=`7em repeat(${n},minmax(0,1fr))`;$('heat').innerHTML=h;
- const r=attnRow(QI),top=r.map((a,j)=>[a,j]).sort((a,b)=>b[0]-a[0]).slice(0,2);$('attn').innerHTML=`“<b>${toks[QI]}</b>” pone ${Math.round(top[0][0]*100)}% de su atención en “${toks[top[0][1]]}”${top[1]?` y ${Math.round(top[1][0]*100)}% en “${toks[top[1][1]]}”`:''}. Solo puede mirar hacia atrás: así leen los modelos de lenguaje, sin espiar el futuro.`;
- pred()}
-function pred(){const T=+$('temp').value;$('tv').textContent=T.toFixed(1);const last=toks[toks.length-1];const row=big[last];
- const sc=VOC.map(w=>[w,((row&&row[w])||0)+.05*(uni[w]/CORPUS.length)*(row?1:40)]);
- const p=sc.map(([w,c])=>[w,Math.pow(c,1/T)]);const z=p.reduce((a,b)=>a+b[1],0);const top=p.map(([w,v])=>[w,v/z]).sort((a,b)=>b[1]-a[1]).slice(0,5);
- $('preds').innerHTML=top.map(([w,v])=>`<button class="pr" data-w="${w}"><span>${w==='.'?'(punto)':w}</span><span><i class="b" style="display:block;width:${Math.max(3,v*100)}%"></i></span><span>${(v*100).toFixed(0)}%</span></button>`).join('');
- $('preds').querySelectorAll('.pr').forEach(b=>b.onclick=()=>{const w=b.dataset.w;$('txt').value=($('txt').value+' '+(w==='.'?'.':w)).trim();QI=99;lab()});
- $('params').textContent=`Esta mente diminuta tiene ${NB} parámetros (pares de palabras que aprendió) y conoce ${VOC.length} palabras. Un modelo grande tiene miles de millones de parámetros y lee con decenas de capas de atención: la misma idea, a una escala inimaginable. Aquí la atención usa vectores armados a mano y la predicción usa una tabla de pares; una IA real aprende las dos cosas a la vez.`}
-$('txt').oninput=()=>{QI=99;lab()};$('temp').oninput=pred;QI=99;lab();
+ const r=A[QI],top=r.map((a,j)=>[a,j]).sort((a,b)=>b[0]-a[0]).slice(0,2);$('attn').innerHTML=`En la capa ${HL+1}, cabeza ${HH+1}, “<b>${toks[QI]}</b>” pone ${Math.round(top[0][0]*100)}% de su atención en “${toks[top[0][1]]}”${top[1]?` y ${Math.round(top[1][0]*100)}% en “${toks[top[1][1]]}”`:''}. Cada cabeza aprendió a mirar algo distinto; nadie se lo programó. Solo puede mirar hacia atrás.`;
+ pred(lg)}
+let LG=null;
+function pred(lg){if(lg)LG=lg;if(!LG)return;const T=+$('temp').value;$('tv').textContent=T.toFixed(1).replace('.',',');const p=probs(LG,T);
+ const top=Array.from(p).map((v,i)=>[i,v]).sort((a,b)=>b[1]-a[1]).slice(0,5);
+ $('preds').innerHTML=top.map(([i,v])=>{const w=MD.vocab[i];return`<button class="pr" data-w="${w}"><span>${w==='.'?'(punto)':w===','?'(coma)':w}</span><span><i class="b" style="display:block;width:${Math.max(3,v*100)}%"></i></span><span>${(v*100).toFixed(0)}%</span></button>`}).join('');
+ $('preds').querySelectorAll('.pr').forEach(b=>b.onclick=()=>{add(b.dataset.w);QI=99;lab()})}
+function add(w){const v=$('txt').value.trim();$('txt').value=/[.,:;?!)]/.test(w)?v+w:v+' '+w}
+function sample(){const p=probs(LG,+$('temp').value);let r=Math.random(),c=0;for(let i=1;i<p.length;i++){c+=p[i];if(r<c)return MD.vocab[i]}return'.'}
+$('gen').onclick=()=>{if(!MD)return;let k=0;const go=()=>{add(sample());QI=99;lab();if(++k<12)setTimeout(go,RM?0:140)};go()};
+$('txt').oninput=()=>{QI=99;lab()};$('temp').oninput=()=>pred();
+fetch('modelo.json').then(r=>r.json()).then(m=>{MD=m;for(const[k,v]of Object.entries(m.t))W2[k]=deq(v);
+ const np=Object.values(m.t).reduce((a,t)=>a+t.s.reduce((x,y)=>x*y,1),0);
+ $('params').textContent=`Esta mente tiene ${np.toLocaleString('es-CL')} parámetros, 2 capas y 3 cabezas de atención por capa, y conoce ${m.vocab.length} palabras. La entrené con unas 10 mil palabras de los textos de la Trama, durante 900 pasos. Es un transformer de verdad, la misma arquitectura de los grandes modelos, pero miles de millones de veces más pequeño: por eso a veces inventa frases raras o repite lo que leyó.`;
+ QI=99;lab()}).catch(()=>{$('params').textContent='No se pudo cargar el modelo (revisa tu conexión).'});
+const col=x=>`hsl(${x>0?265:200} 80% ${50+Math.max(-1,Math.min(1,x))*25}%)`;
 
 /* neurona vs neurona */
 const WT=[.9,.5,-.7];
