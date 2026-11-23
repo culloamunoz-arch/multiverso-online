@@ -1,6 +1,6 @@
 // Service worker mínimo: offline-first para lo ya visitado (incluye los modelos 3D tras la primera carga).
 // Funciona en la raíz o en una subcarpeta: todo se calcula a partir de la ubicación del propio archivo.
-const CACHE = 'trama-v8';
+const CACHE = 'trama-v9';
 const ROOT = new URL('./', self.location).href;
 self.addEventListener('install', (e) => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then((c) => c.addAll([ROOT, ROOT + 'manifest.webmanifest', ROOT + 'icon.svg']).catch(() => {}))); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });

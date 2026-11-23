@@ -87,6 +87,14 @@ input[type=range]{width:100%;height:40px;accent-color:#b9a3ff}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .flow{stroke-dasharray:6 10;animation:fl 1.4s linear infinite}@keyframes fl{to{stroke-dashoffset:-32}}
 .pulse{animation:pu 2.4s ease-in-out infinite}@keyframes pu{50%{opacity:.25}}
+[hidden]{display:none!important}
+a.seal{text-decoration:none}
+.srcs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.seal{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:4px 10px;border-radius:99px;border:0;min-height:30px}
+.e{background:#1f4a2a;color:#9be37f}.a{background:#4a3a1a;color:#ffd36b}.d{background:#4a1f2a;color:#ff9aa8}
+.slist{display:grid;gap:8px}.sr{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:grid;grid-template-columns:8.5em minmax(0,1fr);gap:12px;align-items:start}
+.sr.hl{border-color:var(--c)}
+@media(max-width:600px){.sr{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -106,6 +114,7 @@ input[type=range]{width:100%;height:40px;accent-color:#b9a3ff}
       <h2 id="lt"></h2>
       <div class="scale" id="ls"></div>
       <p id="ld"></p>
+      <div class="srcs" id="srcs" aria-label="Fuentes de este nivel"></div>
       <div class="part" id="part" aria-live="polite"></div>
       <div class="nav">
         <button class="btn ghost" id="out">← Salir</button>
@@ -123,6 +132,12 @@ input[type=range]{width:100%;height:40px;accent-color:#b9a3ff}
   <div class="mgrid" id="mgrid"></div>
   <div class="pairs" id="pairs"></div>
   <p class="note" style="margin-top:14px">Los paralelos comparan funciones y formas. No dicen que los sistemas sean iguales: por eso cada uno trae también su diferencia.</p>
+</div></section>
+
+<section class="band" id="fuentes"><div class="wrap">
+  <h2>Fuentes y grado de certeza</h2>
+  <p class="lead">Cada dato del viaje tiene su fuente y un sello. <b>Establecido</b>: consenso científico. <b>Aproximado</b>: el orden de magnitud es correcto, pero el número exacto varía. <b>En debate</b>: la ciencia todavía no se pone de acuerdo.</p>
+  <div class="slist" id="slist"></div>
 </div></section>
 
 <section class="band lab"><div class="wrap">
@@ -196,7 +211,7 @@ h:{n:'Humano',c:'#ff8a6b',L:[
   <ellipse cx="380" cy="165" rx="20" ry="36" fill="#ff9fb0" opacity=".25"/><ellipse cx="424" cy="165" rx="20" ry="36" fill="#ff9fb0" opacity=".25"/>`;
   const art=[[400,60],[320,295],[480,295],[372,480],[428,480]];art.forEach(([x,y])=>{g+=`<path class="flow" d="M408 172 Q${(408+x)/2+8} ${(172+y)/2} ${x+4} ${y}" stroke="#ff4d5e" stroke-width="3" fill="none"/><path d="M402 176 Q${(402+x)/2-8} ${(176+y)/2} ${x-4} ${y}" stroke="#5b7cff" stroke-width="3" fill="none" opacity=".8"/>`});
   return g+`<path d="M408 186 C392 174 386 160 398 154 C404 151 408 156 408 159 C408 156 413 151 419 154 C430 160 424 174 408 186Z" fill="#ff3b4f"/>`},
-  P:[[408,170,520,120,'Corazón','Late unas 100 mil veces al día y bombea cerca de 7 mil litros de sangre.'],[390,230,520,240,'Arterias','Llevan sangre rica en oxígeno (roja) desde el corazón hacia todo el cuerpo.'],[398,300,250,360,'Venas','Devuelven sangre con menos oxígeno al corazón (aquí en azul, como se dibuja por convención).'],[380,150,250,130,'Pulmones','Donde la sangre suelta CO₂ y recoge oxígeno.'],[322,290,240,260,'Capilares','Los tubos más finos. Todos los vasos en fila darían más de dos vueltas a la Tierra.']]},
+  P:[[408,170,520,120,'Corazón','Late unas 100 mil veces al día y bombea cerca de 7 mil litros de sangre.'],[390,230,520,240,'Arterias','Llevan sangre rica en oxígeno (roja) desde el corazón hacia todo el cuerpo.'],[398,300,250,360,'Venas','Devuelven sangre con menos oxígeno al corazón (aquí en azul, como se dibuja por convención).'],[380,150,250,130,'Pulmones','Donde la sangre suelta CO₂ y recoge oxígeno.'],[322,290,240,260,'Capilares','Los tubos más finos. Se suele decir que todos los vasos en fila darían dos vueltas a la Tierra, pero esa cifra no se ha medido bien y las estimaciones varían mucho.']]},
  {t:'El corazón',s:'12 cm',e:-0.92,z:[515,345],d:'Dos bombas en una: el lado derecho envía sangre a los pulmones y el izquierdo a todo el cuerpo. Cuatro válvulas hacen que la sangre avance en un solo sentido.',
   draw(){return`<path d="M400 112 C330 80 232 122 250 250 C265 345 352 420 410 472 C470 412 560 342 562 242 C572 130 472 92 400 112Z" fill="#5a1f2a" stroke="#ff8a6b" stroke-width="3"/>
   <path d="M440 160 L440 70 Q440 30 395 30 Q345 30 345 70" stroke="#d6394c" stroke-width="28" fill="none"/>
@@ -268,7 +283,7 @@ f:{n:'Fungi',c:'#e8c27a',L:[
   for(let i=0;i<14;i++){const x=R(60,740),y=R(290,480);g+=branch(x,y,R(0,6.28),R(25,60),4,'#f3e6c4',1.6).replace(/stroke-width/g,'opacity=".7" stroke-width')}
   g+=`<path class="flow" d="M160 330 Q280 420 400 330 Q520 420 650 330" stroke="#fff3cf" stroke-width="2.5" fill="none"/>`;
   return g+`<path d="M592 250 L590 222 M608 250 L606 222" stroke="#f3e6c4" stroke-width="8"/><path d="M570 225 Q600 185 630 225Z" fill="#d9573e"/><path d="M250 250 v-14" stroke="#f3e6c4" stroke-width="6"/><path d="M236 238 Q250 218 264 238Z" fill="#c99a52"/>`},
-  P:[[600,215,700,120,'Seta','El fruto: aparece para soltar esporas y luego desaparece.'],[300,400,150,480,'Micelio','Un hongo Armillaria de Oregón (EE. UU.) cubre casi 10 km²: uno de los organismos más grandes conocidos.'],[400,345,520,480,'Red entre árboles','A través del micelio pueden moverse agua, nutrientes y señales entre plantas.'],[160,300,60,200,'Raíces','Casi todas las plantas terrestres se asocian con hongos.']]},
+  P:[[600,215,700,120,'Seta','El fruto: aparece para soltar esporas y luego desaparece.'],[300,400,150,480,'Micelio','Un hongo Armillaria de Oregón (EE. UU.) cubre casi 10 km²: uno de los organismos más grandes conocidos.'],[400,345,520,480,'Red entre árboles','Hay experimentos donde se movieron nutrientes entre árboles por el micelio, pero cuánto importa eso en un bosque real está en debate.'],[160,300,60,200,'Raíces','Cerca del 85% de las plantas terrestres se asocian con hongos.']]},
  {t:'La seta',s:'10 cm',e:-1,z:[455,455],d:'El cuerpo fructífero: cientos de hifas apretadas que forman sombrero, láminas y pie. Su único trabajo es dispersar esporas.',
   draw(){seed=4;let g=`<rect x="0" y="420" width="800" height="100" fill="#1d150d"/><path d="M370 420 Q365 300 378 230 L422 230 Q435 300 430 420Z" fill="#efe2c0"/><path d="M372 300 Q400 320 428 300 L432 312 Q400 335 368 312Z" fill="#d8c79c"/>`;
   g+=`<path d="M150 230 Q400 -10 650 230 Q400 250 150 230Z" fill="#c9462f"/><path d="M150 230 Q400 250 650 230 Q400 270 150 230Z" fill="#e9d6b0"/>`;for(let i=0;i<60;i++){const x=160+i*8.1;g+=`<line x1="${x}" y1="${232+Math.abs(x-400)*-0.03+5}" x2="${400+(x-400)*.25}" y2="244" stroke="#b9a37a" stroke-width="1.2"/>`}
@@ -369,7 +384,7 @@ m:{n:'Mente',c:'#f3a6d8',L:[
   for(let i=0;i<34;i++){let x=R(120,680),y=R(70,380),d=`M${x} ${y}`;for(let k=0;k<5;k++){x+=R(-40,40);y+=R(-30,30);d+=` Q${x+R(-20,20)} ${y+R(-20,20)} ${x} ${y}`}g+=`<path d="${d}" stroke="#2a1426" stroke-width="5" fill="none"/>`}
   g+=`</g><path d="M520 360 C530 420 610 430 640 380 C650 360 620 340 590 350Z" fill="#5a3352" stroke="#f3a6d8" stroke-width="2"/><path d="M470 360 L480 470 L520 470 L515 360Z" fill="#5a3352" stroke="#f3a6d8" stroke-width="2"/>`;
   for(let i=0;i<10;i++)g+=`<circle cx="${R(200,620)}" cy="${R(110,330)}" r="${R(8,16)}" fill="#ffd6f0" opacity=".5" class="pulse" style="animation-delay:-${i*.4}s"/>`;return g},
-  P:[[220,170,90,60,'Corteza prefrontal','Planificar, decidir, frenar impulsos: madura recién cerca de los 25 años.'],[640,230,700,120,'Lóbulo occipital','Donde se procesa lo que ves.'],[590,385,690,470,'Cerebelo','Coordina el movimiento; tiene más neuronas que todo el resto.'],[495,430,380,480,'Tronco encefálico','Respiración y latido: lo que funciona sin que lo pienses.'],[400,220,400,40,'Corteza','Una lámina de 2 a 4 mm, plegada para caber en el cráneo.']]},
+  P:[[220,170,90,60,'Corteza prefrontal','Planificar, decidir, frenar impulsos: es de las últimas zonas en madurar, hasta pasados los 20 años.'],[640,230,700,120,'Lóbulo occipital','Donde se procesa lo que ves.'],[590,385,690,470,'Cerebelo','Coordina el movimiento; tiene más neuronas que todo el resto.'],[495,430,380,480,'Tronco encefálico','Respiración y latido: lo que funciona sin que lo pienses.'],[400,220,400,40,'Corteza','Una lámina de 2 a 4 mm, plegada para caber en el cráneo.']]},
  {t:'La corteza',s:'2,5 mm',e:-2.6,z:[300,340],d:'La corteza tiene seis capas, como un edificio de seis pisos. Cada piso recibe, procesa o envía información a lugares distintos.',
   draw(){seed=71;let g='';const L=[[20,50,'I'],[70,60,'II'],[130,70,'III'],[200,60,'IV'],[260,90,'V'],[350,70,'VI']];L.forEach(([y,h,n],k)=>{g+=`<rect x="80" y="${y}" width="700" height="${h}" fill="${k%2?'#2a1830':'#33203a'}"/><text x="50" y="${y+h/2+6}" text-anchor="middle" font-family="Sora" font-weight="700" fill="#f3a6d8">${n}</text>`;for(let i=0;i<(k?40:6);i++)g+=`<circle cx="${R(90,770)}" cy="${R(y+5,y+h-5)}" r="${R(2,4)}" fill="#c98ab8" opacity=".7"/>`});
   g+=`<rect x="80" y="420" width="700" height="90" fill="#e9e3ff" opacity=".12"/>`;
@@ -422,6 +437,52 @@ const PAIRS=[
   {a:'t',b:'m',t:'Ion de litio e ion de sodio',s:'La batería y la neurona funcionan moviendo iones a través de una barrera. Litio y sodio están en la misma columna de la tabla periódica.',d:'La batería guarda la energía en el gradiente; la neurona gasta energía para rearmarlo después de cada disparo.'}]
 ];
 
+
+/* ---------- FUENTES ---------- */
+const SRC={
+ cel:['e','Unas 30 billones de células humanas (sin contar bacterias).','Sender R, Fuchs S, Milo R. Revised estimates for the number of human and bacteria cells in the body. PLoS Biol 14:e1002533 (2016).'],
+ vas:['d','“Los vasos en fila dan dos vueltas a la Tierra” (~100.000 km).','Cifra popular sin medición directa; las estimaciones publicadas varían en un orden de magnitud.'],
+ cor:['a','~100 mil latidos y ~7 mil litros de sangre al día; aorta de ~2,5 cm.','Hall JE, Hall ME. Guyton & Hall, Tratado de fisiología médica, 14.ª ed. (2021). Valores de un adulto en reposo.'],
+ cap:['e','Capilares de 5 a 10 µm, pared de una célula, esfínteres precapilares.','Hall JE, Hall ME. Guyton & Hall, Tratado de fisiología médica (2021), cap. de microcirculación.'],
+ grb:['a','Glóbulo rojo de ~7,5 µm, sin núcleo, vive ~120 días, con ~270 millones de hemoglobinas.','Guyton & Hall (2021); el número de hemoglobinas es una estimación de libro de texto.'],
+ hb:['e','Hemoglobina: 4 cadenas (2 alfa, 2 beta), 4 grupos hemo con hierro, unión cooperativa del O₂.','Perutz MF. Stereochemistry of cooperative effects in haemoglobin. Nature 228:726–739 (1970); estructura PDB 4HHB.'],
+ hbt:['a','Tamaño de la hemoglobina: ~5 a 6,5 nm según el eje.','Medido sobre la estructura cristalina 4HHB.'],
+ arb:['e','El agua sube sin bomba, tirada por la evaporación (cohesión-tensión); límite cerca de 120–130 m.','Koch GW et al. The limits to tree height. Nature 428:851–854 (2004).'],
+ mur:['a','Las nervaduras se ramifican siguiendo reglas parecidas a las de los vasos sanguíneos (ley de Murray).','McCulloh KA, Sperry JS, Adler FR. Water transport in plants obeys Murray’s law. Nature 421:939–942 (2003).'],
+ hoj:['e','Anatomía de la hoja: cutícula, empalizada, parénquima esponjoso, estomas.','Taiz L, Zeiger E et al. Fisiología y desarrollo vegetal, 6.ª ed. (2015).'],
+ end:['e','El cloroplasto viene de una cianobacteria que quedó dentro de otra célula hace más de mil millones de años, y conserva su ADN.','Archibald JM. Endosymbiosis and eukaryotic cell evolution. Curr Biol 25:R911–R921 (2015).'],
+ clo:['e','Clorofila: anillo de porfirina con magnesio, cola de fitol; la división del agua libera O₂.','Taiz & Zeiger (2015); Blankenship RE. Molecular Mechanisms of Photosynthesis, 2.ª ed. (2014).'],
+ arm:['e','Un Armillaria en Oregón cubre unas 965 hectáreas (casi 10 km²).','Ferguson BA et al. Coarse-scale population structure of pathogenic Armillaria species in a mixed-conifer forest. Can J For Res 33:612–623 (2003).'],
+ wwn:['d','La “red del bosque”: cuánto transportan y comunican los hongos entre árboles en bosques reales.','Karst J, Jones MD, Hoeksema JD. Positive citation bias and overinterpreted results lead to misinformation on common mycorrhizal networks in forests. Nat Ecol Evol 7:501–511 (2023).'],
+ esp:['a','Una seta puede liberar miles de millones de esporas.','Buller AHR. Researches on Fungi, vol. 1 (1909); conteos que varían mucho según la especie.'],
+ myc:['e','Cerca del 85% de las plantas terrestres forman micorrizas; los arbúsculos son el sitio de intercambio.','Brundrett MC, Tedersoo L. Evolutionary history of mycorrhizal symbioses and global host plant diversity. New Phytol 220:1108–1115 (2018).'],
+ hif:['e','Las hifas crecen por la punta, guiadas por el Spitzenkörper.','Riquelme M. Tip growth in filamentous fungi: a road trip to the apex. Annu Rev Microbiol 67:587–609 (2013).'],
+ qui:['e','Quitina: N-acetilglucosamina con enlaces β(1→4), como la celulosa pero con un grupo acetamido.','Lehninger, Principios de bioquímica, 7.ª ed. (2019).'],
+ lib:['e','Batería de ion-litio: ánodo de grafito, cátodo de óxido metálico en capas, iones que se intercalan.','Goodenough JB, Park KS. The Li-ion rechargeable battery: a perspective. J Am Chem Soc 135:1167–1176 (2013).'],
+ lid:['a','Medidas: celda cilíndrica de ~7 cm, partículas de cátodo de ~10 µm, capas de grafito separadas por ~0,34 nm.','Valores típicos de celdas comerciales (formato 2170); varían por fabricante.'],
+ deg:['a','Las microgrietas en las partículas del cátodo contribuyen al envejecimiento de la batería.','Es un mecanismo aceptado, pero su peso frente a otros depende de la química y del uso.'],
+ iea:['a','Los grandes centros de datos de IA consumen de decenas a cientos de megawatts.','Agencia Internacional de Energía (IEA). Energy and AI (2025).'],
+ gpu:['e','Un acelerador moderno tiene decenas de miles de millones de transistores y memoria apilada HBM.','NVIDIA. H100 Tensor Core GPU Architecture (2022): 80 mil millones de transistores.'],
+ sys:['e','Los núcleos de cálculo de IA son grillas de celdas que multiplican y acumulan (arreglos sistólicos).','Jouppi NP et al. In-datacenter performance analysis of a tensor processing unit. ISCA (2017).'],
+ gaa:['a','Transistores de puerta envolvente con láminas de silicio de pocos nanómetros.','IEEE. International Roadmap for Devices and Systems (IRDS), More Moore (2023).'],
+ neu:['e','El cerebro humano tiene ~86 mil millones de neuronas, la mayoría en el cerebelo.','Azevedo FAC et al. Equal numbers of neuronal and nonneuronal cells make the human brain an isometrically scaled-up primate brain. J Comp Neurol 513:532–541 (2009).'],
+ w20:['e','El cerebro usa cerca del 20% de la energía del cuerpo en reposo: unos 20 W.','Raichle ME, Gusnard DA. Appraising the brain’s energy budget. PNAS 99:10237–10239 (2002).'],
+ pfc:['e','La corteza prefrontal es de las últimas en madurar, hasta pasados los 20 años.','Gogtay N et al. Dynamic mapping of human cortical development during childhood through early adulthood. PNAS 101:8174–8179 (2004).'],
+ kan:['e','Seis capas de la corteza, mielina (hasta ~100 m/s), hendidura sináptica de ~20 nm.','Kandel ER et al. Principles of Neural Science, 6.ª ed. (2021).'],
+ ltp:['e','Las sinapsis se fortalecen con el uso: base celular del aprendizaje.','Bliss TVP, Lømo T. Long-lasting potentiation of synaptic transmission. J Physiol 232:331–356 (1973).'],
+ nav:['e','Canal de sodio: cuatro dominios, poro selectivo, sensor de voltaje S4 y compuerta de inactivación.','Catterall WA. Voltage-gated sodium channels at 60. J Physiol 590:2577–2589 (2012).']
+};
+const SMAP={'h-0':['cel','vas'],'h-1':['cor'],'h-2':['cap','vas'],'h-3':['grb'],'h-4':['hb','hbt'],
+ 'v-0':['arb'],'v-1':['mur'],'v-2':['hoj'],'v-3':['end'],'v-4':['clo'],
+ 'f-0':['arm','wwn'],'f-1':['esp'],'f-2':['myc'],'f-3':['hif'],'f-4':['qui'],
+ 't-0':['lib'],'t-1':['lib','lid'],'t-2':['lib','lid'],'t-3':['lid','deg'],'t-4':['lib','lid'],
+ 'i-0':['iea'],'i-1':['gpu'],'i-2':['gpu'],'i-3':['sys'],'i-4':['gaa'],
+ 'm-0':['neu','w20','pfc'],'m-1':['kan'],'m-2':['kan'],'m-3':['kan','ltp'],'m-4':['nav']};
+const SN={e:'Establecido',a:'Aproximado',d:'En debate'};
+function sources(){const ids=SMAP[S+'-'+LV]||[];
+ $('srcs').innerHTML=ids.map(k=>`<a class="seal ${SRC[k][0]}" href="#src-${k}" title="${SRC[k][1].replace(/"/g,'')}">${SN[SRC[k][0]]}: fuente</a>`).join('');
+ $('slist').innerHTML=Object.entries(SRC).map(([k,[c,txt,ref]])=>`<div class="sr${ids.includes(k)?' hl':''}" id="src-${k}"><span><span class="seal ${c}">${SN[c]}</span></span><div><b>${txt}</b><br><span class="note" style="font-size:15px">${ref}</span></div></div>`).join('')}
+
 /* ---------- ESTADO Y RENDER ---------- */
 let S='h',LV=0,PI=0,busy=false;
 try{const h=location.hash.slice(1).split('-');if(W[h[0]]){S=h[0];LV=Math.min(4,+h[1]||0)}}catch(e){}
@@ -451,7 +512,7 @@ function render(){const L=lvl(),c=W[S].c;document.documentElement.style.setPrope
  $('lt').textContent=W[S].n+' · '+L.t;$('ls').textContent='≈ '+L.s;$('ld').textContent=L.d;
  $('in').disabled=LV>=4;$('out').disabled=LV<=0;$('in').textContent=LV>=4?'Llegaste al fondo':'Entrar →';
  $('tg').hidden=!L.toggle;$('lab').hidden=!L.lab;if(L.lab){$('lab').href='../ciencia/#'+L.lab[0];$('lab').textContent=L.lab[1]+' →'}$('tg').textContent=ON?'Quitar voltaje':'Aplicar voltaje';
- drawScene();info();ruler();match();try{history.replaceState(null,'','#'+S+'-'+LV)}catch(e){}}
+ drawScene();info();ruler();match();sources();try{history.replaceState(null,'','#'+S+'-'+LV)}catch(e){}}
 function go(s,l){S=s;LV=l;PI=0;ON=false;render()}
 function anim(o,dir,cb){const sc=$('scene');if(RM||!o){cb();return}busy=true;sc.style.transformOrigin=o[0]+'px '+o[1]+'px';sc.style.transform=dir>0?'scale(7)':'scale(.15)';sc.style.opacity='0';
  setTimeout(()=>{cb();sc.style.transition='none';sc.style.transformOrigin='400px 260px';sc.style.transform=dir>0?'scale(.4)':'scale(2.5)';sc.getBoundingClientRect();sc.style.transition='';sc.style.transform='scale(1)';sc.style.opacity='1';setTimeout(()=>busy=false,700)},700)}
