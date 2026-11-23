@@ -87,6 +87,15 @@ input[type=range]{width:100%;height:40px;accent-color:#b9a3ff}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .flow{stroke-dasharray:6 10;animation:fl 1.4s linear infinite}@keyframes fl{to{stroke-dashoffset:-32}}
 .pulse{animation:pu 2.4s ease-in-out infinite}@keyframes pu{50%{opacity:.25}}
+.qz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-top:18px}
+.qz summary{cursor:pointer;font-family:Sora;font-weight:700;font-size:18px;min-height:44px;display:flex;align-items:center}
+.qq{margin:16px 0}.qq b{display:block;margin-bottom:6px}
+.qo{display:grid;gap:6px}.qo label{display:flex;gap:10px;align-items:flex-start;font-weight:400;margin:0;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg2);cursor:pointer;min-height:44px}
+.qo input{margin-top:5px;accent-color:var(--acc);width:18px;height:18px;flex:none}
+.qo label.ok{border-color:#6fd39a;background:#123222}.qo label.no{border-color:#ff7a7a;background:#3a1418}
+.qres{font-family:Sora;font-size:22px;margin:10px 0}
+.cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+.cmp div{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.cmp b{display:block;font-family:Sora;font-size:26px;color:var(--acc)}
 [hidden]{display:none!important}
 a.seal{text-decoration:none}
 .srcs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
@@ -101,6 +110,7 @@ a.seal{text-decoration:none}
 <section class="band"><div class="wrap">
   <h1>Viaje al interior</h1>
   <p class="lead">Entra en cada sistema hasta su última pieza: del metro al nanómetro. Toca una etiqueta para entender una parte y la lupa para entrar más. En cada nivel, mira qué hacen los otros mundos a la misma profundidad.</p>
+  <details class="qz" id="qpre"><summary>Antes de entrar: 6 preguntas rápidas (opcional y anónimo)</summary><div id="qpreb"></div></details>
   <div class="tabs" id="tabs" role="group" aria-label="Elige un sistema"></div>
   <div class="stage">
     <div>
@@ -132,6 +142,12 @@ a.seal{text-decoration:none}
   <div class="mgrid" id="mgrid"></div>
   <div class="pairs" id="pairs"></div>
   <p class="note" style="margin-top:14px">Los paralelos comparan funciones y formas. No dicen que los sistemas sean iguales: por eso cada uno trae también su diferencia.</p>
+</div></section>
+
+<section class="band" id="aprendiste"><div class="wrap">
+  <h2>¿Qué te llevas?</h2>
+  <p class="lead">Las mismas 6 preguntas del comienzo. Así sabremos si el viaje enseña de verdad. Es anónimo: no se guarda tu nombre ni nada que te identifique, solo las respuestas.</p>
+  <div class="qz" id="qpost"><div id="qpostb"></div></div>
 </div></section>
 
 <section class="band" id="fuentes"><div class="wrap">
@@ -520,6 +536,41 @@ function zin(){if(busy||LV>=4)return;const z=lvl().z||[400,260];anim(z,1,()=>{LV
 function zout(){if(busy||LV<=0)return;anim([400,260],-1,()=>{LV--;PI=0;ON=false;render()})}
 let rw=innerWidth;addEventListener('resize',()=>{if(Math.abs(innerWidth-rw)>40){rw=innerWidth;drawScene();ruler()}});$('in').onclick=zin;$('out').onclick=zout;$('tg').onclick=()=>{ON=!ON;render()};
 render();
+
+
+/* ---------- ¿ENSEÑA? (pre y post, anónimo) ---------- */
+const QZ=[
+ ['¿Qué tienen en común la hemoglobina de tu sangre y la clorofila de las plantas?',['Ambas fabrican azúcar','Un anillo casi igual, con un metal al centro','Ambas son proteínas de cuatro cadenas','Nada: son de reinos distintos']],
+ ['¿Para qué le sirve a la hemoglobina la cooperación entre sus cadenas?',['Para cargar mucho oxígeno en el pulmón y soltar mucho en los tejidos','Para fabricar glóbulos rojos','Para que la sangre sea roja','Para guardar oxígeno en los huesos']],
+ ['En el cerebro, ¿qué es lo más parecido a un “peso” de una IA?',['Una neurona entera','La mielina','La fuerza de una sinapsis','El cerebelo']],
+ ['Un canal de sodio de una neurona y un transistor de un chip se parecen en que…',['Ambos están hechos de silicio','Ambos guardan energía','Ambos miden cerca de un metro','Ambos son interruptores que se abren con voltaje']],
+ ['Sobre la “red del bosque” (hongos que conectan árboles), lo más correcto es:',['Está probado que los árboles conversan por un internet de hongos','Los hongos sí conectan raíces, pero cuánto ayuda eso a los árboles está en debate','Es un mito: los hongos no tocan las raíces','Solo ocurre en los bosques de Chile']],
+ ['¿Cuál es una diferencia real entre una IA y un cerebro?',['La IA no usa electricidad','La IA tiene más neuronas vivas','La IA no tiene cuerpo, deseos ni experiencia propia: es un patrón de números aprendido','No hay ninguna diferencia']]];
+const QK=[1,0,2,3,1,2];
+const SBU='https://bsbufxnyrtggsaqwttau.supabase.co/rest/v1/rpc/',SBK='sb_publishable_9QTNNbjLdlWSs45EBu2VNA_futa1Mkg';
+const sbr=(fn,body)=>fetch(SBU+fn,{method:'POST',headers:{apikey:SBK,'Content-Type':'application/json'},body:JSON.stringify(body||{})}).then(r=>r.ok?r.json():null).catch(()=>null);
+function vid(){try{let v=localStorage.getItem('mvo_vid');if(!v){v='v'+Math.random().toString(36).slice(2,12)+Date.now().toString(36);localStorage.setItem('mvo_vid',v)}return v}catch(e){return'anon-'+Math.random().toString(36).slice(2,12)}}
+const lg=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}},ls=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+function qform(ph){const el=$(ph==='pre'?'qpreb':'qpostb'),done=lg('trama_q_'+ph);
+ if(done){if(!done.saved)sbr('trama_quiz_submit',{p_visitor:vid(),p_phase:ph,p_answers:done.a}).then(r=>{if(r){done.saved=true;ls('trama_q_'+ph,done)}});qresult(ph,done);return}
+ el.innerHTML=QZ.map(([q,o],i)=>`<div class="qq"><b>${i+1}. ${q}</b><div class="qo">${o.map((x,j)=>`<label><input type="radio" name="${ph}${i}" value="${j}">${x}</label>`).join('')}</div></div>`).join('')+`<button class="btn" id="${ph}go" style="--c:#ffb35c">Enviar respuestas</button> <span class="note" id="${ph}msg"></span>`;
+ $(ph+'go').onclick=async()=>{const a=QZ.map((_,i)=>{const r=el.querySelector(`input[name=${ph}${i}]:checked`);return r?+r.value:null});
+  if(a.includes(null)){$(ph+'msg').textContent='Responde las 6 para enviar.';return}
+  $(ph+'go').disabled=true;$(ph+'msg').textContent='Enviando…';
+  const r=await sbr('trama_quiz_submit',{p_visitor:vid(),p_phase:ph,p_answers:a});
+  const d={a,score:a.filter((x,i)=>x===QK[i]).length,saved:!!r};ls('trama_q_'+ph,d);qresult(ph,d)}}
+async function qresult(ph,d){const el=$(ph==='pre'?'qpreb':'qpostb');
+ let h=`<div class="qres">${d.score} de 6 correctas</div>`;
+ if(ph==='pre')h+=`<p>Guardamos tu punto de partida${d.saved?'':' en este teléfono (sin conexión no se pudo enviar)'}. No te mostramos las respuestas todavía: haz el viaje y, al final, vuelve a responder.</p><p><a href="#aprendiste">Ir a las preguntas del final</a></p>`;
+ else{const pre=lg('trama_q_pre');
+  h+=QZ.map(([q,o],i)=>`<div class="qq"><b>${i+1}. ${q}</b><div class="qo">${o.map((x,j)=>j===QK[i]||j===d.a[i]?`<label class="${j===QK[i]?'ok':'no'}">${j===QK[i]?'✓':'✗'} ${x}</label>`:'').join('')}</div></div>`).join('');
+  if(pre)h+=`<div class="cmp"><div><b>${pre.score}/6</b>tú, antes del viaje</div><div><b>${d.score}/6</b>tú, después</div></div>`;
+  h+=`<div id="qstats" class="note">Cargando resultados de todos…</div>`}
+ el.innerHTML=h;if(ph==='pre')$('qpre').open=true;
+ if(ph==='post'){const s=await sbr('trama_quiz_stats');const st=$('qstats');if(!st)return;
+  if(!s){st.textContent='Sin conexión: no se pudieron cargar los resultados de todos.';return}
+  st.innerHTML=s.pair_n>0?`<b style="color:var(--ink)">Entre las ${s.pair_n} ${s.pair_n==1?'persona':'personas'} que respondieron antes y después, los aciertos pasaron de ${s.pair_pre}% a ${s.pair_post}%.</b> ${s.pair_n<20?'Todavía son pocas respuestas para sacar conclusiones.':''}`:'Aún nadie ha respondido antes y después. ¡Puedes ser el primero en sumar datos!'}}
+qform('pre');qform('post');
 
 /* ---------- LABORATORIO IA ---------- */
 const CORPUS=`el micelio conecta los árboles del bosque . los árboles dan azúcar al micelio . el micelio devuelve agua y nutrientes a los árboles . el corazón bombea la sangre por todo el cuerpo . la sangre lleva oxígeno a cada célula . la hoja convierte la luz en azúcar . la clorofila atrapa la luz del sol . la hemoglobina lleva oxígeno en la sangre . la neurona recibe señales y dispara un pulso . la sinapsis se fortalece cuando aprendes . la inteligencia artificial aprende patrones de los datos . la inteligencia artificial predice la siguiente palabra . el chip multiplica números por pesos . los pesos guardan lo que la red aprendió . la red conecta todos los sistemas . la vida es un flujo de energía . la energía fluye por la trama de la vida . la trama de la vida conecta el cuerpo la planta el hongo y la máquina . cada sistema necesita energía información y protección . el bosque es una red viva . el cuerpo es una red de sistemas . la batería guarda energía para el motor . el sensor envía señales al chip . aprender es cambiar las conexiones . la conciencia observa los patrones de la vida . el hongo descompone la materia y devuelve la vida al suelo . la luz del sol da energía a la hoja . la red de micelio lleva señales entre los árboles .`.split(' ').filter(Boolean);
