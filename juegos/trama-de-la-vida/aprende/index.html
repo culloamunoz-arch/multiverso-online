@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#04060f">
+<title>Aprende la Trama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: un guía paciente de noche en el bosque; claro, cálido, sin jerga.
+   IDEA: un telar de micelio: cinco mundos unidos por seis hilos.
+   PICTURE: la red viva arriba; al elegir un hilo se enciende entre los cinco mundos.
+   COLOUR/TYPE: noche #04060f, hilos de colores por patrón, marfil para el texto. Sora + Atkinson Hyperlegible.
+   LAYOUT: título → red → panel del hilo → 4 ideas → simulador → retos. Una columna en el teléfono. */
+:root{color-scheme:dark;--bg:#04060f;--bg2:#0b1024;--card:#111833;--line:#25305a;--ink:#f3eee2;--mute:#a9b0c8;--acc:#ffb35c}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;line-height:1.08;text-wrap:balance;margin:0 0 .4em}
+h1{font-size:clamp(34px,6vw,52px)}h2{font-size:clamp(26px,4vw,36px)}h3{font-size:19px}
+p{margin:0 0 .8em;max-width:68ch}
+.band{padding:clamp(28px,4vw,64px) max(5vw,16px)}
+.wrap{max-width:1180px;margin:0 auto}
+.alt{background:var(--bg2)}
+.lead{color:var(--mute);font-size:18px}
+a{color:var(--acc)}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:32px;align-items:center}
+.fig{position:relative;aspect-ratio:1/1;max-height:560px;width:100%}
+.fig svg{position:absolute;inset:0;width:100%;height:100%}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+button{font:inherit;color:inherit;cursor:pointer}
+.chip{min-height:44px;padding:8px 16px;border-radius:99px;border:1.5px solid var(--c);background:transparent;font-weight:700}
+.chip[aria-pressed=true]{background:var(--c);color:#04060f}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.steps{display:flex;gap:10px;flex-wrap:wrap;color:var(--mute);font-size:15px;margin-top:6px}
+.steps b{color:var(--ink)}
+.q{border-left:4px solid var(--c,#ffb35c);padding:10px 16px;background:var(--card);border-radius:0 12px 12px 0;margin:18px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.card .u{display:flex;align-items:center;gap:10px;font-weight:700;margin-bottom:6px}
+.dot{width:14px;height:14px;border-radius:50%;flex:none}
+.card .ex{color:var(--mute);font-size:15px;margin:8px 0 0}
+.card.on{border-color:var(--c);box-shadow:0 0 0 2px var(--c) inset}
+.note{font-size:14px;color:var(--mute)}
+.ideas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px;margin-top:18px}
+.ideas .card b{display:block;font-family:Sora;font-size:18px;margin-bottom:4px}
+.sim{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:28px;align-items:start}
+label{display:block;font-weight:700;margin:14px 0 4px}
+input[type=range]{width:100%;height:44px;accent-color:var(--acc)}
+.val{float:right;color:var(--acc)}
+.chart{position:relative;height:320px;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.chart svg{position:absolute;inset:0;width:100%;height:100%}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:15px;margin:10px 0}
+.verdict{font-family:Sora;font-size:20px;margin:12px 0 6px}
+.btn{min-height:44px;padding:10px 18px;border-radius:12px;border:0;background:var(--acc);color:#04060f;font-weight:700}
+.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.quiz .opts{display:grid;gap:8px;margin-top:12px}
+.opt{text-align:left;min-height:48px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg2)}
+.opt.ok{border-color:#6fd39a;background:#123222}.opt.no{border-color:#ff7a7a;background:#3a1418}
+.bar{height:10px;border-radius:9px;background:var(--line);overflow:hidden;margin:8px 0 16px}.bar i{display:block;height:100%;background:var(--acc);transition:width .4s}
+footer{color:var(--mute);font-size:14px}
+@media(max-width:820px){.hero,.sim{grid-template-columns:minmax(0,1fr)}.fig{max-height:420px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.flow{stroke-dasharray:6 10;animation:fl 1.6s linear infinite}@keyframes fl{to{stroke-dashoffset:-32}}
+</style>
+</head>
+<body>
+<section class="band"><div class="wrap hero">
+  <div>
+    <h1>Aprende la Trama de la Vida</h1>
+    <p class="lead">Un cuerpo, un auto, una IA, una planta y un hongo parecen no tener nada en común. Pero todos tienen que resolver los mismos seis problemas para existir. Esa es la trama.</p>
+    <div class="steps"><span><b>1.</b> Elige un hilo</span><span><b>2.</b> Mira cómo lo resuelve cada mundo</span><span><b>3.</b> Prueba el bosque y los retos</span></div>
+    <div class="chips" id="chips" role="group" aria-label="Seis hilos (patrones)"></div>
+  </div>
+  <div class="fig" id="fig"><svg id="web" viewBox="0 0 600 600" role="img" aria-label="Red de cinco mundos unidos por el hilo elegido"></svg></div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2 id="pt"></h2>
+  <p class="lead" id="pq"></p>
+  <div class="grid" id="cards"></div>
+  <div class="q" id="think"></div>
+  <p class="note">Las analogías ayudan a comprender; no afirman que los sistemas sean idénticos. Un corazón no es una bomba de auto: comparten una función, no una naturaleza.</p>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Pensar en sistemas, en cuatro ideas</h2>
+  <p class="lead">Esto es lo que la Trama quiere enseñarte. Con estas cuatro ideas puedes mirar cualquier cosa: tu cuerpo, tu barrio, un CESFAM o un bosque.</p>
+  <div class="ideas">
+    <div class="card"><b>Elementos</b>Las partes que ves: órganos, piezas, raíces, hifas. Es lo primero que notamos y lo menos importante.</div>
+    <div class="card"><b>Conexiones</b>Lo que fluye entre las partes: sangre, corriente, savia, señales. Cambia una conexión y cambia todo el sistema.</div>
+    <div class="card"><b>Bucles</b>Cuando el efecto vuelve a la causa. De <em>refuerzo</em>: más árboles, más micelio, más árboles. De <em>equilibrio</em>: la fiebre sube y el sudor la baja.</div>
+    <div class="card"><b>Emergencia</b>El todo hace cosas que ninguna parte hace sola. Ninguna neurona piensa; un cerebro sí. Ningún árbol es un bosque.</div>
+  </div>
+</div></section>
+
+<section class="band alt"><div class="wrap sim">
+  <div>
+    <h2>El bosque y su red</h2>
+    <p>Árboles y hongos hacen un trato: el árbol da azúcar al micelio y el micelio le devuelve agua y nutrientes del suelo. Mueve las palancas y mira 60 años en segundos.</p>
+    <label for="tala">Tala de árboles por año <span class="val" id="talaV"></span></label>
+    <input type="range" id="tala" min="0" max="8" step="0.5" value="1">
+    <label for="dano">Daño al micelio (químicos, suelo compactado) <span class="val" id="danoV"></span></label>
+    <input type="range" id="dano" min="0" max="90" step="5" value="0">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+      <button class="btn ghost" data-p="0,0">Bosque sano</button>
+      <button class="btn ghost" data-p="4,0">Solo tala</button>
+      <button class="btn ghost" data-p="1,70">Solo daño al suelo</button>
+    </div>
+  </div>
+  <div>
+    <div class="legend"><span style="color:#7fd67a">● Árboles</span><span style="color:#e8c27a">● Micelio</span><span style="color:#7fb8ff">● Nutrientes del suelo</span></div>
+    <div class="chart" id="chart"><svg id="cs" aria-label="Gráfico de 60 años del bosque"></svg></div>
+    <p class="verdict" id="verdict"></p>
+    <p id="lesson"></p>
+  </div>
+</div></section>
+
+<section class="band"><div class="wrap quiz" style="max-width:760px">
+  <h2>Retos de la Trama</h2>
+  <p class="lead">Seis preguntas. No se trata de memorizar: se trata de reconocer el mismo hilo en mundos distintos.</p>
+  <div class="bar"><i id="prog" style="width:0"></i></div>
+  <div id="quiz"></div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>¿Listo para volver al universo 3D?</h2>
+  <p>Ahora que conoces los seis hilos, cada punto luminoso del viaje tridimensional tendrá sentido: estás viendo cómo cada mundo resuelve energía, distribución, información, protección, adaptación y sentido.</p>
+  <p><a class="btn" style="display:inline-block;text-decoration:none" href="../">Abrir el viaje 3D →</a></p>
+  <footer>La Trama de la Vida · Universo Gao Yu · Modo Aprende</footer>
+</div></section>
+
+<script>
+{
+const U=[
+ {k:'h',n:'Humano',c:'#ff8a6b'},{k:'t',n:'Tecnológico e IA',c:'#7fb8ff'},{k:'v',n:'Vegetal',c:'#7fd67a'},{k:'f',n:'Fungi',c:'#e8c27a'},{k:'c',n:'Conciencia',c:'#e9e3ff'}];
+const P=[
+ {n:'Energía',c:'#ffb35c',q:'¿De dónde saca fuerza cada sistema?',
+  h:['Comer y respirar','Las mitocondrias queman glucosa con oxígeno y fabrican ATP, la "moneda" de energía de cada célula.','Pulmones, estómago, intestino'],
+  t:['Electricidad','El auto guarda energía en la batería y la convierte en movimiento. La IA consume electricidad en chips que hacen billones de cálculos.','Batería, motor, centros de datos'],
+  v:['Luz convertida en azúcar','La hoja captura luz y, con agua y CO₂, fabrica azúcar: la fotosíntesis. Es la puerta de entrada de energía a casi toda la vida.','Hojas, raíces'],
+  f:['Descomponer y negociar','Los hongos no hacen fotosíntesis: digieren materia muerta por fuera de su cuerpo y reciben azúcar de las plantas a cambio de nutrientes.','Descomposición, micorrizas'],
+  c:['Mantener el orden cuesta','Todo lo vivo es un flujo, no una cosa quieta: si deja de recibir energía, se desordena.','¿Qué es la vida?'],
+  think:'Si dejas de "alimentar" un sistema —tu cuerpo, un equipo de trabajo, una huerta—, ¿qué se desordena primero?'},
+ {n:'Distribución',c:'#ff6f91',q:'¿Cómo llega lo vital a cada parte?',
+  h:['Corazón y vasos','El corazón empuja la sangre por una red de vasos que, puestos en fila, darían más de dos vueltas a la Tierra.','Corazón, arterias y venas'],
+  t:['Cables y fluidos','El cableado lleva corriente y señales; la bomba mueve refrigerante para que nada se recaliente.','Líneas de fluidos, refrigeración'],
+  v:['Xilema y floema','El xilema sube agua desde la raíz; el floema reparte el azúcar fabricado en las hojas hacia donde se necesita.','Xilema, floema'],
+  f:['Micelio','Las hifas forman una red que transporta agua y nutrientes, y puede mover recursos entre plantas conectadas.','Micelio, hifas'],
+  c:['Centro y periferia','Toda red decide quién recibe primero y quién al final. Mirar eso es mirar la equidad del sistema.','¿Qué es la cooperación?'],
+  think:'En un territorio, ¿quién está "al final de la red" y recibe los recursos más tarde? ¿Qué conexión nueva lo cambiaría?'},
+ {n:'Información',c:'#9ad7ff',q:'¿Quién le avisa a quién?',
+  h:['Nervios y hormonas','Los nervios avisan rápido con electricidad; las hormonas avisan lento, por la sangre, a todo el cuerpo.','Cerebro, médula, glándulas'],
+  t:['Sensores y atención','Sensores → computador (ECU) → acción. En la IA, el mecanismo de atención decide qué palabras influyen en cada respuesta.','Sensores, bus CAN, atención'],
+  v:['Señales químicas','Una planta atacada libera compuestos que activan defensas en otras partes de sí misma y, a veces, en plantas vecinas.','Señalización'],
+  f:['Mensajes en la red','Por el micelio viajan señales químicas. Cuánto se "comunica" el bosque así todavía se investiga y se discute.','Red simbiótica del bosque'],
+  c:['Reconocer patrones','La información es una diferencia que produce una diferencia: un aviso solo sirve si alguien cambia algo al recibirlo.','Reconocer patrones'],
+  think:'Piensa en un aviso que llega y no cambia nada. ¿Falló el mensaje, el canal o quien lo recibe?'},
+ {n:'Protección',c:'#c9a3ff',q:'¿Cómo se defiende sin destruirse?',
+  h:['Sistema inmune','Piel, timo, médula ósea y bazo reconocen lo extraño. La microbiota ocupa espacio y deja menos lugar a los patógenos.','Timo, bazo, microbiota'],
+  t:['Frenos y salvaguardas','ABS, fusibles y diagnóstico protegen la máquina. En la IA: evaluación, salvaguardas y una persona en el bucle.','Frenos, OBD, alineación'],
+  v:['Corteza y química','Espinas, corteza y sustancias amargas o tóxicas que disuaden a quien quiera comérsela.','Defensas químicas'],
+  f:['Antibióticos naturales','Los hongos compiten fabricando sustancias contra bacterias. La penicilina nació de un hongo.','Defensa ecológica'],
+  c:['El costo de defenderse','Toda defensa cuesta energía. Demasiada protección también enferma: alergias, rigidez, desconfianza.','¿Cómo emerge el orden?'],
+  think:'¿Dónde una protección exagerada termina dañando lo que quería cuidar?'},
+ {n:'Adaptación',c:'#6fd3b8',q:'¿Cómo cambia sin dejar de ser?',
+  h:['Aprender y fortalecerse','El músculo crece con el uso, el cerebro se reorganiza al aprender y la temperatura del cuerpo se mantiene estable aunque afuera cambie.','Músculos, cerebro'],
+  t:['Actualizar','El software se actualiza; la IA se entrena y ajusta con nuevos datos, y se evalúa para ver si mejoró.','Actualización, ajuste fino'],
+  v:['Crecer hacia la luz','Los tropismos dirigen el crecimiento hacia la luz y el agua. En sequía, algunas plantas sueltan hojas para sobrevivir.','Tropismos'],
+  f:['Red plástica','El micelio refuerza los caminos que llevan a comida y abandona los que no sirven: una red que se rediseña sola.','Plasticidad del micelio'],
+  c:['Innovar','Aprender es la forma más rápida de adaptarse: cambiar la conducta antes de que el entorno te obligue.','Innovar'],
+  think:'¿Qué costumbre tuya era útil antes y hoy ya no lo es? ¿Qué la reemplazaría?'},
+ {n:'Sentido',c:'#ffe08a',q:'¿Para qué existe todo esto?',
+  h:['Propósito','Las personas buscamos significado. Tener un propósito se asocia a mejor salud y a cuidar mejor de otros.','Corteza prefrontal'],
+  t:['Propósito prestado','Una máquina tiene el propósito que le da quien la diseña. La IA no tiene deseos propios: sigue objetivos definidos por personas.','Lo que la IA no es'],
+  v:['Continuar','Sin conciencia, la planta "apuesta" por el futuro: flor, fruto y semilla.','Flor, fruto, semilla'],
+  f:['Cerrar el ciclo','Sin hongos, el bosque se ahogaría en hojas muertas. Su papel es devolver lo que muere a la vida.','Esporas, cuerpo fructífero'],
+  c:['Dar significado','Observar, reconocer patrones, dar significado, innovar: así la trama se mira a sí misma.','¿Qué conecta todos los sistemas?'],
+  think:'Si fueras un hilo de la trama de tu comunidad, ¿qué conectas tú que, sin ti, quedaría suelto?'}
+];
+const $=id=>document.getElementById(id);
+let cur=0,sel=null;
+const POS=U.map((u,i)=>{const a=-Math.PI/2+i*2*Math.PI/5;return[300+205*Math.cos(a),300+205*Math.sin(a)]});
+function web(){
+  const p=P[cur];let s='<defs><radialGradient id="g"><stop offset="0" stop-color="'+p.c+'" stop-opacity=".35"/><stop offset="1" stop-color="'+p.c+'" stop-opacity="0"/></radialGradient></defs><circle cx="300" cy="300" r="260" fill="url(#g)"/>';
+  P.forEach((q,j)=>{if(j===cur)return;for(let a=0;a<5;a++)for(let b=a+1;b<5;b++){const[x1,y1]=POS[a],[x2,y2]=POS[b];s+=`<path d="M${x1} ${y1}Q${300+(j-2.5)*14} ${300+(j-2.5)*14} ${x2} ${y2}" stroke="${q.c}" stroke-opacity=".08" fill="none"/>`}});
+  for(let a=0;a<5;a++)for(let b=a+1;b<5;b++){const[x1,y1]=POS[a],[x2,y2]=POS[b];s+=`<path class="flow" d="M${x1} ${y1}Q300 300 ${x2} ${y2}" stroke="${p.c}" stroke-width="2.2" stroke-opacity=".75" fill="none"/>`}
+  s+=`<circle cx="300" cy="300" r="56" fill="#04060f" stroke="${p.c}" stroke-width="2"/><text x="300" y="296" text-anchor="middle" fill="${p.c}" font-family="Sora" font-weight="700" font-size="19">${p.n}</text><text x="300" y="320" text-anchor="middle" fill="#a9b0c8" font-size="13">el hilo</text>`;
+  U.forEach((u,i)=>{const[x,y]=POS[i],on=sel===i;s+=`<g class="nd" data-i="${i}" tabindex="0" role="button" aria-label="${u.n}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="${on?50:44}" fill="#0b1024" stroke="${u.c}" stroke-width="${on?4:2}"/><circle cx="${x-12}" cy="${y-14}" r="10" fill="${u.c}" opacity=".25"/><circle cx="${x}" cy="${y}" r="9" fill="${u.c}"/><text x="${x}" y="${y+(y>300?70:-58)}" text-anchor="middle" fill="#f3eee2" font-family="Sora" font-weight="700" font-size="18">${u.n.replace(' e IA','')}</text></g>`});
+  $('web').innerHTML=s;
+  $('web').querySelectorAll('.nd').forEach(g=>{const f=()=>{sel=+g.dataset.i;render();document.querySelector('.card.on')?.scrollIntoView({behavior:'smooth',block:'center'})};g.onclick=f;g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f()}}});
+}
+function render(){
+  const p=P[cur];
+  $('chips').innerHTML=P.map((q,j)=>`<button class="chip" style="--c:${q.c}" aria-pressed="${j===cur}" data-j="${j}">${q.n}</button>`).join('');
+  $('chips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{cur=+b.dataset.j;sel=null;render();try{localStorage.setItem('trama-hilo',cur)}catch(e){}});
+  $('pt').textContent=(cur+1)+' de 6 · '+p.n;$('pq').textContent=p.q;
+  $('cards').innerHTML=U.map((u,i)=>{const d=p[u.k];return`<div class="card${sel===i?' on':''}" style="--c:${u.c}"><div class="u"><span class="dot" style="background:${u.c}"></span>${u.n}</div><h3>${d[0]}</h3><p style="margin:0">${d[1]}</p><p class="ex">Búscalo en el 3D: ${d[2]}</p></div>`}).join('');
+  $('think').style.setProperty('--c',p.c);$('think').innerHTML='<b>Para pensar:</b> '+p.think;
+  web();
+}
+try{const v=+localStorage.getItem('trama-hilo');if(v>=0&&v<6)cur=v}catch(e){}
+render();
+
+/* Simulador */
+function simulate(h,d){let T=60,M=50,N=40;const o=[];const mic=1-d;
+  for(let t=0;t<=60;t++){o.push([T,M,N]);
+    for(let k=0;k<2;k++){const up=0.10*T*(N/(N+25))*(1-T/100)*(0.6+0.4*Math.min(1,M/40));
+    const sug=0.07*M*(T/(T+20))*(1-M/100)*mic;
+    T=Math.max(0,T+up-h*T-0.01*T);
+    const nM=Math.max(0,M+sug-0.03*M);
+    N=Math.max(0,Math.min(120,N+0.06*M*mic+0.005*T-0.05*T*(N/(N+25))-0.01*N));M=nM}}
+  return o}
+let data=[];
+function draw(){const s=$('cs'),W=s.clientWidth,H=s.clientHeight;if(!W)return;const L=36,R=12,Tp=16,B=30,cols=['#7fd67a','#e8c27a','#7fb8ff'];
+  const x=i=>L+(W-L-R)*i/60,y=v=>Tp+(H-Tp-B)*(1-Math.min(v,110)/110);
+  let g='';[0,50,100].forEach(v=>g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#25305a"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" fill="#a9b0c8" font-size="12">${v}</text>`);
+  [0,20,40,60].forEach(t=>g+=`<text x="${x(t)}" y="${H-8}" text-anchor="middle" fill="#a9b0c8" font-size="12">${W<520&&t%40?'':'año '+t}</text>`);
+  cols.forEach((c,k)=>g+=`<polyline fill="none" stroke="${c}" stroke-width="3" stroke-linejoin="round" points="${data.map((r,i)=>x(i)+','+y(r[k])).join(' ')}"/>`);
+  s.innerHTML=g}
+const ro=new ResizeObserver(draw);ro.observe($('chart'));
+function sim(){const h=+$('tala').value,d=+$('dano').value;$('talaV').textContent=h+'%';$('danoV').textContent=d+'%';
+  data=simulate(h/100,d/100);draw();const[T,M]=data[60];
+  let v,l;
+  if(T>65&&M>40){v='Bosque en equilibrio';l='El bucle de refuerzo funciona: los árboles alimentan al micelio y el micelio alimenta a los árboles. Fíjate que los nutrientes se estabilizan solos: es un bucle de equilibrio.'}
+  else if(M<20&&T>25){v='Red debilitada';l='Los árboles siguen de pie, pero el micelio se apaga. Es un daño invisible: arriba todo parece bien y abajo se rompe la conexión. Muchos problemas de salud y de comunidad funcionan igual.'}
+  else if(T<25){v='Colapso';l='El mismo bucle que hacía crecer al bosque ahora lo hunde: menos árboles, menos azúcar para el micelio, menos nutrientes, menos árboles. Un bucle de refuerzo empuja hacia arriba o hacia abajo.'}
+  else{v='Bosque bajo presión';l='El sistema resiste, pero vive con menos. Observa que la caída no es lineal: un poco más de presión puede inclinarlo hacia el colapso.'}
+  $('verdict').textContent=v;$('lesson').textContent=l}
+['tala','dano'].forEach(i=>$(i).oninput=sim);
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const[h,d]=b.dataset.p.split(',');$('tala').value=h;$('dano').value=d;sim()});
+sim();
+
+/* Retos */
+const Q=[
+ {q:'El floema reparte el azúcar por la planta. ¿Qué cumple una función parecida en tu cuerpo?',o:['Los pulmones','El corazón y los vasos sanguíneos','El esqueleto'],a:1,e:'Ambos distribuyen lo vital a todas las partes: es el hilo de la Distribución.'},
+ {q:'Un hongo no puede hacer fotosíntesis. ¿Cómo obtiene su energía?',o:['Descomponiendo materia y recibiendo azúcar de las plantas','Absorbiendo luz por las esporas','No necesita energía'],a:0,e:'Descompone lo muerto y negocia con las plantas a través de las micorrizas.'},
+ {q:'En un auto, los sensores avisan a la ECU. En tu cuerpo, el equivalente más cercano es…',o:['El estómago','Los nervios que llevan señales al cerebro','La piel como barrera'],a:1,e:'Es el hilo de la Información: detectar, avisar, decidir, actuar.'},
+ {q:'La penicilina, primer antibiótico, salió de…',o:['Una planta medicinal','Un hongo','Una bacteria del intestino'],a:1,e:'Los hongos se defienden fabricando sustancias contra bacterias: el hilo de la Protección.'},
+ {q:'Si el micelio se daña pero los árboles siguen de pie, ¿qué pasa con el tiempo?',o:['Nada, los árboles no lo necesitan','Los árboles crecen más rápido','Se debilita el bucle que nutre a los árboles y el bosque pierde fuerza'],a:2,e:'Un daño invisible en una conexión termina afectando a las partes visibles.'},
+ {q:'¿Cuál frase describe mejor la emergencia?',o:['El todo hace cosas que ninguna parte hace sola','Las partes siempre son más importantes que el todo','Un sistema es la suma exacta de sus piezas'],a:0,e:'Ninguna neurona piensa; un cerebro sí. Ningún árbol es un bosque.'}
+];
+let qi=0,score=0;
+function quiz(){const z=$('quiz');$('prog').style.width=(qi/Q.length*100)+'%';
+  if(qi>=Q.length){z.innerHTML=`<div class="card"><h3>Lograste ${score} de ${Q.length}</h3><p>${score>=5?'Ya ves la trama: el mismo hilo en mundos distintos.':score>=3?'Vas bien. Vuelve a los hilos que te costaron y míralos en el 3D.':'Buen comienzo. Recorre los seis hilos de arriba y vuelve a intentarlo.'}</p><button class="btn" id="again">Jugar otra vez</button></div>`;
+    try{const b=+(localStorage.getItem('trama-best')||0);if(score>b)localStorage.setItem('trama-best',score)}catch(e){}
+    $('again').onclick=()=>{qi=0;score=0;quiz()};return}
+  const c=Q[qi];z.innerHTML=`<div class="card"><p class="note">Reto ${qi+1} de ${Q.length}</p><h3>${c.q}</h3><div class="opts">${c.o.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join('')}</div><div id="fb"></div></div>`;
+  z.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(z.querySelector('.ok'))return;const i=+b.dataset.i;z.querySelectorAll('.opt')[c.a].classList.add('ok');if(i!==c.a)b.classList.add('no');else score++;
+    $('fb').innerHTML=`<p style="margin:12px 0">${i===c.a?'<b>¡Exacto!</b> ':'<b>Casi.</b> '}${c.e}</p><button class="btn" id="nx">${qi<Q.length-1?'Siguiente':'Ver resultado'}</button>`;$('nx').onclick=()=>{qi++;quiz()}})}
+quiz();
+}
+</script>
+</body>
+</html>
