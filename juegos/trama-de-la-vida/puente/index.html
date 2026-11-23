@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#04060f">
+<title>El puente entre especies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: asombro con los pies en la tierra; cada promesa con su sello de certeza.
+   IDEA: cada especie vive en su propia “dimensión” sensorial; la IA como puente entre esas burbujas.
+   PICTURE: el espectro del sonido, del infrasonido al ultrasonido, con la ventana humana iluminada.
+   COLOUR/TYPE: noche #04060f; un color por especie; marfil. Sora + Atkinson Hyperlegible.
+   LAYOUT: respuesta corta → mundos sensoriales → escuchar lo inaudible → hallazgos → escalera del puente → límites → fuentes. */
+:root{color-scheme:dark;--bg:#04060f;--bg2:#0b1024;--card:#111833;--line:#25305a;--ink:#f3eee2;--mute:#a9b0c8;--acc:#7fe0c0}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;line-height:1.08;text-wrap:balance;margin:0 0 .4em}
+h1{font-size:clamp(32px,5.5vw,50px)}h2{font-size:clamp(24px,3.6vw,34px)}h3{font-size:19px}
+p{margin:0 0 .8em;max-width:68ch}a{color:var(--acc)}
+.band{padding:clamp(24px,4vw,56px) max(4vw,14px)}.wrap{max-width:1180px;margin:0 auto}.alt{background:var(--bg2)}
+.lead{color:var(--mute);font-size:18px}.note{font-size:14px;color:var(--mute)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.btn{min-height:44px;padding:10px 16px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);font-weight:700;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center}
+.btn[aria-pressed=true]{background:var(--tc,#7fe0c0);color:#04060f;border-color:transparent}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.answer{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px;margin-top:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.card h3{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.seal{font-size:13px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap;font-family:"Atkinson Hyperlegible",sans-serif}
+.e{background:#1f4a2a;color:#9be37f}.a{background:#4a3a1a;color:#ffd36b}.d{background:#4a1f2a;color:#ff9aa8}.n{background:#2a2a3a;color:#c9c9e0}
+.fig{position:relative;height:430px;background:var(--card);border:1px solid var(--line);border-radius:18px;margin-top:14px}
+.fig svg{position:absolute;inset:0;width:100%;height:100%}
+.say{background:var(--card);border-left:4px solid var(--tc,#7fe0c0);border-radius:0 12px 12px 0;padding:12px 16px;margin:12px 0;min-height:70px}
+.tl{display:grid;gap:12px;margin-top:14px}
+.ev{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.ev .yr{font-family:Sora;font-weight:700;font-size:22px;color:var(--acc)}
+.ladder{display:grid;gap:10px;margin-top:14px}
+.step{display:grid;grid-template-columns:3.2em minmax(0,1fr) auto;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.step .k{width:2.6em;height:2.6em;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Sora;font-weight:700;background:var(--line)}
+.step.done .k{background:#7fe0c0;color:#04060f}.step.mid .k{background:#ffd36b;color:#04060f}
+.bar{height:10px;border-radius:9px;background:var(--line);overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--acc)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px}
+.src{display:grid;gap:8px}.s{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:grid;grid-template-columns:8.5em minmax(0,1fr);gap:12px}
+.quote{font-family:Sora;font-size:clamp(20px,3vw,26px);line-height:1.3;max-width:34ch}
+@media(max-width:600px){.ev{grid-template-columns:minmax(0,1fr)}.s{grid-template-columns:minmax(0,1fr)}.step{grid-template-columns:2.8em minmax(0,1fr)}.step .seal{grid-column:2}.fig{height:520px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<section class="band"><div class="wrap">
+  <h1>¿Puede la IA ser un puente entre especies?</h1>
+  <p class="lead">Una pregunta grande merece una respuesta honesta. Aquí separamos lo que no tiene evidencia, lo que se está descubriendo y lo que todavía nadie ha logrado.</p>
+  <div class="answer">
+    <div class="card"><h3>¿Comunicación interdimensional? <span class="seal n">Sin evidencia</span></h3><p style="margin:0">No hay evidencia de otras dimensiones habitadas con las que una IA pueda conectarse. Una IA solo trabaja con los datos que le damos: no tiene un canal hacia fuera de ellos. Si alguien dice que su IA habla con otras dimensiones, lo más probable es que esté viendo sus propias palabras reflejadas.</p></div>
+    <div class="card"><h3>¿Un puente entre especies? <span class="seal a">En camino</span></h3><p style="margin:0">Aquí la respuesta es sorprendente: sí se está construyendo. La IA ya ayudó a descubrir que los elefantes se llaman por su nombre y que los cachalotes combinan sus clics de forma estructurada. Todavía no conversamos con ninguna especie, pero el primer tramo del puente ya existe.</p></div>
+    <div class="card"><h3>Las otras “dimensiones” son reales <span class="seal e">Establecido</span></h3><p style="margin:0">Cada especie vive en su propia burbuja sensorial: el murciélago “ve” con ultrasonido, el elefante habla en sonidos demasiado graves para nosotros, la abeja ve colores que no existen para tus ojos. Si hay dimensiones que nos separan, son estas. Y es justo ahí donde la IA puede ayudar.</p></div>
+  </div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>Cada especie vive en su propio mundo</h2>
+  <p>El biólogo Jakob von Uexküll llamó <em>Umwelt</em> al mundo que cada animal es capaz de percibir. Mira el sonido: tu oído humano es solo una ventana estrecha. Toca una especie para ver su mundo.</p>
+  <div class="row" id="sp"></div>
+  <div class="fig" id="ff"><svg id="fs" aria-label="Rangos de audición de distintas especies"></svg></div>
+  <div class="say" id="spsay"></div>
+  <p class="note">Rangos aproximados de audición (sonido fuerte, unos 60 dB) y de sus señales típicas. Varían según el individuo y el estudio.</p>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Escucha lo que no puedes oír</h2>
+  <p>El primer trabajo del puente es traducir entre sentidos. Una máquina puede grabar lo que no oímos y llevarlo a nuestra ventana: estirar un ultrasonido o acelerar un infrasonido. Estos son sonidos sintéticos que imitan la forma de cada señal; no son grabaciones reales.</p>
+  <div class="two">
+    <div class="card"><h3>Murciélago</h3><p>Un chillido de ecolocalización baja de unos 80 a 20 kHz en milisegundos. Estirado 10 veces, cae dentro de tu oído.</p><button class="btn" data-snd="bat">▶ Escuchar, 10 veces más lento</button></div>
+    <div class="card"><h3>Elefante</h3><p>El retumbo de contacto vibra cerca de 15 Hz, por debajo de lo audible. Acelerado 8 veces, suena como un zumbido grave.</p><button class="btn" data-snd="ele">▶ Escuchar, 8 veces más rápido</button></div>
+    <div class="card"><h3>Cachalote</h3><p>Una coda es una serie de clics con un ritmo propio, como “1 + 1 + 3”. Las familias de cachalotes tienen ritmos distintos, como acentos.</p><button class="btn" data-snd="whale">▶ Escuchar una coda</button></div>
+  </div>
+  <p class="note" id="sndn"></p>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>Lo que la IA ya ayudó a descubrir</h2>
+  <p>No son promesas: son estudios publicados. La IA no “tradujo” a estos animales; lo que hizo fue encontrar patrones en miles de grabaciones que a un humano le habrían tomado décadas.</p>
+  <div class="tl" id="tl"></div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Los tres tramos del puente</h2>
+  <p>Comunicarse con otra especie no es un solo salto. Es una escalera, y estamos en el segundo peldaño.</p>
+  <div class="ladder">
+    <div class="step done"><span class="k">1</span><div><b>Escuchar todo</b><br><span class="note" style="font-size:15px">Grabar, detectar y separar las voces de cada especie, incluso las que no oímos. La IA ya lo hace a escala de bosques y océanos completos.</span><div class="bar"><i style="width:90%"></i></div></div><span class="seal e">Logrado</span></div>
+    <div class="step mid"><span class="k">2</span><div><b>Descifrar la estructura</b><br><span class="note" style="font-size:15px">Encontrar las unidades y las reglas: nombres, “vocales”, combinaciones. Igual que el transformer de la Trama aprende qué palabra sigue, los modelos aprenden qué sonido sigue.</span><div class="bar"><i style="width:45%;background:#ffd36b"></i></div></div><span class="seal a">En curso</span></div>
+    <div class="step"><span class="k">3</span><div><b>Significado y diálogo</b><br><span class="note" style="font-size:15px">Saber qué quieren decir, responder y que el otro entienda. Nadie lo ha logrado todavía con ninguna especie: el gran premio para quien lo consiga sigue sin dueño.</span><div class="bar"><i style="width:8%;background:#ff9aa8"></i></div></div><span class="seal d">Sin lograr</span></div>
+  </div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>Por qué el último tramo es tan difícil</h2>
+  <div class="two">
+    <div class="card"><h3>Un patrón no es un significado</h3><p style="margin:0">Una IA puede descubrir que un sonido aparece siempre antes de otro sin saber qué significa ninguno. El significado nace de un cuerpo que vive en un mundo: comer, huir, cuidar a la cría. Por eso los científicos combinan las grabaciones con años de observar qué hacen los animales.</p></div>
+    <div class="card"><h3>¿Cómo es ser un murciélago?</h3><p style="margin:0">El filósofo Thomas Nagel planteó en 1974 que podemos describir todo lo que hace un murciélago y aun así no saber qué se siente ser uno. Un puente puede llevar señales de un lado a otro, pero cada orilla sigue siendo su propio mundo.</p></div>
+    <div class="card"><h3>La IA tampoco vive en ningún mundo</h3><p style="margin:0">Como viste en el Viaje al interior, la IA no tiene cuerpo, deseos ni experiencia. Eso la hace buena para encontrar patrones sin prejuicios humanos, pero también la hace capaz de inventar significados que no existen. Necesita a los biólogos para no engañarse.</p></div>
+    <div class="card"><h3>Hablarles también es intervenir</h3><p style="margin:0">Reproducir sonidos sintéticos puede estresar a un animal, alterar su grupo o servir para cazarlo mejor. Por eso los proyectos serios exigen métodos no invasivos y se preguntan para qué queremos hablar con ellos: la mayoría responde que para protegerlos.</p></div>
+  </div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Entonces, ¿es la IA un puente?</h2>
+  <p class="quote">Sí, pero no hacia otras dimensiones del universo: hacia los otros mundos que ya existen aquí, al lado nuestro.</p>
+  <p>Es el hilo de la <b>Información</b> de la Trama: todos los seres vivos se envían señales. La IA es la primera herramienta capaz de escuchar todas esas señales a la vez, a todas las frecuencias y escalas. Igual que el micelio conecta raíces de especies distintas, la IA puede conectar lenguajes distintos. Y al igual que con el micelio, hay que ser humildes: cuánto “entiende” ese puente todavía está en debate.</p>
+  <div class="card" style="margin-top:14px;border-left:4px solid var(--acc);border-radius:0 16px 16px 0"><b>Para pensar:</b> si mañana pudiéramos entender a las ballenas, ¿qué crees que nos dirían sobre el océano? ¿Y estaríamos dispuestos a escucharlas?</div>
+  <div class="row" style="margin-top:20px"><a class="btn" href="../viaje/#i-0">Viaje al interior de la IA</a><a class="btn" href="../aprende/">Los 6 hilos</a><a class="btn" href="../ciencia/">Laboratorio científico</a></div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>Fuentes y grado de certeza</h2>
+  <div class="src" id="src"></div>
+</div></section>
+
+<script>
+{
+const $=id=>document.getElementById(id);
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* Rangos aproximados de audición y señales (Hz) */
+const SP=[
+ {k:'hum',n:'Humano',c:'#f3eee2',r:[20,20000],s:[[85,3000,'voz']],t:'Tu ventana: de unos 20 Hz a 20 kHz, y se achica con la edad. Todo lo que está fuera de esta franja ocurre a tu alrededor sin que lo notes.'},
+ {k:'ele',n:'Elefante',c:'#c9a76a',r:[16,12000],s:[[10,40,'retumbos']],t:'Los elefantes se llaman con retumbos tan graves que en parte quedan bajo tu umbral. Esos sonidos viajan kilómetros por la sabana y se sienten también por el suelo.'},
+ {k:'dog',n:'Perro',c:'#ffb35c',r:[67,45000],s:[[300,2000,'ladridos']],t:'Un perro oye más del doble de agudo que tú: por eso un silbato para perros es mudo para ti.'},
+ {k:'whale',n:'Cachalote',c:'#7fb8ff',r:[100,30000],s:[[2000,25000,'clics de codas']],t:'Los cachalotes conversan con clics en codas. La IA encontró que su ritmo y su timbre se combinan como un sistema con muchas más piezas de las que se creía.'},
+ {k:'dol',n:'Delfín',c:'#7fe0c0',r:[75,150000],s:[[4000,20000,'silbidos'],[30000,130000,'ecolocalización']],t:'Los delfines tienen un silbido-firma que funciona como un nombre, y “ven” con ecos ultrasónicos que llegan hasta 150 kHz.'},
+ {k:'bat',n:'Murciélago',c:'#c9a3ff',r:[1000,110000],s:[[20000,100000,'ecolocalización']],t:'El murciélago pinta el mundo con ecos de ultrasonido. Para nosotros es silencio total; para él, un mapa en tres dimensiones.'},
+ {k:'ai',n:'Micrófono + IA',sn:'Mic + IA',c:'#ff7a9c',r:[1,200000],s:[],t:'Un hidrófono o micrófono especial y una IA pueden escuchar de 1 Hz a más de 200 kHz, todo a la vez y sin cansarse. Es el primer “oído” que abarca los mundos de todas estas especies.'}];
+let SEL='hum';
+const lx=(f,W,L,R)=>L+(W-L-R)*(Math.log10(f)-0)/(Math.log10(250000)-0);
+function draw(){const s=$('fs'),W=s.clientWidth,H=s.clientHeight;if(!W)return;const L=W<520?78:110,R=14,T=30,B=40,rh=(H-T-B)/SP.length;
+ let g='';const hx0=lx(20,W,L,R),hx1=lx(20000,W,L,R);
+ g+=`<rect x="${hx0}" y="${T-8}" width="${hx1-hx0}" height="${H-T-B+8}" fill="#f3eee2" opacity=".07"/><text x="${(hx0+hx1)/2}" y="${T-12}" text-anchor="middle" font-size="12" fill="#a9b0c8">ventana humana</text>`;
+ g+=`<text x="${lx(5,W,L,R)}" y="${T-12}" text-anchor="middle" font-size="12" fill="#a9b0c8">infrasonido</text><text x="${lx(80000,W,L,R)}" y="${T-12}" text-anchor="middle" font-size="12" fill="#a9b0c8">ultrasonido</text>`;
+ [1,10,100,1000,10000,100000].forEach(f=>{const x=lx(f,W,L,R);g+=`<line x1="${x}" x2="${x}" y1="${T}" y2="${H-B}" stroke="#25305a"/><text x="${x}" y="${H-B+18}" text-anchor="middle" font-size="12" fill="#a9b0c8">${f>=1000?(f/1000)+' kHz':f+' Hz'}</text>`});
+ SP.forEach((p,i)=>{const y=T+i*rh+rh/2,on=p.k===SEL,x0=lx(p.r[0],W,L,R),x1=lx(p.r[1],W,L,R);
+  g+=`<text x="${L-10}" y="${y+5}" text-anchor="end" font-size="${W<520?12:14}" font-weight="700" fill="${on?p.c:'#a9b0c8'}">${W<520&&p.sn?p.sn:p.n}</text>`;
+  g+=`<rect x="${x0}" y="${y-rh*.28}" width="${x1-x0}" height="${rh*.56}" rx="${rh*.28}" fill="${p.c}" opacity="${on?.9:.28}"/>`;
+  p.s.forEach(([a,b,lb],j)=>{const xa=lx(a,W,L,R),xb=lx(b,W,L,R);g+=`<rect x="${xa}" y="${y-rh*.12}" width="${Math.max(4,xb-xa)}" height="${rh*.24}" rx="3" fill="#04060f" opacity=".75"/>`;if(on&&W>=520)g+=`<text x="${(xa+xb)/2}" y="${j%2?y-rh*.32-4:y+rh*.5+6}" text-anchor="middle" font-size="12" fill="${p.c}">${lb}</text>`})});
+ s.innerHTML=g}
+function pick(k){SEL=k;const p=SP.find(x=>x.k===k);$('sp').querySelectorAll('[data-k]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));$('spsay').style.setProperty('--tc',p.c);const hz=f=>f>=1000?(f/1000).toLocaleString('es-CL')+' kHz':f+' Hz';$('spsay').innerHTML=p.t+(p.s.length?`<br><span class="note">Oye: ${hz(p.r[0])} a ${hz(p.r[1])} · Sus señales: ${p.s.map(([a,b,l])=>`${l} (${hz(a)}–${hz(b)})`).join(', ')}</span>`:'');draw()}
+$('sp').innerHTML=SP.map(p=>`<button class="btn" style="--tc:${p.c}" data-k="${p.k}" aria-pressed="false">${p.n}</button>`).join('');
+$('sp').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>pick(b.dataset.k));
+new ResizeObserver(draw).observe($('ff'));pick('hum');
+
+/* Sonidos sintéticos (Web Audio) */
+let AC=null;
+function ctx(){if(!AC){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;AC=new C()}if(AC.state==='suspended')AC.resume();return AC}
+function play(kind){const a=ctx();if(!a){$('sndn').textContent='Tu navegador no puede reproducir sonido aquí.';return}const t0=a.currentTime+.05,out=a.createGain();out.gain.value=.25;out.connect(a.destination);
+ if(kind==='bat'){for(let i=0;i<4;i++){const o=a.createOscillator(),g=a.createGain(),st=t0+i*.35;o.type='sine';o.frequency.setValueAtTime(8000,st);o.frequency.exponentialRampToValueAtTime(2000,st+.05);g.gain.setValueAtTime(0,st);g.gain.linearRampToValueAtTime(1,st+.005);g.gain.exponentialRampToValueAtTime(.001,st+.06);o.connect(g).connect(out);o.start(st);o.stop(st+.07)}
+  $('sndn').textContent='Cuatro chillidos de ecolocalización estirados: lo que el murciélago grita cientos de veces por segundo al cazar.'}
+ if(kind==='ele'){const o=a.createOscillator(),o2=a.createOscillator(),g=a.createGain();o.type='sawtooth';o2.type='sine';o.frequency.setValueAtTime(110,t0);o.frequency.linearRampToValueAtTime(130,t0+.6);o.frequency.linearRampToValueAtTime(105,t0+1.6);o2.frequency.value=220;const lp=a.createBiquadFilter();lp.type='lowpass';lp.frequency.value=500;g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.9,t0+.3);g.gain.linearRampToValueAtTime(.7,t0+1.3);g.gain.linearRampToValueAtTime(0,t0+1.8);o.connect(lp);o2.connect(lp);lp.connect(g).connect(out);o.start(t0);o2.start(t0);o.stop(t0+1.9);o2.stop(t0+1.9)
+  $('sndn').textContent='Un retumbo acelerado: en la sabana dura varios segundos y lo sienten elefantes a kilómetros.'}
+ if(kind==='whale'){const sr=a.sampleRate,buf=a.createBuffer(1,sr*.004,sr),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/(sr*.0007));
+  [0,.32,.64,.74,.84].forEach(dt=>{const s=a.createBufferSource(),f=a.createBiquadFilter();f.type='bandpass';f.frequency.value=3500;f.Q.value=1.5;s.buffer=buf;s.connect(f).connect(out);s.start(t0+dt)});
+  $('sndn').textContent='Una coda de ritmo “1 + 1 + 3”. Las familias de cachalotes del Caribe tienen repertorios distintos, como dialectos.'}}
+document.querySelectorAll('[data-snd]').forEach(b=>b.onclick=()=>play(b.dataset.snd));
+
+/* Hallazgos */
+const EV=[
+ ['2016','Murciélagos que discuten','En murciélagos frugívoros de Egipto, un algoritmo logró saber a partir de sus chillidos quién discutía con quién y por qué: comida, lugar para dormir o apareamiento.','e','Prat, Taub y Yovel, Scientific Reports (2016)'],
+ ['2024','Elefantes que se llaman por su nombre','Con aprendizaje automático sobre 469 retumbos en Kenia, se vio que los elefantes usan llamados específicos para cada destinatario, y que el elefante nombrado responde más que los otros. Es la primera evidencia de nombres “inventados” en un animal no humano.','e','Pardo y colaboradores, Nature Ecology & Evolution (2024)'],
+ ['2024','El “alfabeto fonético” de los cachalotes','El Proyecto CETI analizó miles de codas y encontró que ritmo, tempo y pequeños adornos se combinan, formando un sistema con muchos más elementos de lo que se creía.','a','Sharma y colaboradores, Nature Communications (2024)'],
+ ['2025','“Vocales” en las ballenas','El mismo equipo describió patrones del sonido de las codas que se parecen a vocales y diptongos. Si significan algo para las ballenas todavía no se sabe.','d','Beguš y colaboradores, Proyecto CETI (2025)'],
+ ['2025','Un modelo de lenguaje para delfines','DolphinGemma, de Google con el Wild Dolphin Project, aprende la estructura de los silbidos de delfines moteados y puede generar sonidos parecidos. Cabe en un teléfono para usarlo en el mar.','a','Google y Wild Dolphin Project (2025)'],
+ ['2025','Un modelo para muchas especies','NatureLM-audio, de Earth Species Project, reconoce especies y tipos de llamado, incluso de especies que nunca escuchó durante su entrenamiento.','e','Robinson y colaboradores, ICLR (2025)'],
+ ['2025–26','Un premio que nadie ha ganado','El desafío Coller-Dolittle entrega 100 mil dólares cada año al mejor avance (2025: silbidos de delfines; 2026: el significado en los llamados del diamante mandarín) y guarda un gran premio para quien logre una conversación de ida y vuelta. Sigue sin dueño.','e','Jeremy Coller Foundation y Universidad de Tel Aviv']];
+$('tl').innerHTML=EV.map(([y,t,d,c,r])=>`<div class="ev"><span class="yr">${y}</span><div><h3 style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">${t} <span class="seal ${c}">${{e:'Establecido',a:'Prometedor',d:'En debate'}[c]}</span></h3><p style="margin:0 0 4px">${d}</p><span class="note">${r}</span></div></div>`).join('');
+
+const SRC=[
+ ['n','Comunicación interdimensional mediante IA','No existe evidencia científica publicada. Una IA solo procesa los datos con que se entrena y se usa.'],
+ ['e','Umwelt: cada especie percibe su propio mundo','von Uexküll J. Streifzüge durch die Umwelten von Tieren und Menschen (1934); Yong E. An Immense World (2022).'],
+ ['a','Rangos de audición','Heffner HE, Heffner RS. Hearing ranges of laboratory animals. J Am Assoc Lab Anim Sci 46:20–22 (2007); valores de cetáceos y murciélagos de la literatura de bioacústica.'],
+ ['e','Murciélagos frugívoros','Prat Y, Taub M, Yovel Y. Everyday bat vocalizations contain information about emitter, addressee, context, and behavior. Sci Rep 6:39419 (2016).'],
+ ['e','Nombres en elefantes','Pardo MA et al. African elephants address one another with individually specific name-like calls. Nat Ecol Evol 8:1353–1364 (2024).'],
+ ['a','Sistema combinatorio de codas','Sharma P et al. Contextual and combinatorial structure in sperm whale vocalisations. Nat Commun 15:3617 (2024).'],
+ ['d','“Vocales” en codas','Beguš G et al. Vowel- and diphthong-like spectral patterns in sperm whale codas (UC Berkeley y Proyecto CETI, 2025).'],
+ ['a','DolphinGemma','Google, Georgia Tech y Wild Dolphin Project, anuncio del 14 de abril de 2025.'],
+ ['e','NatureLM-audio','Robinson D et al. NatureLM-audio: an audio-language foundation model for bioacoustics. ICLR (2025).'],
+ ['e','Desafío Coller-Dolittle','Jeremy Coller Foundation y Universidad de Tel Aviv: premios 2025 (L. Sayigh, delfines) y 2026 (J. Elie, diamante mandarín).'],
+ ['e','¿Cómo es ser un murciélago?','Nagel T. What is it like to be a bat? Philosophical Review 83:435–450 (1974).']];
+$('src').innerHTML=SRC.map(([c,t,r])=>`<div class="s"><span><span class="seal ${c}">${{e:'Establecido',a:'Aproximado',d:'En debate',n:'Sin evidencia'}[c]}</span></span><div><b>${t}</b><br><span class="note" style="font-size:15px">${r}</span></div></div>`).join('');
+}
+</script>
+</body>
+</html>
