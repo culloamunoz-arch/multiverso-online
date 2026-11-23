@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#04060f">
+<title>Laboratorio de la Trama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: un laboratorio honesto: cada número dice de dónde viene y cuánta certeza tiene.
+   IDEA: la libreta del científico: molécula real, ecuación viva, fuente al pie.
+   PICTURE: la hemoglobina real girando; luego curvas que responden a tus manos.
+   COLOUR/TYPE: noche #04060f; rojo sangre, verde clorofila, rosa neurona. Sora + Atkinson Hyperlegible.
+   LAYOUT: moléculas 3D → curva de la hemoglobina → disparo de la neurona → fuentes. */
+:root{color-scheme:dark;--bg:#04060f;--bg2:#0b1024;--card:#111833;--line:#25305a;--ink:#f3eee2;--mute:#a9b0c8;--acc:#ffb35c}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;line-height:1.08;text-wrap:balance;margin:0 0 .4em}
+h1{font-size:clamp(32px,5.5vw,50px)}h2{font-size:clamp(24px,3.6vw,34px)}h3{font-size:19px}
+p{margin:0 0 .8em;max-width:68ch}a{color:var(--acc)}
+.band{padding:clamp(24px,4vw,56px) max(4vw,14px)}.wrap{max-width:1200px;margin:0 auto}.alt{background:var(--bg2)}
+.lead{color:var(--mute);font-size:18px}.note{font-size:14px;color:var(--mute)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.btn{min-height:44px;padding:10px 16px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);font-weight:700}
+.btn[aria-pressed=true]{background:var(--c,#ffb35c);color:#04060f;border-color:transparent}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.mol{position:relative;height:min(62vh,520px);border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#04060f}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.two .mol{height:min(50vh,400px)}
+.cap{position:absolute;left:12px;top:10px;font-family:Sora;font-weight:700;pointer-events:none;text-shadow:0 1px 6px #000}
+.fall{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;color:var(--mute)}
+.leg{display:flex;flex-wrap:wrap;gap:14px;font-size:15px;margin:10px 0}.leg i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:24px;align-items:start}
+.fig{position:relative;height:340px;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.fig svg{position:absolute;inset:0;width:100%;height:100%}
+.fig.sm{height:150px;margin-top:10px}
+label{display:block;font-weight:700;margin:14px 0 2px}
+.val{float:right;color:var(--c,#ffb35c);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;height:40px;accent-color:var(--c,#ffb35c)}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 10px}
+.kpi b{display:block;white-space:nowrap;font-family:Sora;font-size:clamp(19px,3vw,30px);color:var(--c,#ffb35c);font-variant-numeric:tabular-nums}
+.kpi span{font-size:14px;color:var(--mute)}
+.say{background:var(--card);border-left:4px solid var(--c,#ffb35c);border-radius:0 12px 12px 0;padding:12px 16px;margin:12px 0}
+.eq{font-family:ui-monospace,monospace;font-size:14px;background:#0b1024;border:1px solid var(--line);border-radius:10px;padding:10px 12px;max-width:none}
+.src{display:grid;gap:10px}
+.s{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start}
+.seal{font-size:13px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.e{background:#1f4a2a;color:#9be37f}.a{background:#4a3a1a;color:#ffd36b}.d{background:#4a1f2a;color:#ff9aa8}
+.hemo{--c:#ff7a7a}.neu{--c:#f3a6d8}
+@media(max-width:820px){.grid,.two{grid-template-columns:minmax(0,1fr)}.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.s{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<section class="band"><div class="wrap">
+  <h1>Laboratorio de la Trama</h1>
+  <p class="lead">Aquí nada es un dibujo de adorno. Las moléculas son coordenadas medidas o calculadas, y las curvas salen de las mismas ecuaciones que usan la fisiología y la neurociencia. Cada número trae su fuente al final.</p>
+  <div class="row"><a class="btn" href="#moleculas" style="text-decoration:none">Moléculas reales</a><a class="btn" href="#hemo" style="text-decoration:none">Curva de la hemoglobina</a><a class="btn" href="#neurona" style="text-decoration:none">Disparo de la neurona</a><a class="btn" href="../viaje/" style="text-decoration:none">← Viaje al interior</a></div>
+</div></section>
+
+<section class="band alt" id="moleculas"><div class="wrap">
+  <h2>La hemoglobina, átomo por átomo</h2>
+  <p>Estas son las posiciones reales de 4.384 átomos de proteína de la hemoglobina humana, medidas por cristalografía de rayos X (estructura 4HHB del Protein Data Bank). Gírala con el dedo y pellizca para acercarte.</p>
+  <div class="mol" id="v1"><div class="cap">Hemoglobina humana · 4HHB</div><div class="fall" id="f1">Cargando la molécula…</div></div>
+  <div class="leg"><span><i style="background:#ff7a7a"></i>Cadenas alfa</span><span><i style="background:#f2a2c0"></i>Cadenas beta</span><span><i style="background:#ffb35c"></i>Grupos hemo</span><span><i style="background:#d9894a"></i>Hierro</span></div>
+  <div class="row"><button class="btn" aria-pressed="true" data-st="cartoon">Cintas (forma)</button><button class="btn" aria-pressed="false" data-st="surface">Superficie</button><button class="btn" aria-pressed="false" data-st="hemo">Solo los hemos</button></div>
+  <p class="note">Las cintas muestran cómo se pliega la cadena de aminoácidos: cada espiral es una hélice alfa. Esta es la forma sin oxígeno (desoxihemoglobina).</p>
+
+  <h2 style="margin-top:36px">El mismo anillo en tu sangre y en una hoja</h2>
+  <p>A la izquierda, un grupo hemo real, sacado de esa misma hemoglobina. A la derecha, la clorofila a. Mira el anillo de cuatro nitrógenos con un metal al centro: hierro en uno, magnesio en el otro.</p>
+  <div class="two">
+    <div class="mol" id="v2"><div class="cap" style="color:#ffb35c">Hemo · hierro</div><div class="fall" id="f2">Cargando…</div></div>
+    <div class="mol" id="v3"><div class="cap" style="color:#9be37f">Clorofila a · magnesio</div><div class="fall" id="f3">Cargando…</div></div>
+  </div>
+  <div class="leg"><span><i style="background:#7fb8ff"></i>Nitrógeno</span><span><i style="background:#ff5b5b"></i>Oxígeno</span><span><i style="background:#d9894a"></i>Hierro</span><span><i style="background:#9be37f"></i>Magnesio</span></div>
+  <p class="note">El hemo viene del cristal 4HHB. La clorofila es un modelo calculado por computador a partir de su fórmula (C₅₅H₇₂MgN₄O₅); su larga cola (fitol) aparece en una de sus muchas posiciones posibles.</p>
+</div></section>
+
+<section class="band hemo" id="hemo"><div class="wrap">
+  <h2>La curva de la hemoglobina</h2>
+  <p>¿Cuánto oxígeno carga tu sangre según el oxígeno que hay alrededor? La respuesta es una curva en forma de S. Esa S es la cooperación: cuando una de las cuatro cadenas atrapa oxígeno, a las otras les cuesta menos. Por eso la hemoglobina carga casi todo en el pulmón y suelta mucho en los tejidos.</p>
+  <div class="grid">
+    <div>
+      <div class="fig" id="hf"><svg id="hs" aria-label="Curva de saturación de oxígeno"></svg></div>
+      <div class="leg"><span><i style="background:#ff7a7a"></i>Hemoglobina real (con cooperación)</span><span><i style="background:#7fb8ff"></i>Sin cooperación (misma P50)</span></div>
+      <div class="kpis"><div class="kpi"><b id="k1"></b><span>saturación en arterias</span></div><div class="kpi"><b id="k2"></b><span>saturación en venas</span></div><div class="kpi"><b id="k3"></b><span>presión de O₂ en el tejido</span></div></div>
+    </div>
+    <div>
+      <div class="row" id="places"></div>
+      <label for="alt">Altitud <span class="val" id="altv"></span></label><input type="range" id="alt" min="0" max="7000" step="50" value="570">
+      <div class="row"><button class="btn" id="ex" aria-pressed="false">Haciendo ejercicio</button><button class="btn" id="acl" aria-pressed="false">Aclimatado a la altura</button></div>
+      <div class="say" id="hsay"></div>
+    </div>
+  </div>
+  <p class="eq">El tejido consume 25% del oxígeno en reposo y 50% en ejercicio · S = Pⁿ / (P50ⁿ + Pⁿ) · n = 2,7 · P50 = 26,8 mmHg a pH 7,40 · log P50 cambia −0,48 por unidad de pH</p>
+  <p class="note">Modelo educativo: usa la presión de oxígeno alveolar como si fuera la arterial y no reemplaza una evaluación clínica. La saturación arterial es lo que mide un saturómetro de dedo.</p>
+</div></section>
+
+<section class="band alt neu" id="neurona"><div class="wrap">
+  <h2>El disparo de una neurona</h2>
+  <p>En 1952, Hodgkin y Huxley escribieron cuatro ecuaciones que explican cómo una neurona dispara, midiendo el axón gigante del calamar. Les dieron el Nobel. Aquí corren esas mismas ecuaciones: miles de pasos de cálculo en cada toque.</p>
+  <div class="grid">
+    <div>
+      <div class="fig" id="nf"><svg id="ns" aria-label="Voltaje de la membrana en el tiempo"></svg></div>
+      <div class="fig sm" id="gf"><svg id="gs" aria-label="Apertura de canales de sodio y potasio"></svg></div>
+      <div class="leg"><span><i style="background:#ffd36b"></i>Canales de sodio abiertos</span><span><i style="background:#7fb8ff"></i>Canales de potasio abiertos</span></div>
+    </div>
+    <div>
+      <label for="amp">Fuerza del estímulo <span class="val" id="ampv"></span></label><input type="range" id="amp" min="0" max="30" step="0.5" value="10">
+      <label for="na">Canales de sodio disponibles <span class="val" id="nav"></span></label><input type="range" id="na" min="0" max="100" step="5" value="100">
+      <div class="row"><button class="btn" id="two" aria-pressed="false">Dos estímulos seguidos</button></div>
+      <label for="gap" id="gapl">Tiempo entre estímulos <span class="val" id="gapv"></span></label><input type="range" id="gap" min="2" max="25" step="0.5" value="8">
+      <div class="say" id="nsay"></div>
+    </div>
+  </div>
+  <p class="note">El sodio entra rápido y sube el voltaje; el potasio sale después y lo baja. La anestesia local (lidocaína) y la toxina del pez globo bloquean los canales de sodio: prueba bajarlos.</p>
+</div></section>
+
+<section class="band" id="fuentes"><div class="wrap">
+  <h2>Fuentes y grado de certeza</h2>
+  <div class="row"><span class="seal e">Establecido</span><span class="seal a">Aproximado</span><span class="seal d">En debate</span></div>
+  <div class="src" id="src"></div>
+  <p style="margin-top:20px"><a class="btn" style="text-decoration:none" href="../viaje/">← Viaje al interior</a> <a class="btn" style="text-decoration:none" href="../aprende/">Aprende los 6 hilos</a></p>
+</div></section>
+
+<script src="3Dmol-min.js"></script>
+<script>
+{
+const $=id=>document.getElementById(id);
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt=(x,d)=>x.toFixed(d).replace('.',',');
+
+/* ---------- Moléculas ---------- */
+const EL={N:'#7fb8ff',O:'#ff5b5b',Fe:'#d9894a',Mg:'#9be37f',S:'#ffe08a'};
+function scheme(cC){return{prop:'elem',map:Object.assign({C:cC},EL)}}
+let v1=null,m1=null;
+function hemoStyle(mode){if(!v1)return;v1.setStyle({},{});v1.removeAllSurfaces();
+  const cart={cartoon:{colorfunc:a=>/[AC]/.test(a.chain)?'#ff7a7a':'#f2a2c0'}};
+  if(mode==='cartoon'){v1.setStyle({hetflag:false},cart);v1.setStyle({resn:'HEM'},{stick:{radius:.22,colorscheme:scheme('#ffb35c')}});v1.addStyle({elem:'Fe'},{sphere:{radius:.9,color:'#d9894a'}})}
+  if(mode==='surface'){v1.setStyle({resn:'HEM'},{stick:{radius:.22,colorscheme:scheme('#ffb35c')}});v1.addSurface($3Dmol.SurfaceType.VDW,{opacity:.85,colorfunc:a=>/[AC]/.test(a.chain)?'#ff7a7a':'#f2a2c0'},{hetflag:false})}
+  if(mode==='hemo'){v1.setStyle({hetflag:false},{cartoon:{color:'#3a2a40',opacity:.35}});v1.setStyle({resn:'HEM'},{stick:{radius:.3,colorscheme:scheme('#ffb35c')}});v1.addStyle({elem:'Fe'},{sphere:{radius:1.1,color:'#d9894a'}})}
+  v1.render()}
+function mk(el){try{return $3Dmol.createViewer(el,{backgroundColor:'#04060f',antialias:true})}catch(e){return null}}
+async function get(u){const r=await fetch(u);if(!r.ok)throw new Error(u);return r.text()}
+async function mols(){
+  if(!window.$3Dmol){['f1','f2','f3'].forEach(f=>$(f).textContent='No se pudo cargar el visor 3D.');return}
+  try{v1=mk($('v1'));if(!v1)throw 0;m1=v1.addModel(await get('4hhb.pdb'),'pdb');hemoStyle('cartoon');v1.zoomTo();v1.zoom(1.1);if(!RM)v1.spin('y',.4);v1.render();$('f1').remove()}catch(e){$('f1').textContent='Tu navegador no pudo mostrar la molécula en 3D (necesita WebGL).'}
+  try{const v=mk($('v2'));v.addModel(await get('hem.pdb'),'pdb');v.setStyle({},{stick:{radius:.25,colorscheme:scheme('#ffb35c')}});v.addStyle({elem:'Fe'},{sphere:{radius:.7,color:'#d9894a'}});v.zoomTo();if(!RM)v.spin('y',.5);v.render();$('f2').remove()}catch(e){$('f2').textContent='No disponible en este navegador.'}
+  try{const v=mk($('v3'));v.addModel(await get('clorofila.mol'),'sdf');v.setStyle({},{stick:{radius:.25,colorscheme:scheme('#7fd67a')}});v.addStyle({elem:'Mg'},{sphere:{radius:.7,color:'#9be37f'}});v.zoomTo({elem:'Mg'});v.zoomTo();if(!RM)v.spin('y',.5);v.render();$('f3').remove()}catch(e){$('f3').textContent='No disponible en este navegador.'}
+}
+document.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-st]').forEach(x=>x.setAttribute('aria-pressed',x===b));hemoStyle(b.dataset.st)});
+if('IntersectionObserver'in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();mols()}},{rootMargin:'300px'});io.observe($('moleculas'))}else mols();
+
+/* ---------- Curva de la hemoglobina ---------- */
+const PLACES=[['Nivel del mar',0],['Santiago',570],['San Pedro de Atacama',2400],['Putre',3500],['Cumbre del Aconcagua',6960]];
+let EX=false,ACL=false;
+const P50=pH=>26.8*Math.pow(10,-0.48*(pH-7.4));
+const S=(P,p50,n)=>Math.pow(P,n)/(Math.pow(p50,n)+Math.pow(P,n));
+function pao2(h){const PB=760*Math.exp(-h/8000),PaCO2=h<=1500?40:Math.max(18,40-(ACL?.004:.0015)*(h-1500));return Math.max(1,.2095*(PB-47)-PaCO2/.8)}
+$('places').innerHTML=PLACES.map(([n,h])=>`<button class="btn" data-h="${h}" aria-pressed="false">${n}</button>`).join('');
+$('places').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{$('alt').value=b.dataset.h;hemo()});
+const Pinv=(s,p50,n)=>p50*Math.pow(s/(1-s),1/n);
+function hemo(){const h=+$('alt').value,pa=pao2(h),dS=EX?.5:.25,pH=EX?7.2:7.4,p50=P50(pH);
+  $('altv').textContent=h.toLocaleString('es-CL')+' m';
+  $('places').querySelectorAll('[data-h]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.h===h));
+  const sa=S(pa,p50,2.7),sv=Math.max(.01,sa-dS),pv=Pinv(sv,p50,2.7),sa1=S(pa,p50,1),sv1=sa1-dS,pv1=sv1>.01?Pinv(sv1,p50,1):0;
+  $('k1').textContent=Math.round(sa*100)+'%';$('k2').textContent=Math.round(sv*100)+'%';$('k3').textContent=(sa-dS<.02?'< 5':Math.round(pv))+' mmHg';
+  let msg=`El oxígeno en tus pulmones queda en unos ${Math.round(pa)} mmHg. `;
+  msg+=sa>.94?'Tu sangre sale casi llena: la parte plana de la S te protege. ':sa>.85?'La sangre sale menos cargada: es la zona donde aparece el mal de altura. ':'La saturación cae fuerte: en la parte empinada de la S, cada metro cuenta. ';
+  msg+=sa-dS<.02?'Con esta saturación la sangre no alcanza a cubrir lo que el cuerpo consume: el corazón y la respiración tienen que acelerarse. ':`Tus tejidos sacan ${Math.round(dS*100)}% del oxígeno y aun así les queda una presión de ${Math.round(pv)} mmHg. `+(sv1>.01?`Sin cooperación les quedarían solo ${Math.round(pv1)} mmHg: la S mantiene la presión que empuja el oxígeno hacia las células.`:'Sin cooperación, la sangre ni siquiera alcanzaría a entregar esa cantidad.');
+  if(EX)msg+=' En ejercicio el músculo se acidifica y la curva se corre a la derecha (efecto Bohr): la hemoglobina suelta más oxígeno justo donde se necesita.';
+  if(ACL&&h>1500)msg+=' Aclimatado, respiras más rápido y profundo, baja el CO₂ y entra más oxígeno al pulmón: por eso en la montaña se sube por etapas.';else if(h>5000)msg+=' A esta altura, sin aclimatación, el cuerpo está en riesgo grave: prueba el botón “Aclimatado”.';
+  $('hsay').textContent=msg;hplot(pa,pv,p50,sa,sv)}
+function hplot(pa,pv,p50,sa,sv){const s=$('hs'),W=s.clientWidth,H=s.clientHeight;if(!W)return;const L=44,R=14,T=14,B=36,x=p=>L+(W-L-R)*p/110,y=v=>T+(H-T-B)*(1-v);
+  let g='';[0,.25,.5,.75,1].forEach(v=>g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#25305a"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="12" fill="#a9b0c8">${v*100}%</text>`);
+  [0,20,40,60,80,100].forEach(p=>g+=(W<480&&p%40)?'':`<text x="${x(p)}" y="${H-14}" text-anchor="middle" font-size="12" fill="#a9b0c8">${p}</text>`);
+  g+=`<text x="${W-R}" y="${H-2}" text-anchor="end" font-size="12" fill="#a9b0c8">presión de O₂ (mmHg)</text>`;
+  const line=(n,c,d)=>{let p='';for(let P=0;P<=110;P+=1)p+=(P?'L':'M')+x(P).toFixed(1)+' '+y(S(P,p50,n)).toFixed(1);return`<path d="${p}" stroke="${c}" stroke-width="3" fill="none" ${d?'stroke-dasharray="6 6"':''}/>`};
+  g+=line(1,'#7fb8ff',1)+line(2.7,'#ff7a7a');
+  g+=`<rect x="${x(Math.min(pa,pv))}" y="${y(sa)}" width="${Math.abs(x(pa)-x(pv))}" height="${y(sv)-y(sa)}" fill="#ff7a7a" opacity=".12"/>`;
+  [[pa,sa,'pulmón'],[pv,sv,'tejido']].forEach(([P,v,t])=>g+=`<line x1="${x(P)}" x2="${x(P)}" y1="${y(0)}" y2="${y(v)}" stroke="#f3eee2" stroke-dasharray="3 4"/><circle cx="${x(P)}" cy="${y(v)}" r="7" fill="#ff7a7a" stroke="#04060f" stroke-width="2"/><text x="${x(P)+(t==='pulmón'?-10:10)}" y="${y(v)+(t==='pulmón'?22:-12)}" text-anchor="${t==='pulmón'?'end':'start'}" font-size="13" font-weight="700" fill="#f3eee2">${t}</text>`);
+  s.innerHTML=g}
+$('alt').oninput=hemo;$('ex').onclick=()=>{EX=!EX;$('ex').setAttribute('aria-pressed',EX);hemo()};$('acl').onclick=()=>{ACL=!ACL;$('acl').setAttribute('aria-pressed',ACL);hemo()};
+new ResizeObserver(hemo).observe($('hf'));hemo();
+
+/* ---------- Hodgkin-Huxley ---------- */
+let TWO=false;
+const am=V=>Math.abs(V+40)<1e-6?1:.1*(V+40)/(1-Math.exp(-(V+40)/10)),bm=V=>4*Math.exp(-(V+65)/18),ah=V=>.07*Math.exp(-(V+65)/20),bh=V=>1/(1+Math.exp(-(V+35)/10)),an=V=>Math.abs(V+55)<1e-6?.1:.01*(V+55)/(1-Math.exp(-(V+55)/10)),bn=V=>.125*Math.exp(-(V+65)/80);
+function hh(I,frac,gap){const dt=.01,T=50,gNa=120*frac;let V=-65,m=.0529,h=.5961,n=.3177;const o=[];let peaks=0,up=false;
+  for(let i=0;i*dt<=T;i++){const t=i*dt,st=(t>=5&&t<6)||(TWO&&t>=5+gap&&t<6+gap)?I:0;
+   const INa=gNa*m*m*m*h*(V-50),IK=36*n**4*(V+77),IL=.3*(V+54.387);V+=dt*(st-INa-IK-IL);
+   m+=dt*(am(V)*(1-m)-bm(V)*m);h+=dt*(ah(V)*(1-h)-bh(V)*h);n+=dt*(an(V)*(1-n)-bn(V)*n);
+   if(V>0&&!up){peaks++;up=true}if(V<-30)up=false;if(i%5===0)o.push([t,V,m*m*m*h*frac,n**4,st])}return{o,peaks}}
+function nplot(r){const s=$('ns'),W=s.clientWidth,H=s.clientHeight;if(!W)return;const L=46,R=12,T=14,B=30,x=t=>L+(W-L-R)*t/50,y=v=>T+(H-T-B)*(1-(v+90)/150);
+  let g='';[-80,-40,0,40].forEach(v=>g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#25305a"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="12" fill="#a9b0c8">${v}</text>`);
+  [0,10,20,30,40,50].forEach(t=>g+=(W<480&&t%20)?'':`<text x="${x(t)}" y="${H-10}" text-anchor="middle" font-size="12" fill="#a9b0c8">${t} ms</text>`);
+  g+=`<text x="${L+4}" y="${T+12}" font-size="12" fill="#a9b0c8">mV</text>`;
+  let st='';r.o.forEach(p=>{if(p[4])st+=`<rect x="${x(p[0])}" y="${T}" width="${Math.max(1,(W-L-R)*.1/50)}" height="${H-T-B}" fill="#f3a6d8" opacity=".06"/>`});
+  const d=r.o.map((p,i)=>(i?'L':'M')+x(p[0]).toFixed(1)+' '+y(p[1]).toFixed(1)).join('');
+  g+=st+`<path d="${d}" stroke="#f3a6d8" stroke-width="3" fill="none" stroke-linejoin="round" pathLength="1" ${RM?'':'stroke-dasharray="1" stroke-dashoffset="1"'}>${RM?'':'<animate attributeName="stroke-dashoffset" from="1" to="0" dur="1.2s" fill="freeze"/>'}</path>`;
+  s.innerHTML=g;
+  const s2=$('gs'),W2=s2.clientWidth,H2=s2.clientHeight;if(!W2)return;const x2=t=>L+(W2-L-R)*t/50,y2=v=>8+(H2-26)*(1-v/.6);
+  const path=(k,c)=>`<path d="${r.o.map((p,i)=>(i?'L':'M')+x2(p[0]).toFixed(1)+' '+y2(Math.min(.6,p[k])).toFixed(1)).join('')}" stroke="${c}" stroke-width="2.5" fill="none"/>`;
+  s2.innerHTML=`<line x1="${L}" x2="${W2-R}" y1="${y2(0)}" y2="${y2(0)}" stroke="#25305a"/><text x="${L-6}" y="${y2(0)+4}" text-anchor="end" font-size="11" fill="#a9b0c8">cerrado</text>`+path(2,'#ffd36b')+path(3,'#7fb8ff')}
+function neu(){const I=+$('amp').value,f=+$('na').value/100,gap=+$('gap').value;
+  $('ampv').textContent=fmt(I,1)+' µA/cm²';$('nav').textContent=Math.round(f*100)+'%';$('gapv').textContent=fmt(gap,1)+' ms';
+  $('gap').disabled=!TWO;$('gapl').style.opacity=TWO?1:.4;
+  const r=hh(I,f,gap);nplot(r);let m;
+  if(f<.6&&r.peaks===0)m='Con tan pocos canales de sodio la neurona ya no puede disparar, por fuerte que sea el estímulo. Así funciona la anestesia local: el mensaje de dolor no viaja.';
+  else if(r.peaks===0)m='El estímulo no alcanzó el umbral: el voltaje sube un poco y vuelve. Sube la fuerza y verás que el disparo aparece de golpe, entero. Es todo o nada.';
+  else if(TWO&&r.peaks===1)m='El segundo estímulo llegó durante el período refractario: los canales de sodio quedaron con su tapón puesto y necesitan unos milisegundos para recuperarse. Sepáralos más.';
+  else if(r.peaks>=2)m='Dos disparos completos: los canales alcanzaron a recuperarse. Este período refractario pone un límite a cuántos pulsos por segundo puede mandar una neurona.';
+  else m='Disparo: el voltaje salta de −65 a cerca de +40 mV en menos de un milisegundo y vuelve. Fíjate abajo: primero se abre el sodio (amarillo) y después el potasio (azul). Un estímulo más fuerte no hace un disparo más grande.';
+  $('nsay').textContent=m}
+['amp','na','gap'].forEach(i=>$(i).oninput=neu);$('two').onclick=()=>{TWO=!TWO;$('two').setAttribute('aria-pressed',TWO);neu()};
+new ResizeObserver(neu).observe($('nf'));neu();
+
+/* ---------- Fuentes ---------- */
+const SRC=[
+ ['e','Estructura de la hemoglobina (4HHB)','Fermi G, Perutz MF, Shaanan B, Fourme R. The crystal structure of human deoxyhaemoglobin at 1.74 Å resolution. J Mol Biol 175:159–174 (1984).','https://www.rcsb.org/structure/4HHB'],
+ ['a','Modelo de la clorofila a','Calculado con RDKit (campo de fuerza MMFF) a partir de la fórmula C₅₅H₇₂MgN₄O₅, con el magnesio a ~2,1 Å de los nitrógenos. No es una estructura cristalina; la cola de fitol es una conformación posible entre muchas.',''],
+ ['e','Ecuación de Hill y cooperatividad','Hill AV, J Physiol 40:iv–vii (1910). Valores de referencia del adulto: n ≈ 2,7 y P50 ≈ 26,8 mmHg (pH 7,4; 37 °C).',''],
+ ['e','Efecto Bohr','Bohr C, Hasselbalch K, Krogh A (1904). Coeficiente usado: Δlog P50/ΔpH ≈ −0,48.',''],
+ ['a','Presión de oxígeno en altura','Presión barométrica con un modelo exponencial simplificado (escala de 8 km), ecuación del gas alveolar con cociente respiratorio 0,8 y una caída lineal aproximada del CO₂ por la respiración acelerada en altura. No considera la diferencia alvéolo-arterial ni la variación individual.',''],
+ ['e','Modelo de Hodgkin y Huxley','Hodgkin AL, Huxley AF. A quantitative description of membrane current and its application to conduction and excitation in nerve. J Physiol 117:500–544 (1952). Parámetros del axón de calamar en la convención moderna (reposo −65 mV, 6,3 °C).',''],
+ ['e','Bloqueo de canales de sodio','La lidocaína y la tetrodotoxina (pez globo) bloquean canales de sodio dependientes de voltaje; aquí se representa como menos canales disponibles.',''],
+ ['e','Visor molecular 3Dmol.js','Rego N, Koes D. 3Dmol.js: molecular visualization with WebGL. Bioinformatics 31:1322–1324 (2015). Licencia BSD.','https://3dmol.csb.pitt.edu/']];
+$('src').innerHTML=SRC.map(([c,t,d,u])=>`<div class="s"><span class="seal ${c}">${{e:'Establecido',a:'Aproximado',d:'En debate'}[c]}</span><div><b>${t}</b><br><span class="note" style="font-size:15px">${d}</span>${u?` <a href="${u}">${u.replace('https://','')}</a>`:''}</div></div>`).join('');
+}
+</script>
+</body>
+</html>
