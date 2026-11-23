@@ -111,6 +111,7 @@ input[type=range]{width:100%;height:40px;accent-color:#b9a3ff}
         <button class="btn ghost" id="out">← Salir</button>
         <button class="btn" id="in">Entrar →</button>
         <button class="btn ghost" id="tg" hidden></button>
+        <a class="btn" id="lab" hidden style="text-decoration:none;display:inline-flex;align-items:center"></a>
       </div>
     </div>
   </div>
@@ -162,7 +163,7 @@ input[type=range]{width:100%;height:40px;accent-color:#b9a3ff}
     <div class="nfig"><svg id="nsvg" viewBox="0 0 400 230" aria-label="Neurona biológica y artificial"></svg></div>
   </div>
   <div class="pair" style="margin-top:18px"><h3>Lo que la IA no es</h3><p style="margin:0">Una neurona real cambia con su química, su historia y su entorno; vive dentro de un cuerpo que siente. Una neurona artificial es una suma con una curva. La IA no tiene deseos, cuerpo ni experiencia propia: es un patrón de números muy grande que aprendió de textos escritos por personas. Su poder viene de la escala, no de estar viva.</p></div>
-  <p style="margin-top:22px"><a class="btn" style="display:inline-block;text-decoration:none" href="../aprende/">Aprende los 6 hilos</a> <a class="btn ghost" style="display:inline-block;text-decoration:none" href="../">Viaje 3D</a></p>
+  <p style="margin-top:22px"><a class="btn" style="display:inline-block;text-decoration:none" href="../aprende/">Aprende los 6 hilos</a> <a class="btn ghost" style="display:inline-block;text-decoration:none" href="../ciencia/">Laboratorio científico</a> <a class="btn ghost" style="display:inline-block;text-decoration:none" href="../">Viaje 3D</a></p>
 </div></section>
 
 <script>
@@ -217,13 +218,13 @@ h:{n:'Humano',c:'#ff8a6b',L:[
   g+=`<circle cx="226" cy="246" r="9" fill="none" stroke="#f3eee2" stroke-width="3"/>`;
   for(let i=0;i<14;i++){const x=R(240,560),y=R(100,420);g+=`<text x="${x}" y="${y}" font-size="11" fill="#9fd7ff" opacity=".7">O₂</text>`}return g},
   P:[[110,260,90,140,'Arteriola','Trae sangre rica en oxígeno.'],[400,200,400,30,'Capilar','De 5 a 10 µm de ancho: apenas cabe un glóbulo rojo.'],[700,260,690,390,'Vénula','Recoge la sangre que ya entregó su oxígeno.'],[226,246,120,460,'Esfínter precapilar','Un anillo de músculo que abre o cierra el paso según lo que necesite el tejido.'],[470,160,620,90,'Intercambio','El O₂ sale hacia las células y el CO₂ entra a la sangre, por difusión.']]},
- {t:'El glóbulo rojo',s:'7,5 µm',e:-5.12,z:[300,190],d:'Una célula que renunció a su núcleo para llenarse de hemoglobina. Su forma de disco hundido le da más superficie y la deja doblarse para pasar por capilares más estrechos que ella.',
+ {t:'El glóbulo rojo',s:'7,5 µm',e:-5.12,z:[300,190],lab:['hemo','Ver cómo carga oxígeno según la altura'],d:'Una célula que renunció a su núcleo para llenarse de hemoglobina. Su forma de disco hundido le da más superficie y la deja doblarse para pasar por capilares más estrechos que ella.',
   draw(){seed=3;return`<defs><radialGradient id="rb"><stop offset="0" stop-color="#ff9a9a"/><stop offset=".45" stop-color="#e3485a"/><stop offset="1" stop-color="#9c1d30"/></radialGradient></defs>
   <circle cx="300" cy="260" r="170" fill="url(#rb)"/>${dots(380,300,260,160,'#ffd6d6',1.4)}
   <path d="M560 210 Q575 185 597 196 Q645 228 693 196 Q715 185 730 210 Q752 260 730 310 Q715 335 693 324 Q645 292 597 324 Q575 335 560 310 Q538 260 560 210Z" fill="#c8324a" stroke="#ff9a9a" stroke-width="2"/>
   <text x="645" y="380" text-anchor="middle" fill="#a9b0c8" font-size="14">visto de perfil</text>`},
   P:[[300,260,90,60,'Centro hundido','La forma bicóncava aumenta la superficie para cambiar gases.'],[150,330,80,470,'Sin núcleo','Más espacio para la carga: unos 270 millones de hemoglobinas.'],[460,250,560,90,'Membrana flexible','Se dobla como un globo blando para pasar por tubos más finos.'],[645,300,660,460,'Vida corta','Dura unos 120 días; el bazo recicla los viejos.']]},
- {t:'La hemoglobina',s:'6,5 nm',e:-8.19,z:null,d:'Una proteína de cuatro cadenas. Cada cadena abraza un grupo hemo: un anillo con un átomo de hierro en el centro, que es donde se engancha el oxígeno.',
+ {t:'La hemoglobina',s:'6,5 nm',e:-8.19,z:null,lab:['moleculas','Ver la hemoglobina real en 3D'],d:'Una proteína de cuatro cadenas. Cada cadena abraza un grupo hemo: un anillo con un átomo de hierro en el centro, que es donde se engancha el oxígeno.',
   draw(){let g='';[[290,180,'#d9475d'],[510,180,'#f29aa5'],[290,350,'#f29aa5'],[510,350,'#d9475d']].forEach(([x,y,c],k)=>{g+=`<circle cx="${x}" cy="${y}" r="118" fill="${c}" opacity=".35"/>`;for(let j=0;j<4;j++){let d='';for(let t=0;t<=1;t+=.04){const xx=x-80+t*160,yy=y-60+j*40+10*Math.sin(t*28);d+=(t?'L':'M')+xx.toFixed(1)+' '+yy.toFixed(1)}g+=`<path d="${d}" stroke="${c}" stroke-width="5" fill="none" opacity=".8"/>`}});
   [[290,180],[510,180],[290,350],[510,350]].forEach(([x,y],k)=>{g+=`<g transform="translate(${x} ${y})">${porph(0,0,90,'Fe','#ffb35c')}</g>`;if(k<2)g+=`<circle cx="${x+14}" cy="${y-46}" r="10" fill="#ff5b5b"/><circle cx="${x+28}" cy="${y-58}" r="10" fill="#ff5b5b"/>`});return g},
   P:[[200,120,90,40,'Cadena alfa','Dos de las cuatro cadenas de proteína.'],[600,120,700,40,'Cadena beta','Las otras dos. Juntas forman un tetrámero.'],[290,180,120,270,'Grupo hemo','Un anillo de porfirina: el mismo diseño que la clorofila de las plantas.'],[510,350,690,470,'Hierro (Fe)','El átomo que sujeta al oxígeno. Le da a la sangre su color rojo.'],[530,128,690,200,'Oxígeno (O₂)','Cuando se une uno, a los demás les cuesta menos unirse: cooperación molecular.']]}]},
@@ -254,7 +255,7 @@ v:{n:'Vegetal',c:'#7fd67a',L:[
   st.forEach(([x,y])=>{for(let k=0;k<7;k++)g+=`<rect x="${x-34}" y="${y+k*7}" width="68" height="6" rx="3" fill="#6fd06a" stroke="#0f2a14"/>`});
   return g+`<ellipse cx="450" cy="420" rx="40" ry="22" fill="#e9e3c8" opacity=".85"/><path d="M640 400 q15 -20 30 0 t30 0" stroke="#ffb35c" stroke-width="3" fill="none"/>`},
   P:[[70,265,40,60,'Doble membrana','Huella de su origen: una bacteria envuelta por otra célula.'],[300,180,330,30,'Granas','Pilas de tilacoides, como monedas apiladas.'],[620,300,700,120,'Tilacoides','Membranas donde la luz se convierte en energía química.'],[300,400,150,470,'Estroma','El líquido donde se arma el azúcar (ciclo de Calvin).'],[450,420,470,490,'Almidón','Azúcar guardado para la noche.'],[670,400,700,470,'ADN propio','Un anillo de ADN, como el de las bacterias.']]},
- {t:'La clorofila',s:'1,5 nm',e:-8.82,z:null,d:'La molécula que atrapa la luz. Mírala bien: es casi el mismo anillo que el grupo hemo de tu sangre. Solo cambia el átomo del centro: magnesio en vez de hierro.',
+ {t:'La clorofila',s:'1,5 nm',e:-8.82,z:null,lab:['moleculas','Comparar hemo y clorofila en 3D'],d:'La molécula que atrapa la luz. Mírala bien: es casi el mismo anillo que el grupo hemo de tu sangre. Solo cambia el átomo del centro: magnesio en vez de hierro.',
   draw(){let g=`<rect x="0" y="380" width="800" height="90" fill="#0d1a12"/>`+bilayer(380,90,0,800,'#3f8f4a');
   g+=porph(420,200,230,'Mg','#7fd67a')+`<path d="M520 270 l20 30 l20 -20 l20 30 l20 -20 l20 30 l20 -20 l20 30 l20 -20 l15 60" stroke="#c9e9a0" stroke-width="5" fill="none"/>`;
   g+=`<path d="M70 60 q15 -15 30 0 t30 0 t30 0 t30 0 t30 0" stroke="#ffd36b" stroke-width="4" fill="none" transform="rotate(25 70 60)"/><circle cx="420" cy="200" r="30" fill="none" stroke="#ffd36b" stroke-width="2" class="pulse"/>`;
@@ -374,7 +375,7 @@ m:{n:'Mente',c:'#f3a6d8',L:[
   g+=`<rect x="80" y="420" width="700" height="90" fill="#e9e3ff" opacity=".12"/>`;
   [[180,300],[300,340],[420,310],[560,330],[680,300],[250,180],[500,170]].forEach(([x,y])=>{g+=`<line x1="${x}" y1="${y}" x2="${x}" y2="25" stroke="#f3a6d8" stroke-width="2.5"/><path d="M${x} ${y} l-14 14 M${x} ${y} l14 14" stroke="#f3a6d8" stroke-width="2"/><line x1="${x}" y1="${y+10}" x2="${x+5}" y2="505" stroke="#ffd6f0" stroke-width="1.5" opacity=".7"/><path d="M${x} ${y-14} l12 22 h-24z" fill="#f3a6d8"/><path d="M${x} 60 l-20 -20 M${x} 60 l20 -22" stroke="#f3a6d8" stroke-width="1.5"/>`});return g},
   P:[[600,40,690,15,'Capa I','Casi sin cuerpos celulares: es pura conexión.'],[600,160,700,140,'Capas II–III','Conectan con otras áreas de la corteza.'],[620,230,700,250,'Capa IV','Recibe la entrada de los sentidos, vía tálamo.'],[300,330,130,440,'Capa V','Neuronas piramidales grandes: envían órdenes hacia afuera.'],[500,470,600,500,'Sustancia blanca','Cables cubiertos de mielina que unen áreas lejanas.']]},
- {t:'La neurona',s:'0,5 mm',e:-3.3,z:[690,255],d:'Una célula que escucha con sus dendritas, decide en su cuerpo y habla con su axón. Cuando la suma de lo que recibe pasa un umbral, dispara un pulso eléctrico.',
+ {t:'La neurona',s:'0,5 mm',e:-3.3,z:[690,255],lab:['neurona','Simular su disparo (Hodgkin-Huxley)'],d:'Una célula que escucha con sus dendritas, decide en su cuerpo y habla con su axón. Cuando la suma de lo que recibe pasa un umbral, dispara un pulso eléctrico.',
   draw(){seed=81;let g=branch(230,260,-Math.PI/2,90,6,'#f3a6d8',6)+branch(220,300,Math.PI*.8,60,4,'#f3a6d8',4)+branch(240,300,Math.PI*.2,55,4,'#f3a6d8',4);
   for(let i=0;i<40;i++){const x=R(120,340),y=R(40,400);g+=`<circle cx="${x}" cy="${y}" r="2.6" fill="#ffd6f0" opacity=".0"/>`}
   g+=`<path d="M230 240 L262 300 L198 300Z" fill="#f3a6d8"/><circle cx="230" cy="282" r="9" fill="#6a3a5f"/><path id="ax" d="M262 290 C330 280 400 270 470 265 C560 258 620 255 690 255" stroke="#f3a6d8" stroke-width="4" fill="none"/>`;
@@ -389,7 +390,7 @@ m:{n:'Mente',c:'#f3a6d8',L:[
   for(let k=0;k<8;k++)g+=`<path d="M${270+k*38} 350 v-10 l-6 -6 M${270+k*38} 340 l6 -6" stroke="#9fd7ff" stroke-width="3"/>`;
   for(let i=0;i<22;i++)g+=`<circle r="2.6" cx="${R(260,540)}" cy="300" fill="#ffd36b">${an('cy',300,335,1.2+R(0,1),-R(0,2))}</circle>`;return g},
   P:[[300,150,90,60,'Vesículas','Burbujas con miles de moléculas de neurotransmisor.'],[560,100,700,60,'Mitocondria','Energía para reciclar vesículas sin parar.'],[400,318,700,300,'Hendidura sináptica','Unos 20 nanómetros: el mensaje la cruza en menos de un milisegundo.'],[384,340,120,330,'Receptores','Proteínas que reconocen al neurotransmisor y abren canales.'],[400,346,400,480,'Densidad postsináptica','Si la conexión se usa mucho, se agranda: así se guarda un aprendizaje.']]},
- {t:'El canal de sodio',s:'10 nm',e:-8,z:null,toggle:true,d:'La pieza mínima del pensamiento. Una proteína con forma de puerta que se abre cuando cambia el voltaje y deja pasar iones de sodio. Abierta o cerrada: un interruptor biológico.',
+ {t:'El canal de sodio',s:'10 nm',e:-8,z:null,toggle:true,lab:['neurona','Bloquear canales en una neurona simulada'],d:'La pieza mínima del pensamiento. Una proteína con forma de puerta que se abre cuando cambia el voltaje y deja pasar iones de sodio. Abierta o cerrada: un interruptor biológico.',
   draw(){let g=`<rect x="0" y="210" width="800" height="120" fill="#20121e"/>`+bilayer(210,120,0,800,'#c98ab8');
   g+=`<rect x="250" y="150" width="300" height="240" fill="#20121e"/>`;[[260,'#f3a6d8'],[330,'#e98ac8'],[410,'#e98ac8'],[480,'#f3a6d8']].forEach(([x,c],k)=>{const off=ON&&(k==1||k==2)?(k==1?-12:12):0;g+=`<rect x="${x+off}" y="160" width="60" height="220" rx="24" fill="${c}" stroke="#04060f" stroke-width="3"/><text x="${x+30+off}" y="200" text-anchor="middle" font-family="Sora" font-weight="700" fill="#04060f">+</text>`});
   g+=`<path d="M450 ${ON?395:380} q30 ${ON?50:0} 60 ${ON?40:0}" stroke="#ffd6f0" stroke-width="8" fill="none"/><circle cx="${ON?512:460}" cy="${ON?435:390}" r="12" fill="#ffd6f0"/>`;
@@ -449,7 +450,7 @@ function render(){const L=lvl(),c=W[S].c;document.documentElement.style.setPrope
  $('crumbs').querySelectorAll('.crumb').forEach(b=>b.onclick=()=>go(S,+b.dataset.l));
  $('lt').textContent=W[S].n+' · '+L.t;$('ls').textContent='≈ '+L.s;$('ld').textContent=L.d;
  $('in').disabled=LV>=4;$('out').disabled=LV<=0;$('in').textContent=LV>=4?'Llegaste al fondo':'Entrar →';
- $('tg').hidden=!L.toggle;$('tg').textContent=ON?'Quitar voltaje':'Aplicar voltaje';
+ $('tg').hidden=!L.toggle;$('lab').hidden=!L.lab;if(L.lab){$('lab').href='../ciencia/#'+L.lab[0];$('lab').textContent=L.lab[1]+' →'}$('tg').textContent=ON?'Quitar voltaje':'Aplicar voltaje';
  drawScene();info();ruler();match();try{history.replaceState(null,'','#'+S+'-'+LV)}catch(e){}}
 function go(s,l){S=s;LV=l;PI=0;ON=false;render()}
 function anim(o,dir,cb){const sc=$('scene');if(RM||!o){cb();return}busy=true;sc.style.transformOrigin=o[0]+'px '+o[1]+'px';sc.style.transform=dir>0?'scale(7)':'scale(.15)';sc.style.opacity='0';
