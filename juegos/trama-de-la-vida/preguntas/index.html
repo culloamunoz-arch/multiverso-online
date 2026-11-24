@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#04060f">
+<title>Preguntas que cambian · La Trama de la Vida</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* IDEA: las preguntas no son fijas. Cada ronda se arma con las 63 piezas de los cinco mundos.
+   Lo que fallas vuelve pronto; lo que dominas se espacia (repaso espaciado, cajas de Leitner).
+   Al final, una pregunta abierta que no tiene respuesta correcta: tu respuesta se guarda y la ves crecer. */
+:root{color-scheme:dark;--bg:#04060f;--bg2:#0b1024;--card:#111833;--line:#25305a;--ink:#f3eee2;--mute:#a9b0c8;--acc:#ffb35c;--ok:#6fd3b8;--no:#ff6f91}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;line-height:1.15;text-wrap:balance;margin:0 0 .4em}
+h1{font-size:clamp(30px,6vw,44px)}h2{font-size:clamp(21px,4vw,26px)}
+p{margin:0 0 .8em;max-width:64ch}
+.wrap{max-width:760px;margin:0 auto;padding:clamp(22px,4vw,44px) max(5vw,16px) 40px}
+.lead{color:var(--mute)}
+a{color:var(--acc)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.stat b{display:block;font:700 22px Sora,system-ui,sans-serif}
+.stat span{color:var(--mute);font-size:13.5px;line-height:1.25;display:block}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:18px}
+.prog{display:flex;gap:5px;margin-bottom:14px}.prog i{flex:1;height:4px;border-radius:9px;background:#25305a}.prog i.on{background:var(--acc)}.prog i.ok{background:var(--ok)}.prog i.no{background:var(--no)}
+.kind{font:700 12.5px Sora,system-ui,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--c,var(--acc))}
+.q{font:700 20px/1.3 Sora,system-ui,sans-serif;margin:6px 0 14px}
+.quote{border-left:3px solid var(--c,var(--acc));padding:4px 0 4px 12px;color:#e9e3d4;margin:0 0 14px;font-style:italic}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;min-height:48px;padding:10px 14px;border-radius:14px;border:1.5px solid var(--line);background:#0b1024;display:flex;gap:10px;align-items:center}
+.opt .dot{flex:none;width:10px;height:10px;border-radius:50%;background:var(--oc,#25305a)}
+.opt small{color:var(--mute);display:block;font-size:13.5px}
+.opt.ok{border-color:var(--ok);background:#0f2a26}.opt.no{border-color:var(--no);background:#2a1020}
+.opt:disabled{cursor:default}
+.fb{margin-top:14px;padding:12px 14px;border-radius:14px;background:#0b1024;border:1px solid var(--line)}
+.fb b{font-family:Sora,system-ui,sans-serif}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.btn{min-height:48px;padding:10px 20px;border-radius:99px;border:0;background:var(--acc);color:#04060f;font-weight:700}
+.btn.sec{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn:disabled{opacity:.4}
+textarea{width:100%;min-height:110px;border-radius:14px;border:1.5px solid var(--line);background:#0b1024;color:var(--ink);font:inherit;padding:12px}
+.prev{margin-top:12px;color:var(--mute);font-size:15px}
+.prev p{margin:.3em 0;padding:8px 12px;border-radius:12px;background:#0b1024;border:1px solid var(--line);color:var(--ink)}
+.how{margin-top:28px;color:var(--mute);font-size:15.5px}
+.how summary{cursor:pointer;color:var(--ink);font-weight:700;min-height:44px;display:flex;align-items:center}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <a href="../inicio/">← Inicio</a>
+  <h1 style="margin-top:10px">Preguntas que cambian</h1>
+  <p class="lead">Cada ronda se arma de nuevo con las piezas de los cinco mundos. Lo que fallas vuelve pronto; lo que ya sabes aparece cada vez menos. Así nunca se repite igual.</p>
+  <div class="stats" aria-live="polite">
+    <div class="stat"><b id="sDom">0</b><span>preguntas dominadas</span></div>
+    <div class="stat"><b id="sRep">0</b><span>por repasar hoy</span></div>
+    <div class="stat"><b id="sNew">0</b><span>aún sin ver</span></div>
+  </div>
+  <section id="game" class="card" aria-live="polite"></section>
+  <details class="how">
+    <summary>¿Cómo sigue aprendiendo esto?</summary>
+    <p>Hay más de 300 preguntas posibles, armadas con las piezas del cuerpo, la máquina, la IA, la planta y el hongo, y los seis hilos que las unen. Cada pregunta tiene una caja: si aciertas sube y tarda más en volver (1, 3, 7, 16 y 35 días); si fallas vuelve a la primera caja y aparece en la próxima ronda. Es el repaso espaciado que usan quienes estudian idiomas.</p>
+    <p>La pregunta abierta del final no tiene respuesta correcta. Tus respuestas quedan guardadas en este dispositivo, con fecha, para que veas cómo cambia lo que piensas.</p>
+  </details>
+</main>
+<script src="datos.js"></script>
+<script src="../mapa/nav.js" data-slug="preguntas"></script>
+<script>
+(function(){
+const D=window.TRAMA_DATOS,$=id=>document.getElementById(id);
+const H={};D.H.forEach(h=>H[h[0]]={id:h[0],n:h[1],c:h[2],q:h[3]});
+const MUNDO={humano:'el cuerpo',tecnologico:'la máquina',ia:'la IA',vegetal:'la planta',fungi:'el hongo'};
+const MUNDOS=Object.keys(MUNDO);
+const P=D.P,byId={};P.forEach(p=>byId[p.id]=p);
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const today=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);
+const INT=[0,1,3,7,16,35];
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let S=load('trama-preguntas',{});
+
+// Todas las preguntas posibles (claves estables)
+const KEYS=[];
+P.forEach(p=>{
+  KEYS.push('hilo:'+p.id);
+  if(p.cu&&!p.cu.toLowerCase().includes(p.n.toLowerCase().split(' ')[0]))KEYS.push('dato:'+p.id);
+  MUNDOS.forEach(u=>{if(u!==p.u&&P.some(x=>x.u===u&&x.pr===p.pr)&&P.filter(x=>x.u===u&&x.pr!==p.pr).length>=3)KEYS.push('espejo:'+p.id+':'+u)});
+});
+
+function build(key){
+  const [t,id,u]=key.split(':'),p=byId[id],h=H[p.pr];
+  if(t==='hilo'){
+    const o=shuf([p.pr,...shuf(Object.keys(H).filter(x=>x!==p.pr)).slice(0,3)]);
+    return {key,kind:'Hilo',c:h.c,q:`¿Qué problema de la vida resuelve «${p.n}» en ${MUNDO[p.u]}?`,
+      o:o.map(x=>({t:H[x].n,sub:H[x].q,c:H[x].c,ok:x===p.pr})),why:p.s};
+  }
+  if(t==='espejo'){
+    const ok=rnd(P.filter(x=>x.u===u&&x.pr===p.pr)),bad=shuf(P.filter(x=>x.u===u&&x.pr!==p.pr)).slice(0,3);
+    return {key,kind:'Espejo entre mundos',c:h.c,q:`En ${MUNDO[p.u]}, «${p.n}» resuelve el hilo de ${h.n.toLowerCase()}. ¿Qué pieza hace lo mismo en ${MUNDO[u]}?`,
+      o:shuf([ok,...bad]).map(x=>({t:x.n,sub:x.sys,c:H[x.pr].c,ok:x.pr===p.pr})),why:`${ok.n}: ${ok.s} Las dos piezas resuelven ${h.q.toLowerCase()}`};
+  }
+  const bad=shuf(P.filter(x=>x.id!==p.id&&x.n!==p.n)).slice(0,3);
+  return {key,kind:'Dato curioso',c:h.c,quote:p.cu,q:'¿De qué pieza habla este dato?',
+    o:shuf([p,...bad]).map(x=>({t:x.n,sub:MUNDO[x.u],c:H[x.pr].c,ok:x.id===p.id})),why:`${p.n} (${MUNDO[p.u]}): ${p.s}`};
+}
+
+function stats(){
+  let dom=0,rep=0,seen=0;
+  KEYS.forEach(k=>{const s=S[k];if(!s)return;seen++;if(s.b>=3)dom++;if(s.d<=today)rep++});
+  $('sDom').textContent=dom;$('sRep').textContent=rep;$('sNew').textContent=KEYS.length-seen;
+}
+
+function pickRound(n){
+  const due=shuf(KEYS.filter(k=>S[k]&&S[k].d<=today)).sort((a,b)=>S[a].b-S[b].b);
+  const fresh=shuf(KEYS.filter(k=>!S[k]));
+  const out=[],used=new Set();
+  const add=k=>{const id=k.split(':')[1];if(out.length<n&&!used.has(id)){out.push(k);used.add(id)}};
+  due.slice(0,Math.ceil(n/2)).forEach(add);
+  // mezcla tipos entre las nuevas
+  const t=['hilo','espejo','dato'];let i=0;
+  while(out.length<n&&fresh.length){const ty=t[i++%3],j=fresh.findIndex(k=>k.startsWith(ty)&&!used.has(k.split(':')[1]));add(fresh.splice(j>=0?j:0,1)[0])}
+  due.forEach(add);
+  if(out.length<n)shuf(KEYS).forEach(add);
+  return out.map(build);
+}
+
+let R=[],ix=0,res=[];
+function start(){R=pickRound(6);ix=0;res=[];show()}
+function show(){
+  const g=$('game');
+  if(ix>=R.length)return fin();
+  const Q=R[ix];
+  g.style.setProperty('--c',Q.c);
+  g.innerHTML=`<div class="prog" aria-hidden="true">${R.map((_,i)=>`<i class="${i<ix?(res[i]?'ok':'no'):i===ix?'on':''}"></i>`).join('')}</div>
+    <div class="kind">${Q.kind} · ${ix+1} de ${R.length}</div>
+    <p class="q">${Q.q}</p>${Q.quote?`<p class="quote">${Q.quote}</p>`:''}
+    <div class="opts" id="opts">${Q.o.map((o,i)=>`<button class="opt" data-i="${i}" style="--oc:${o.c}"><span class="dot"></span><span>${o.t}${o.sub?`<small>${o.sub}</small>`:''}</span></button>`).join('')}</div>
+    <div id="fb"></div><div class="row"><button class="btn" id="sig" disabled>${ix<R.length-1?'Siguiente':'Ver la ronda'}</button></div>`;
+  $('opts').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    const o=Q.o[+b.dataset.i],ok=o.ok;
+    $('opts').querySelectorAll('.opt').forEach((x,j)=>{x.disabled=true;if(Q.o[j].ok)x.classList.add('ok');else if(x===b)x.classList.add('no')});
+    const s=S[Q.key]||{b:0,d:today};
+    if(ok){s.b=Math.min(s.b+1,5);s.d=today+INT[s.b]}else{s.b=0;s.d=today}
+    S[Q.key]=s;save('trama-preguntas',S);res[ix]=ok;stats();
+    $('fb').innerHTML=`<div class="fb"><b>${ok?'¡Bien pensado!':'No era esa, y así se aprende.'}</b> ${Q.why}${ok?` <span style="color:var(--mute)">Volverá en ${INT[s.b]} día${INT[s.b]===1?'':'s'}.</span>`:` <span style="color:var(--mute)">Volverá en la próxima ronda.</span>`}</div>`;
+    $('sig').disabled=false;$('sig').focus({preventScroll:true});$('fb').scrollIntoView({block:'nearest',behavior:'smooth'});
+  });
+  $('sig').onclick=()=>{ix++;show();$('game').scrollIntoView({block:'start',behavior:'smooth'})};
+}
+function fin(){
+  const n=res.filter(Boolean).length,A=D.C[today%D.C.length];
+  const L=load('trama-abiertas',{}),mine=(L[A.id]||[]);
+  $('game').innerHTML=`<div class="kind">Ronda terminada</div><p class="q">Acertaste ${n} de ${R.length}.</p>
+    <p class="lead">${n===R.length?'Las acertadas se espacian: volverán en unos días para comprobar que siguen ahí.':'Las que fallaste vuelven en la próxima ronda, con otras opciones.'}</p>
+    <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+    <div class="kind" style="color:${H[A.pr].c}">Pregunta abierta de hoy · ${A.n}</div>
+    <p class="q">${A.q||A.n}</p>
+    <p class="lead">${A.s}</p>
+    <label for="resp" class="lead" style="display:block;margin-bottom:6px">No hay respuesta correcta. Escribe la tuya:</label>
+    <textarea id="resp" placeholder="Lo que pienso hoy…"></textarea>
+    <div class="row"><button class="btn sec" id="guardar">Guardar mi respuesta</button><span id="ok" class="lead"></span></div>
+    ${mine.length?`<div class="prev"><b style="color:var(--ink)">Lo que respondiste antes</b>${mine.slice(-3).reverse().map(m=>`<p><span style="color:var(--mute);font-size:13px">${new Date(m.t).toLocaleDateString('es-CL')}</span><br>${m.r.replace(/</g,'&lt;')}</p>`).join('')}</div>`:''}
+    <div class="row"><button class="btn" id="otra">Otra ronda</button></div>`;
+  $('guardar').onclick=()=>{const v=$('resp').value.trim();if(!v)return;const L=load('trama-abiertas',{});(L[A.id]=L[A.id]||[]).push({t:Date.now(),r:v});save('trama-abiertas',L);$('ok').textContent='Guardada en este dispositivo.';$('guardar').disabled=true};
+  $('otra').onclick=()=>{start();$('game').scrollIntoView({block:'start',behavior:'smooth'})};
+}
+stats();start();
+})();
+</script>
+</body>
+</html>

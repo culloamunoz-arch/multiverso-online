@@ -30,6 +30,9 @@ a:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
 .way{display:flex;gap:14px;align-items:flex-start;text-decoration:none;color:inherit;background:var(--card);border:1.5px solid var(--line);
   border-radius:18px;padding:16px;min-height:44px;transition:border-color .2s,transform .2s}
 .way:hover{border-color:var(--c);transform:translateY(-2px)}
+.way.sel{border-color:var(--c);box-shadow:0 0 0 2px var(--c) inset}
+.way .yo{display:none;font-size:12px;font-weight:700;color:#04060f;background:var(--c);border-radius:99px;padding:1px 8px;margin-left:6px}
+.way.sel .yo{display:inline-block}
 .way svg{flex:none;width:44px;height:44px}
 .way .lv{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--c);text-transform:uppercase}
 .way b{display:block;font:700 19px/1.2 Sora,system-ui,sans-serif;margin:2px 0 4px}
@@ -41,6 +44,7 @@ a:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
 .row{display:flex;flex-wrap:wrap;gap:8px}
 .row a{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 14px;border-radius:99px;border:1.5px solid var(--line);
   color:var(--ink);text-decoration:none;font-weight:700;font-size:15.5px}
+.row a{position:relative}
 .row a .o{width:9px;height:9px;border-radius:50%;border:2px solid var(--c)}
 .row a.v .o{background:var(--c)}
 .foot{margin-top:30px;color:var(--mute);font-size:15px}
@@ -50,7 +54,7 @@ a:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
 <main class="wrap">
   <p class="lead" style="margin:0 0 4px">La Trama de la Vida</p>
   <h1>¿Por dónde quieres partir?</h1>
-  <p class="lead">Elige cómo viajar. Puedes volver a esta pantalla en cualquier momento con el botón <b>Inicio</b>.</p>
+  <p class="lead">Todo vuelve aquí: en el 3D con el botón <b>Inicio</b> y en las páginas con el botón <b>Guía</b>.</p>
 
   <a class="sug" id="sug" href="../expedicion/">
     <span class="k" id="sugk">Si es tu primera vez</span>
@@ -58,23 +62,24 @@ a:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
     <span class="d" id="sugd">Súbete a la Semilla: un viaje paso a paso, con un solo botón para avanzar.</span>
   </a>
 
-  <h2>Cuatro formas de viajar</h2>
-  <div class="ways">
-    <a class="way" style="--c:#6fd3b8" href="../expedicion/">
+  <h2>¿Cómo te gusta viajar?</h2>
+  <p class="lead" style="font-size:16px">Elige una forma. La guía (y la tarjeta «Siguiente» al final de cada página) te propondrá siempre el próximo paso de esa forma, para que no te pierdas entre modos. Puedes cambiarla cuando quieras.</p>
+  <div class="ways" id="ways">
+    <a class="way" style="--c:#6fd3b8" data-forma="guiada" href="../expedicion/">
       <svg viewBox="0 0 44 44" fill="none" stroke="#6fd3b8" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="22" cy="22" r="19" opacity=".35"/><path d="M14 30c2-9 8-15 16-16-1 8-7 14-16 16z"/><path d="M14 30l9-9"/></svg>
-      <span><span class="lv">Muy guiado · 5 a 10 min</span><b>Expediciones</b><span class="d">Once viajes cortos con escenas, juegos y preguntas. Solo tocas «Siguiente».</span></span>
+      <span><span class="lv">Guiada · un botón para avanzar</span><b>Guiada</b><span class="d">Expediciones con la Semilla, preguntas que cambian y recorridos 3D, paso a paso.</span></span>
     </a>
-    <a class="way" style="--c:#9ad7ff" href="../recorridos/">
-      <svg viewBox="0 0 44 44" fill="none" stroke="#9ad7ff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="22" cy="22" r="19" opacity=".35"/><circle cx="12" cy="30" r="3"/><circle cx="32" cy="14" r="3"/><path d="M14.5 28c5-1 3-8 8-9s4-3 7-3.5"/></svg>
-      <span><span class="lv">Guiado en 3D · 4 min</span><b>Recorridos 3D</b><span class="d">La cámara te lleva de cerca a cada pieza: un cuerpo, un auto, una planta, un hongo y una IA.</span></span>
+    <a class="way" style="--c:#9ad7ff" data-forma="visual" href="../">
+      <svg viewBox="0 0 44 44" fill="none" stroke="#9ad7ff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="22" cy="22" r="19" opacity=".35"/><path d="M22 10l10 6v12l-10 6-10-6V16z"/><path d="M22 22l10-6M22 22v12M22 22l-10-6"/></svg>
+      <span><span class="lv">Mirar y tocar</span><b>Visual en 3D</b><span class="d">Los cinco mundos en 3D, los recorridos de cerca y el viaje al interior.</span></span>
     </a>
-    <a class="way" style="--c:#ffb35c" href="../mapa/">
+    <a class="way" style="--c:#c9a3ff" data-forma="lectura" href="../aprende/">
+      <svg viewBox="0 0 44 44" fill="none" stroke="#c9a3ff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="22" cy="22" r="19" opacity=".35"/><path d="M11 14c4-1 8 0 11 2 3-2 7-3 11-2v16c-4-1-8 0-11 2-3-2-7-3-11-2z"/><path d="M22 16v16"/></svg>
+      <span><span class="lv">A tu ritmo</span><b>Leer y pensar</b><span class="d">Los seis hilos, la psique, los mapas simbólicos y lo que una IA ve de la trama.</span></span>
+    </a>
+    <a class="way" style="--c:#ffb35c" data-forma="libre" href="../mapa/">
       <svg viewBox="0 0 44 44" fill="none" stroke="#ffb35c" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="22" cy="22" r="19" opacity=".35"/><path d="M11 14l7-3 8 3 7-3v19l-7 3-8-3-7 3z"/><path d="M18 11v19M26 14v19"/></svg>
-      <span><span class="lv">A tu ritmo</span><b>El mapa de la Trama</b><span class="d">Las doce paradas en orden, en cuatro movimientos. Marca lo que ya viste.</span></span>
-    </a>
-    <a class="way" style="--c:#c9a3ff" href="../">
-      <svg viewBox="0 0 44 44" fill="none" stroke="#c9a3ff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="22" cy="22" r="19" opacity=".35"/><circle cx="22" cy="22" r="8"/><path d="M22 3v6M22 35v6M3 22h6M35 22h6"/></svg>
-      <span><span class="lv">Libre</span><b>Explorar en 3D</b><span class="d">Sin guía: entra a los cinco mundos y toca los puntos que te llamen.</span></span>
+      <span><span class="lv">Todo, en orden</span><b>Libre</b><span class="d">Las doce paradas en el orden del mapa, en cuatro movimientos.</span></span>
     </a>
   </div>
 
@@ -88,24 +93,26 @@ a:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
 <script>
 (function(){
   var T=window.TRAMA_MAPA;if(!T)return;
-  var seen=function(s){try{return localStorage.getItem('trama-visto-'+s)==='1'}catch(e){return false}};
-  var h='';
-  T.M.forEach(function(m,mi){
-    h+='<div class="mv" style="--c:'+m.c+'"><div class="k">'+m.n+'</div><p class="q">'+m.q+'</p><div class="row">';
-    T.ST.forEach(function(s){if(s.m!==mi)return;
-      h+='<a class="'+(seen(s.s)?'v':'')+'" href="'+T.base+s.p+'"><span class="o" aria-hidden="true"></span>'+s.n+(seen(s.s)?'<span class="sr" style="position:absolute;left:-9999px"> (visitada)</span>':'')+'</a>';});
-    h+='</div></div>';
+  var seen=T.seen,f=T.forma();
+  document.querySelectorAll('[data-forma]').forEach(function(a){
+    var k=a.getAttribute('data-forma');
+    a.querySelector('b').insertAdjacentHTML('beforeend','<span class="yo">tu forma</span>');
+    if(k===f)a.classList.add('sel');
+    a.addEventListener('click',function(e){e.preventDefault();T.setForma(k);var nx=T.next(k,null)||T.ALL[T.F[k].path[0]];location.href=T.base+nx.p});
   });
+  var row=function(list,c){var h='<div class="row">';list.forEach(function(s){
+      h+='<a class="'+(seen(s.s)?'v':'')+'" style="--c:'+c+'" href="'+T.base+s.p+'"><span class="o" aria-hidden="true"></span>'+s.n+(seen(s.s)?'<span style="position:absolute;left:-9999px"> (visitada)</span>':'')+'</a>'});return h+'</div>'};
+  var h='';
+  T.M.forEach(function(m,mi){h+='<div class="mv" style="--c:'+m.c+'"><div class="k">'+m.n+'</div><p class="q">'+m.q+'</p>'+row(T.ST.filter(function(s){return s.m===mi}),m.c)+'</div>'});
+  h+='<div class="mv" style="--c:#a9b0c8"><div class="k">Desvíos</div><p class="q">Para cruzar los mundos o repasar.</p>'+row(T.D,'#a9b0c8')+'</div>';
   document.getElementById('mv').innerHTML=h;
+  var a=document.getElementById('sug'),K=document.getElementById('sugk'),Ti=document.getElementById('sugt'),De=document.getElementById('sugd');
   var any=T.ST.some(function(s){return seen(s.s)});
-  if(any){
-    var nx=null;for(var i=0;i<T.ST.length;i++)if(!seen(T.ST[i].s)){nx=T.ST[i];break}
-    var a=document.getElementById('sug');
-    if(nx){a.href=T.base+nx.p;document.getElementById('sugk').textContent='Sigue donde quedaste';
-      document.getElementById('sugt').textContent=nx.n+' →';document.getElementById('sugd').textContent=nx.d;}
-    else{a.href=T.base+'mapa/';document.getElementById('sugk').textContent='Recorriste todas las paradas';
-      document.getElementById('sugt').textContent='Mira la trama completa →';document.getElementById('sugd').textContent='Vuelve al mapa para ver cómo se conecta todo lo que viste.';}
-  }
+  if(f){var nx=T.next(f,null);a.style.borderColor=T.F[f].c;K.style.color=T.F[f].c;
+    if(nx){a.href=T.base+nx.p;K.textContent='Sigue en tu forma · '+T.F[f].n;Ti.textContent=nx.n+' →';De.textContent=nx.d||''}
+    else{a.href=T.base+'mapa/';K.textContent='Completaste la forma '+T.F[f].n;Ti.textContent='Prueba otra forma o mira el mapa →';De.textContent='Cada forma recorre la misma trama desde otro ángulo.'}}
+  else if(any){var n2=null;for(var i=0;i<T.ST.length;i++)if(!seen(T.ST[i].s)){n2=T.ST[i];break}
+    if(n2){a.href=T.base+n2.p;K.textContent='Sigue donde quedaste';Ti.textContent=n2.n+' →';De.textContent=n2.d}}
 })();
 </script>
 </body>
