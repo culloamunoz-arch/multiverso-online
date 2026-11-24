@@ -59,7 +59,7 @@ footer{color:var(--mute);font-size:14px}
   <div class="note">Tres etiquetas para no perderse. <span class="tag t-h">Historia</span>lo que está documentado. <span class="tag t-l">Leyenda</span>lo que se repite sin pruebas. <span class="tag t-s">Símbolo</span>lo que no es ciencia, pero puede enseñar a mirar. Ninguna tradición de esta página es una ciencia, y todas son más antiguas y serias que sus caricaturas.</div>
 
   <div class="card" id="pre" style="margin-top:18px">
-    <h3>Antes de empezar, apuesta</h3>
+    <h3>Antes de empezar, ¿qué crees?</h3>
     <p>La masonería moderna, como institución con una Gran Logia, nació…</p>
     <div id="preopts"></div>
     <div id="prefb"></div>
@@ -135,7 +135,7 @@ footer{color:var(--mute);font-size:14px}
 <script>
 {
 const $=id=>document.getElementById(id);
-// Apuesta
+// Intuición previa
 const PRE=[['En el antiguo Egipto, con los constructores de pirámides',0],['Con los templarios, hacia el año 1300',0],['En Londres, en 1717',1],['En la Revolución francesa, en 1789',0]];
 $('preopts').innerHTML=PRE.map((o,i)=>`<button class="opt" data-i="${i}">${o[0]}</button>`).join('');
 $('preopts').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{

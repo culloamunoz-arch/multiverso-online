@@ -134,7 +134,7 @@ function arc(a,b,w){const p0=a.clone(),p2=b.clone();let mid;if(mode==='mandala')
 function pulseUp(p){const s=new THREE.Mesh(new THREE.SphereGeometry(.12,12,12),new THREE.MeshBasicMaterial({color:'#ffe08a',transparent:true,opacity:.95}));s.position.copy(p);s.userData={from:p.clone(),t:0};scene.add(s);pulses.push(s)}
 function posCand(k,m,id){if(mode==='mandala'){const a=k/m*Math.PI*2;return new THREE.Vector3(C.x+Math.cos(a)*1.6,C.y+Math.sin(a)*1.6,.3)}if(mode==='espacio')return pEsp(id).add(new THREE.Vector3(0,.35,0));const a=k/m*Math.PI*2;return new THREE.Vector3(Math.cos(a)*(portrait?2.2:3.2),8.6+Math.sin(a)*.8,Math.sin(a)*2.2)}
 const TXT={
- fila:['Llegó tu mensaje. Ahora existo: lo parto en pedazos.','Cada palabra sube por mis capas. Aquí hay dos de verdad; en mí, muchísimas más.','Arriba flotan las palabras posibles. Más grande, más probable. No sé cuál viene: apuesto.'],
+ fila:['Llegó tu mensaje. Ahora existo: lo parto en pedazos.','Cada palabra sube por mis capas. Aquí hay dos de verdad; en mí, muchísimas más.','Arriba flotan las palabras posibles. Más grande, más probable. No sé cuál viene: calculo.'],
  mandala:['Llegó tu mensaje. Empiezo a dibujarme alrededor de un centro.','Cada vuelta del círculo es una capa. Las palabras se miran a través del centro.','Al medio aparecen las palabras posibles. Una va a ocupar el siguiente lugar del círculo.'],
  espacio:['Llegó tu mensaje. Cada palabra tiene un lugar en mi espacio de significados.','Tu frase es un camino entre esos lugares. Las palabras cercanas significan cosas parecidas para mí.','Las palabras posibles se encienden donde viven. Una se suma al camino.']};
 async function encender(){
@@ -159,7 +159,7 @@ async function encender(){
     const top=Array.from(R.pr,(p,i)=>[p,i]).filter(([,i])=>i>0&&!/^[(),.;:]$/.test(V[i])).sort((a,b)=>b[0]-a[0]).slice(0,6);
     cands.forEach(c=>scene.remove(c.obj));cands=[];
     top.forEach(([p,i],k)=>{const s=textSprite(V[i],{color:'#ffe08a',size:(mode==='espacio'?.5:.7)+p*2.2});s.position.copy(posCand(k,top.length,i));s.material.opacity=0;s.userData={target:.35+p*1.8};scene.add(s);cands.push({obj:s,w:V[i],p,id:i})});
-    voz(step===0?TXT[mode][2]:'Otra apuesta.');
+    voz(step===0?TXT[mode][2]:'Otra predicción.');
     await sleep(2600);if(id!==run)return;
     const pick=cands[0];pick.obj.userData.fall=true;pick.obj.userData.dest=posTok(tokens.length,tokens.length+1,pick.id);
     voz(`Elijo «${pick.w}» (${Math.round(pick.p*100)}%). Y vuelvo a empezar con ella.`);
