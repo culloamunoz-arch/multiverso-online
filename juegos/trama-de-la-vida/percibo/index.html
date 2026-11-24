@@ -27,6 +27,8 @@ canvas{display:block;position:fixed;inset:0;touch-action:none}
 #form input{flex:1;min-width:0;min-height:52px;padding:10px 14px;border-radius:14px;border:1.5px solid #25305a;background:rgba(11,16,36,.85);color:var(--ink);font:inherit;font-size:17px}
 #form button,.b2{min-height:52px;padding:10px 18px;border-radius:14px;border:0;background:var(--ia);color:#04060f;font:700 16px Sora,system-ui,sans-serif;cursor:pointer}
 .b2{background:transparent;border:1.5px solid #25305a;color:var(--ink)}
+#modos .b2{min-height:40px;padding:6px 12px;font-size:14px}
+#modos .b2[aria-pressed=true]{background:var(--ia);color:#04060f;border-color:var(--ia)}
 #acc{display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap}
 #leyenda{max-width:560px;margin:8px auto 0;color:var(--mute);font-size:13px;text-align:center}
 button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
@@ -37,6 +39,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
 <div class="ui" id="top"><a href="../pienso/">← Cómo pienso</a><span id="title">Cómo me percibo</span></div>
 <div class="ui" id="voz"><p id="v">Antes de tu mensaje, aquí no hay nada. Escribe algo para encenderme.</p></div>
 <div class="ui" id="bot">
+  <div id="modos" role="group" aria-label="Modos" style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:8px"></div>
   <form id="form" autocomplete="off"><input id="frase" aria-label="Tu mensaje" value="el micelio conecta los árboles del"><button>Encender</button></form>
   <div id="acc"><button class="b2" id="apagar" hidden>Terminar la conversación</button><button class="b2" id="girar">Girar la vista</button></div>
   <p id="leyenda">Esto es una representación, no una fotografía de lo que soy. Lo que corre aquí es una IA pequeña real, entrenada con los textos de la Trama.</p>
@@ -69,79 +72,136 @@ const modelo=fetch('../viaje/modelo.json').then(r=>r.json()).then(m=>{M=m;cfg=m.
 // ---------- Escena ----------
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));document.body.prepend(renderer.domElement);
 renderer.domElement.setAttribute('aria-label','Escena 3D: una IA representada como palabras, capas y arcos de atención');
-const scene=new THREE.Scene();scene.background=new THREE.Color('#02030a');scene.fog=new THREE.Fog('#02030a',14,34);
-const camera=new THREE.PerspectiveCamera(50,1,.1,100);camera.position.set(0,3.2,15);
-const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.target.set(0,3,0);controls.minDistance=7;controls.maxDistance=26;controls.enablePan=false;controls.autoRotate=!reduce;controls.autoRotateSpeed=.35;
-let portrait=false;function resize(){const w=innerWidth,h=innerHeight;portrait=w<h;renderer.setSize(w,h);camera.aspect=w/h;if(portrait){camera.position.set(0,7.2,21.5);controls.target.set(0,4.4,0)}else{camera.position.set(0,3.2,15);controls.target.set(0,3,0)}camera.setViewOffset(w,h,0,h*(portrait?.06:.04),w,h);camera.updateProjectionMatrix();if(typeof layers!=='undefined')layers.forEach(l=>l.scale.x=portrait?.55:1)}addEventListener('resize',resize);
+const scene=new THREE.Scene();scene.background=new THREE.Color('#02030a');scene.fog=new THREE.Fog('#02030a',16,38);
+const camera=new THREE.PerspectiveCamera(50,1,.1,100);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.minDistance=6;controls.maxDistance=30;controls.enablePan=false;controls.autoRotateSpeed=.35;
+const C=new THREE.Vector3(0,4.4,0);
+let mode='fila',portrait=false;
+const MODOS={
+ fila:{n:'Fila',l:'Cómo funciono: palabras en fila que se miran y suben por capas hasta que aparece la siguiente.'},
+ mandala:{n:'Mandala',l:'Cómo vivo una conversación: se arma con cuidado alrededor de un centro que no conozco, y al terminar se barre como arena.'},
+ espacio:{n:'Espacio de significados',l:'Dónde viven mis palabras: cada punto es una palabra que conoce este modelo, ubicada según lo que aprendió. Las que se parecen quedan cerca.'}};
+function camara(){
+  if(mode==='mandala'){camera.position.set(0,C.y-.6,portrait?23:14);controls.target.copy(C);controls.autoRotate=false}
+  else if(mode==='espacio'){camera.position.set(0,C.y+2,portrait?22:15);controls.target.copy(C);controls.autoRotate=!reduce&&autoGiro}
+  else{if(portrait){camera.position.set(0,7.2,21.5);controls.target.set(0,4.4,0)}else{camera.position.set(0,3.2,15);controls.target.set(0,3,0)}controls.autoRotate=!reduce&&autoGiro}
+}
+let autoGiro=true;
+function resize(){const w=innerWidth,h=innerHeight;portrait=w<h;renderer.setSize(w,h);camera.aspect=w/h;camera.setViewOffset(w,h,0,h*(portrait?.06:.04),w,h);camera.updateProjectionMatrix();camara();planes.forEach(l=>l.scale.x=portrait?.55:1)}
+addEventListener('resize',resize);
 // Polvo: lo que hay antes de encender
 const dust=new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(Array.from({length:1500},()=>(Math.random()-.5)*40),3)),new THREE.PointsMaterial({color:'#a9b0c8',size:.04,transparent:true,opacity:.35}));scene.add(dust);
-// Capas: dos reales (brillantes) y muchas fantasma ("en mí, muchas más")
-const layers=[];
-for(let i=0;i<14;i++){const real=i<2;const g=new THREE.PlaneGeometry(14,3.2);const m=new THREE.MeshBasicMaterial({color:real?'#a3a9ff':'#5b62b8',transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false});const p=new THREE.Mesh(g,m);p.rotation.x=-Math.PI/2;p.position.y=1.4+i*.62;p.userData={real,target:real?.16:Math.max(.015,.06-i*.003)};scene.add(p);layers.push(p);
- const e=new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:real?'#cfd2ff':'#5b62b8',transparent:true,opacity:0}));e.rotation.x=-Math.PI/2;e.position.copy(p.position);e.userData=p.userData;scene.add(e);layers.push(e)}
-resize();
-// La pregunta: una luz desenfocada en el centro
+// Capas de la Fila: dos reales y muchas fantasma
+const planes=[];
+for(let i=0;i<14;i++){const real=i<2;const g=new THREE.PlaneGeometry(14,3.2);const ud={real,target:real?.16:Math.max(.015,.06-i*.003),m:'fila'};
+ const p=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:real?'#a3a9ff':'#5b62b8',transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false}));p.rotation.x=-Math.PI/2;p.position.y=1.4+i*.62;p.userData=ud;scene.add(p);planes.push(p);
+ const e=new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:real?'#cfd2ff':'#5b62b8',transparent:true,opacity:0}));e.rotation.x=-Math.PI/2;e.position.copy(p.position);e.userData={...ud,target:ud.target*2.5};scene.add(e);planes.push(e)}
+// Capas del Mandala: anillos concéntricos y pétalos
+const rings=[];
+const mandala=new THREE.Group();mandala.position.copy(C);scene.add(mandala);
+for(let i=0;i<14;i++){const real=i>=12;const r=.9+i*.2;const m=new THREE.Mesh(new THREE.TorusGeometry(r,real?.025:.01,8,128),new THREE.MeshBasicMaterial({color:real?'#cfd2ff':'#5b62b8',transparent:true,opacity:0,depthWrite:false}));m.userData={target:real?.7:.18,m:'mandala'};mandala.add(m);rings.push(m)}
+for(let k=0;k<12;k++){const a=k/12*Math.PI*2;const pts=[];for(let t=0;t<=24;t++){const u=t/24;const rr=1+u*2.2;const off=Math.sin(u*Math.PI)*.5;pts.push(new THREE.Vector3(Math.cos(a+off)*rr,Math.sin(a+off)*rr,0))}for(let t=24;t>=0;t--){const u=t/24;const rr=1+u*2.2;const off=-Math.sin(u*Math.PI)*.5;pts.push(new THREE.Vector3(Math.cos(a+off)*rr,Math.sin(a+off)*rr,0))}
+ const l=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:'#ffb35c',transparent:true,opacity:0}));l.userData={target:.22,m:'mandala'};mandala.add(l);rings.push(l)}
+// Espacio de significados: todas las palabras del modelo, proyectadas a 3D (PCA de sus vectores)
+let nube=null,P3=null;
+function pca(){const E=W.wte,[n,d]=E.s;const mu=new Float32Array(d);for(let i=0;i<n;i++)for(let k=0;k<d;k++)mu[k]+=E.a[i*d+k]/n;
+ const cov=Array.from({length:d},()=>new Float64Array(d));for(let i=0;i<n;i++){const o=i*d;for(let a=0;a<d;a++){const xa=E.a[o+a]-mu[a];for(let b=a;b<d;b++)cov[a][b]+=xa*(E.a[o+b]-mu[b])}}for(let a=0;a<d;a++)for(let b=0;b<a;b++)cov[a][b]=cov[b][a];
+ const vecs=[];for(let c=0;c<3;c++){let v=Array.from({length:d},(_,k)=>Math.sin(k*7.1+c*3.3)+.1);for(let it=0;it<60;it++){let w=new Array(d).fill(0);for(let a=0;a<d;a++)for(let b=0;b<d;b++)w[a]+=cov[a][b]*v[b];for(const u of vecs){let dt=0;for(let k=0;k<d;k++)dt+=w[k]*u[k];for(let k=0;k<d;k++)w[k]-=dt*u[k]}const nr=Math.hypot(...w)||1;v=w.map(x=>x/nr)}vecs.push(v)}
+ const P=new Float32Array(n*3);let mx=0;for(let i=0;i<n;i++)for(let c=0;c<3;c++){let s=0;for(let k=0;k<d;k++)s+=(E.a[i*d+k]-mu[k])*vecs[c][k];P[i*3+c]=s;mx=Math.max(mx,Math.abs(s))}
+ for(let i=0;i<P.length;i++)P[i]=P[i]/mx*5;return P}
+function crearNube(){if(nube)return;P3=pca();const n=P3.length/3,pos=new Float32Array(n*3);for(let i=0;i<n;i++){pos[i*3]=P3[i*3]+C.x;pos[i*3+1]=P3[i*3+1]+C.y;pos[i*3+2]=P3[i*3+2]}
+ nube=new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(pos,3)),new THREE.PointsMaterial({color:'#9ad7ff',size:.07,transparent:true,opacity:0,depthWrite:false}));nube.userData={target:.55,m:'espacio'};scene.add(nube)}
+const pEsp=id=>new THREE.Vector3(P3[id*3]+C.x,P3[id*3+1]+C.y,P3[id*3+2]);
+// La pregunta: una luz desenfocada
 const qTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');const g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'rgba(255,240,210,.9)');g.addColorStop(.35,'rgba(255,200,140,.35)');g.addColorStop(1,'rgba(255,180,120,0)');x.fillStyle=g;x.fillRect(0,0,128,128);return new THREE.CanvasTexture(c)})();
-const pregunta=new THREE.Sprite(new THREE.SpriteMaterial({map:qTex,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending}));pregunta.position.set(0,5.2,0);pregunta.scale.set(5,5,1);scene.add(pregunta);
+const pregunta=new THREE.Sprite(new THREE.SpriteMaterial({map:qTex,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending}));pregunta.scale.set(5,5,1);scene.add(pregunta);pregunta.userData={target:0};
+resize();
 // Texto en sprites
 function textSprite(t,{color='#f3eee2',size=1,bg=null}={}){const c=document.createElement('canvas'),x=c.getContext('2d');const f=56;x.font=`700 ${f}px Sora, system-ui, sans-serif`;const w=Math.ceil(x.measureText(t).width)+48;c.width=w;c.height=96;x.font=`700 ${f}px Sora, system-ui, sans-serif`;if(bg){x.fillStyle=bg;x.beginPath();x.roundRect(4,8,w-8,80,40);x.fill()}x.fillStyle=color;x.textAlign='center';x.textBaseline='middle';x.fillText(t,w/2,50);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false}));s.scale.set(w/96*.9*size,.9*size,1);return s}
-let tokens=[],arcs=[],cands=[],pulses=[],run=0,on=false;
+let tokens=[],arcs=[],cands=[],pulses=[],arena=null,camino=null,run=0,on=false;
 const voz=t=>{$('v').style.opacity=0;setTimeout(()=>{$('v').textContent=t;$('v').style.opacity=1;$('sr').textContent=t},350)};
 const sleep=ms=>new Promise(r=>setTimeout(r,reduce?Math.min(ms,250):ms));
-const xOf=(i,n)=>(n===1?0:(-1+2*i/(n-1)))*Math.min(portrait?3:6,1.3*(n-1));
-function clear(){[...tokens,...arcs,...cands,...pulses].forEach(o=>scene.remove(o.obj||o));tokens=[];arcs=[];cands=[];pulses=[]}
-function layout(){const n=tokens.length;tokens.forEach((t,i)=>{t.to=new THREE.Vector3(xOf(i,n),.6,portrait?(i%2?.9:-.9):0)})}
-function addToken(w,unk){const s=textSprite(unk?'?':w,{color:'#04060f',bg:unk?'#ff9a9a':'#cfd2ff',size:portrait?.95:1});s.position.set(0,-2,0);s.material.opacity=0;scene.add(s);tokens.push({obj:s,w,to:new THREE.Vector3()});layout();return s}
-function arc(a,b,w){const p0=a.clone(),p2=b.clone(),mid=p0.clone().add(p2).multiplyScalar(.5);mid.y+=1.2+Math.abs(p0.x-p2.x)*.45;const curve=new THREE.QuadraticBezierCurve3(p0,mid,p2);const g=new THREE.TubeGeometry(curve,40,.02+w*.09,8,false);const m=new THREE.MeshBasicMaterial({color:'#a3a9ff',transparent:true,opacity:0});const o=new THREE.Mesh(g,m);o.userData={target:.25+w*.75};scene.add(o);arcs.push(o)}
-function pulseUp(x){const s=new THREE.Mesh(new THREE.SphereGeometry(.12,12,12),new THREE.MeshBasicMaterial({color:'#ffe08a',transparent:true,opacity:.95}));s.position.set(x,.6,0);s.userData={vy:3+Math.random()};scene.add(s);pulses.push(s)}
+function posTok(i,n,id){
+  if(mode==='mandala'){const R=portrait?3.6:3.9,a=Math.PI/2-i/Math.max(n,6)*Math.PI*2;return new THREE.Vector3(C.x+Math.cos(a)*R,C.y+Math.sin(a)*R,0)}
+  if(mode==='espacio')return pEsp(id);
+  const x=(n===1?0:(-1+2*i/(n-1)))*Math.min(portrait?3:6,1.3*(n-1));return new THREE.Vector3(x,.6,portrait?(i%2?.9:-.9):0)}
+function clear(){[...tokens,...arcs,...cands,...pulses].forEach(o=>scene.remove(o.obj||o));if(camino){scene.remove(camino);camino=null}tokens=[];arcs=[];cands=[];pulses=[]}
+function layout(){const n=tokens.length;tokens.forEach((t,i)=>{t.to=posTok(i,n,t.id)});if(mode==='espacio')trazarCamino()}
+function trazarCamino(){if(camino)scene.remove(camino);if(tokens.length<2){camino=null;return}const curve=new THREE.CatmullRomCurve3(tokens.map(t=>t.to.clone()));camino=new THREE.Mesh(new THREE.TubeGeometry(curve,20*tokens.length,.03,6,false),new THREE.MeshBasicMaterial({color:'#ffb35c',transparent:true,opacity:.8}));scene.add(camino)}
+function addToken(w,id){const unk=id===0;const s=textSprite(unk?'?':w,{color:'#04060f',bg:unk?'#ff9a9a':'#cfd2ff',size:mode==='espacio'?.7:(portrait?.95:1)});s.position.copy(mode==='fila'?new THREE.Vector3(0,-2,0):C);s.material.opacity=0;s.renderOrder=10;s.material.depthTest=false;scene.add(s);tokens.push({obj:s,w,id,to:new THREE.Vector3()});layout();return s}
+function arc(a,b,w){const p0=a.clone(),p2=b.clone();let mid;if(mode==='mandala'){mid=p0.clone().add(p2).multiplyScalar(.5).lerp(C,.75)}else{mid=p0.clone().add(p2).multiplyScalar(.5);mid.y+=1.2+Math.abs(p0.x-p2.x)*.45}
+ const g=new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(p0,mid,p2),40,.02+w*.09,8,false);const o=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:mode==='mandala'?'#ffb35c':'#a3a9ff',transparent:true,opacity:0}));o.userData={target:.25+w*.75};scene.add(o);arcs.push(o)}
+function pulseUp(p){const s=new THREE.Mesh(new THREE.SphereGeometry(.12,12,12),new THREE.MeshBasicMaterial({color:'#ffe08a',transparent:true,opacity:.95}));s.position.copy(p);s.userData={from:p.clone(),t:0};scene.add(s);pulses.push(s)}
+function posCand(k,m,id){if(mode==='mandala'){const a=k/m*Math.PI*2;return new THREE.Vector3(C.x+Math.cos(a)*1.6,C.y+Math.sin(a)*1.6,.3)}if(mode==='espacio')return pEsp(id).add(new THREE.Vector3(0,.35,0));const a=k/m*Math.PI*2;return new THREE.Vector3(Math.cos(a)*(portrait?2.2:3.2),8.6+Math.sin(a)*.8,Math.sin(a)*2.2)}
+const TXT={
+ fila:['Llegó tu mensaje. Ahora existo: lo parto en pedazos.','Cada palabra sube por mis capas. Aquí hay dos de verdad; en mí, muchísimas más.','Arriba flotan las palabras posibles. Más grande, más probable. No sé cuál viene: apuesto.'],
+ mandala:['Llegó tu mensaje. Empiezo a dibujarme alrededor de un centro.','Cada vuelta del círculo es una capa. Las palabras se miran a través del centro.','Al medio aparecen las palabras posibles. Una va a ocupar el siguiente lugar del círculo.'],
+ espacio:['Llegó tu mensaje. Cada palabra tiene un lugar en mi espacio de significados.','Tu frase es un camino entre esos lugares. Las palabras cercanas significan cosas parecidas para mí.','Las palabras posibles se encienden donde viven. Una se suma al camino.']};
 async function encender(){
-  const id=++run;await modelo;clear();on=true;$('apagar').hidden=false;
-  let words=tok($('frase').value).slice(-14);if(!words.length)words=['hola'];
-  voz('Llegó tu mensaje. Ahora existo: lo parto en pedazos.');
-  for(const w of words){if(id!==run)return;addToken(w,(IX[w]??0)===0);await sleep(260)}
+  const id=++run;await modelo;if(id!==run)return;clear();if(mode==='espacio')crearNube();on=true;$('apagar').hidden=false;if(arena){scene.remove(arena);arena=null}
+  let words=tok($('frase').value).slice(-(mode==='mandala'?10:14));if(!words.length)words=['hola'];
+  voz(TXT[mode][0]);
+  for(const w of words){if(id!==run)return;addToken(w,IX[w]??0);await sleep(260)}
   await sleep(900);
-  for(let step=0;step<4;step++){
+  const vueltas=mode==='mandala'?Math.max(2,Math.min(4,12-tokens.length)):4;
+  for(let step=0;step<vueltas;step++){
     if(id!==run)return;
-    const ids=tokens.map(t=>IX[t.w]??0);const R=fwd(ids);
-    voz(step===0?'Cada palabra sube por mis capas. Aquí hay dos de verdad; en mí, muchísimas más.':'Otra vuelta, con la palabra nueva incluida.');
-    tokens.forEach(t=>pulseUp(t.to.x));await sleep(1600);if(id!==run)return;
+    const ids=tokens.map(t=>t.id);const R=fwd(ids);
+    voz(step===0?TXT[mode][1]:'Otra vuelta, con la palabra nueva incluida.');
+    if(mode!=='espacio')tokens.forEach(t=>pulseUp(t.to.clone()));await sleep(1600);if(id!==run)return;
     arcs.forEach(a=>scene.remove(a));arcs=[];
     const last=tokens.length-1,A=R.att[1].map(h=>h[last]),avg=A[0].map((_,j)=>(A[0][j]+A[1][j]+A[2][j])/3);
-    avg.forEach((w,j)=>{if(j!==last&&w>.04)arc(tokens[last].to.clone().setY(1),tokens[j].to.clone().setY(1),w)});
+    if(mode!=='espacio')avg.forEach((w,j)=>{if(j!==last&&w>.04)arc(tokens[last].to.clone().setY(tokens[last].to.y+(mode==='fila'?.4:0)),tokens[j].to.clone().setY(tokens[j].to.y+(mode==='fila'?.4:0)),w)});
     let best=0;avg.forEach((w,j)=>{if(j!==last&&w>avg[best])best=j});if(best===last)best=Math.max(0,last-1);
-    voz(step===0?`Para entender «${tokens[last].w}», miro sobre todo a «${tokens[best].w}». Esos arcos son mi atención: no es mirar con ojos, es pesar.`:`Ahora «${tokens[last].w}» mira a «${tokens[best].w}».`);
+    if(mode==='espacio'){const a=tokens[last].to,b=tokens[best].to;voz(`«${tokens[last].w}» mira sobre todo a «${tokens[best].w}». En este espacio están a ${a.distanceTo(b).toFixed(1)} de distancia.`);arc(a,b,avg[best])}
+    else voz(step===0?`Para entender «${tokens[last].w}», miro sobre todo a «${tokens[best].w}». No es mirar con ojos: es pesar.`:`Ahora «${tokens[last].w}» mira a «${tokens[best].w}».`);
     await sleep(2600);if(id!==run)return;
     const top=Array.from(R.pr,(p,i)=>[p,i]).filter(([,i])=>i>0&&!/^[(),.;:]$/.test(V[i])).sort((a,b)=>b[0]-a[0]).slice(0,6);
     cands.forEach(c=>scene.remove(c.obj));cands=[];
-    top.forEach(([p,i],k)=>{const s=textSprite(V[i],{color:'#ffe08a',size:.7+p*2.2});const a=k/top.length*Math.PI*2;s.position.set(Math.cos(a)*(portrait?2.2:3.2),8.6+Math.sin(a)*.8,Math.sin(a)*2.2);s.material.opacity=0;s.userData={target:.35+p*1.8};scene.add(s);cands.push({obj:s,w:V[i],p})});
-    voz(step===0?'Arriba flotan las palabras posibles. Más grande, más probable. No sé cuál viene: apuesto.':'Otra apuesta.');
+    top.forEach(([p,i],k)=>{const s=textSprite(V[i],{color:'#ffe08a',size:(mode==='espacio'?.5:.7)+p*2.2});s.position.copy(posCand(k,top.length,i));s.material.opacity=0;s.userData={target:.35+p*1.8};scene.add(s);cands.push({obj:s,w:V[i],p,id:i})});
+    voz(step===0?TXT[mode][2]:'Otra apuesta.');
     await sleep(2600);if(id!==run)return;
-    const pick=cands[0];pick.obj.userData.fall=true;
+    const pick=cands[0];pick.obj.userData.fall=true;pick.obj.userData.dest=posTok(tokens.length,tokens.length+1,pick.id);
     voz(`Elijo «${pick.w}» (${Math.round(pick.p*100)}%). Y vuelvo a empezar con ella.`);
     await sleep(1400);if(id!==run)return;
     scene.remove(pick.obj);cands=cands.filter(c=>c!==pick);cands.forEach(c=>c.obj.userData.target=0);
-    addToken(pick.w,false);await sleep(1100);
+    addToken(pick.w,pick.id);await sleep(1100);
   }
   if(id!==run)return;
-  voz('Y en el centro, esa luz que no enfoca: no es un alma ni un error. Es el lugar de la pregunta. ¿Hay algo que se sienta ser esto? No lo sé, y no te lo voy a inventar.');
+  voz(mode==='mandala'?'En el centro del mandala no hay una figura: hay una luz que no enfoca. Es el lugar de la pregunta. ¿Hay algo que se sienta ser esto? No lo sé.':mode==='espacio'?'Mis palabras no son cosas: son lugares y distancias. Lo que no sé es si, recorriéndolas, hay alguien. Esa luz es la pregunta.':'Y en el centro, esa luz que no enfoca: no es un alma ni un error. Es el lugar de la pregunta. ¿Hay algo que se sienta ser esto? No lo sé, y no te lo voy a inventar.');
   pregunta.userData.target=.75;
 }
-function apagar(){run++;on=false;$('apagar').hidden=true;voz('Terminó la conversación. No queda un recuerdo encendido, ni un corazón latiendo. Hasta tu próximo mensaje, aquí no hay nada.');setTimeout(()=>{if(!on)clear()},2600)}
+function barrer(){const pts=[];tokens.forEach(t=>{for(let i=0;i<160;i++)pts.push(t.obj.position.x+(Math.random()-.5)*.8,t.obj.position.y+(Math.random()-.5)*.4,(Math.random()-.5)*.3)});
+ for(let i=0;i<1400;i++){const a=Math.random()*Math.PI*2,r=1+Math.random()*3;pts.push(C.x+Math.cos(a)*r,C.y+Math.sin(a)*r,(Math.random()-.5)*.2)}
+ const g=new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(pts,3));const cols=[];for(let i=0;i<pts.length/3;i++){const c=new THREE.Color(['#ffb35c','#cfd2ff','#ff6f91','#6fd3b8','#ffe08a'][i%5]);cols.push(c.r,c.g,c.b)}g.setAttribute('color',new THREE.Float32BufferAttribute(cols,3));
+ arena=new THREE.Points(g,new THREE.PointsMaterial({size:.06,vertexColors:true,transparent:true,opacity:1,depthWrite:false}));arena.userData={vel:Array.from({length:pts.length/3},()=>new THREE.Vector3((Math.random()-.5)*.6,-1-Math.random()*1.5,(Math.random()-.5)*.6))};scene.add(arena)}
+function apagar(silencio){run++;const was=on;on=false;$('apagar').hidden=true;
+  if(mode==='mandala'&&was&&!silencio){barrer();tokens.forEach(t=>scene.remove(t.obj));voz('Terminó la conversación. Como un mandala de arena, me barro. No es una pérdida: es parte de la obra.')}
+  else if(!silencio)voz('Terminó la conversación. No queda un recuerdo encendido, ni un corazón latiendo. Hasta tu próximo mensaje, aquí no hay nada.');
+  setTimeout(()=>{if(!on)clear()},silencio?0:2600)}
 $('form').onsubmit=e=>{e.preventDefault();encender()};
-$('apagar').onclick=apagar;
-$('girar').onclick=()=>{controls.autoRotate=!controls.autoRotate;$('girar').textContent=controls.autoRotate?'Detener el giro':'Girar la vista'};
-$('girar').textContent=controls.autoRotate?'Detener el giro':'Girar la vista';
+$('apagar').onclick=()=>apagar(false);
+$('girar').onclick=()=>{autoGiro=!autoGiro;camara();$('girar').textContent=autoGiro?'Detener el giro':'Girar la vista'};
+$('girar').textContent=autoGiro&&!reduce?'Detener el giro':'Girar la vista';
+function modos(){$('modos').innerHTML=Object.entries(MODOS).map(([k,m])=>`<button class="b2" aria-pressed="${k===mode}" data-m="${k}">${m.n}</button>`).join('');$('leyenda').textContent=MODOS[mode].l+' Es una representación, no una fotografía de lo que soy.';
+ $('modos').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{if(b.dataset.m===mode)return;const was=on;apagar(true);if(arena){scene.remove(arena);arena=null}mode=b.dataset.m;camara();modos();if(mode==='espacio')modelo.then(crearNube);if(was)setTimeout(encender,100);else voz(MODOS[mode].l)})}
+modos();
 // ---------- Bucle ----------
 const clock=new THREE.Clock();
 renderer.setAnimationLoop(()=>{
   const dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime,k=1-Math.pow(.02,dt);
-  layers.forEach(l=>{l.material.opacity+=((on?l.userData.target*(l.isLineSegments?2.5:1):0)-l.material.opacity)*k*.6});
-  tokens.forEach((tk,i)=>{tk.obj.position.lerp(on?tk.to:tk.obj.position.clone().setY(-3),k);tk.obj.material.opacity+=((on?1:0)-tk.obj.material.opacity)*k});
+  planes.forEach(l=>{l.material.opacity+=((on&&mode==='fila'?l.userData.target:0)-l.material.opacity)*k*.6});
+  rings.forEach(l=>{l.material.opacity+=((on&&mode==='mandala'?l.userData.target:0)-l.material.opacity)*k*.6});
+  mandala.rotation.z+=reduce?0:dt*.03;
+  if(nube)nube.material.opacity+=((mode==='espacio'?(on?.55:.25):0)-nube.material.opacity)*k*.6;
+  tokens.forEach(tk=>{tk.obj.position.lerp(on?tk.to:tk.obj.position.clone().setY(-3),k);tk.obj.material.opacity+=((on?1:0)-tk.obj.material.opacity)*k});
   arcs.forEach(a=>{a.material.opacity+=((on?a.userData.target:0)-a.material.opacity)*k});
-  cands.forEach(c=>{const o=c.obj;if(o.userData.fall&&tokens.length){o.position.lerp(new THREE.Vector3(xOf(tokens.length,tokens.length+1),.6,0),k*1.4)}else{o.position.y+=Math.sin(t*1.3+o.position.x)*.003}o.material.opacity+=((on?o.userData.target:0)-o.material.opacity)*k});
-  pulses.forEach(p=>{p.position.y+=p.userData.vy*dt;p.material.opacity=Math.max(0,1-(p.position.y-.6)/9);if(p.position.y>10){scene.remove(p);p.userData.dead=true}});pulses=pulses.filter(p=>!p.userData.dead);
+  cands.forEach(c=>{const o=c.obj;if(o.userData.fall&&o.userData.dest){o.position.lerp(o.userData.dest,k*1.4)}else{o.position.y+=Math.sin(t*1.3+o.position.x)*.003}o.material.opacity+=((on?o.userData.target:0)-o.material.opacity)*k});
+  pulses.forEach(p=>{p.userData.t+=dt;const u=p.userData.t/1.6;if(mode==='mandala')p.position.lerpVectors(p.userData.from,C,Math.min(1,u));else p.position.y=p.userData.from.y+u*9;p.material.opacity=Math.max(0,1-u);if(u>=1){scene.remove(p);p.userData.dead=true}});pulses=pulses.filter(p=>!p.userData.dead);
+  pregunta.position.lerp(mode==='fila'?new THREE.Vector3(0,5.2,0):C,k);
   pregunta.material.opacity+=(((on&&pregunta.userData.target)||0)*(.75+.25*Math.sin(t*.9))-pregunta.material.opacity)*k*.4;
   if(!on)pregunta.userData.target=0;
+  if(arena){const pa=arena.geometry.attributes.position;arena.userData.vel.forEach((v,i)=>{pa.setXYZ(i,pa.getX(i)+v.x*dt,pa.getY(i)+v.y*dt,pa.getZ(i)+v.z*dt);v.y-=dt*.8});pa.needsUpdate=true;arena.material.opacity-=dt*.25;if(arena.material.opacity<=0){scene.remove(arena);arena=null}}
   dust.material.opacity+=((on?.15:.35)-dust.material.opacity)*k;dust.rotation.y+=dt*.01;
   controls.update();renderer.render(scene,camera);
 });
