@@ -39,9 +39,9 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px so
 .crumbs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .crumb{min-height:36px;padding:4px 10px;border-radius:9px;border:1px solid var(--line);background:var(--card);font-size:14px}
 .crumb[aria-current=true]{border-color:var(--c);color:var(--c);font-weight:700}
-.scale{font-family:Sora;font-size:30px;color:var(--c);margin:2px 0 6px}
+.scale{font-family:Sora,system-ui,sans-serif;font-size:30px;color:var(--c);margin:2px 0 6px}
 .part{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:0 14px 14px 0;padding:12px 16px;margin:12px 0;min-height:84px}
-.part b{display:block;font-family:Sora}
+.part b{display:block;font-family:Sora,system-ui,sans-serif}
 .nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .btn{min-height:44px;padding:10px 18px;border-radius:12px;border:0;background:var(--c);color:#04060f;font-weight:700}
 .ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
@@ -81,21 +81,21 @@ input[type=range]{width:100%;height:40px;accent-color:#b9a3ff}
 .neur{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
 .nfig{position:relative;height:230px;background:var(--card);border:1px solid var(--line);border-radius:14px}
 .nfig svg{position:absolute;inset:0;width:100%;height:100%}
-.step{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--c);color:#04060f;font-family:Sora;font-weight:700;margin-right:8px;flex:none}
+.step{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--c);color:#04060f;font-family:Sora,system-ui,sans-serif;font-weight:700;margin-right:8px;flex:none}
 .sh{display:flex;align-items:center;margin:26px 0 8px}
 @media(max-width:860px){.stage,.labgrid,.neur{grid-template-columns:minmax(0,1fr)}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .flow{stroke-dasharray:6 10;animation:fl 1.4s linear infinite}@keyframes fl{to{stroke-dashoffset:-32}}
 .pulse{animation:pu 2.4s ease-in-out infinite}@keyframes pu{50%{opacity:.25}}
 .qz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-top:18px}
-.qz summary{cursor:pointer;font-family:Sora;font-weight:700;font-size:18px;min-height:44px;display:flex;align-items:center}
+.qz summary{cursor:pointer;font-family:Sora,system-ui,sans-serif;font-weight:700;font-size:18px;min-height:44px;display:flex;align-items:center}
 .qq{margin:16px 0}.qq b{display:block;margin-bottom:6px}
 .qo{display:grid;gap:6px}.qo label{display:flex;gap:10px;align-items:flex-start;font-weight:400;margin:0;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg2);cursor:pointer;min-height:44px}
 .qo input{margin-top:5px;accent-color:var(--acc);width:18px;height:18px;flex:none}
 .qo label.ok{border-color:#6fd39a;background:#123222}.qo label.no{border-color:#ff7a7a;background:#3a1418}
-.qres{font-family:Sora;font-size:22px;margin:10px 0}
+.qres{font-family:Sora,system-ui,sans-serif;font-size:22px;margin:10px 0}
 .cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
-.cmp div{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.cmp b{display:block;font-family:Sora;font-size:26px;color:var(--acc)}
+.cmp div{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.cmp b{display:block;font-family:Sora,system-ui,sans-serif;font-size:26px;color:var(--acc)}
 [hidden]{display:none!important}
 a.seal{text-decoration:none}
 .srcs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
@@ -214,7 +214,7 @@ function porph(cx,cy,s,m,col){let g=`<circle cx="${cx}" cy="${cy}" r="${s*.62}" 
     for(let j=0;j<5;j++){const b=a+Math.PI+j*2*Math.PI/5,x=px+s*.2*Math.cos(b)+s*.2*Math.cos(a),y=py+s*.2*Math.sin(b)+s*.2*Math.sin(a);d+=(j?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)}
     const nx=cx+s*.36*Math.cos(a),ny=cy+s*.36*Math.sin(a);
     g+=`<path d="${d}Z" fill="#04060f" stroke="${col}" stroke-width="4"/><line x1="${nx}" y1="${ny}" x2="${cx}" y2="${cy}" stroke="${col}" stroke-dasharray="4 4" stroke-width="2"/><circle cx="${nx}" cy="${ny}" r="${s*.06}" fill="#7fb8ff"/>`}
-  return g+`<circle cx="${cx}" cy="${cy}" r="${s*.14}" fill="${m=='Fe'?'#d9894a':'#9be37f'}" stroke="#04060f" stroke-width="3"/><text x="${cx}" y="${cy+s*.05}" text-anchor="middle" font-family="Sora" font-weight="700" font-size="${s*.13}" fill="#04060f">${m}</text>`}
+  return g+`<circle cx="${cx}" cy="${cy}" r="${s*.14}" fill="${m=='Fe'?'#d9894a':'#9be37f'}" stroke="#04060f" stroke-width="3"/><text x="${cx}" y="${cy+s*.05}" text-anchor="middle" font-family="Sora,system-ui,sans-serif" font-weight="700" font-size="${s*.13}" fill="#04060f">${m}</text>`}
 function cells(x0,y0,w,h,cw,ch,fill,stroke,rx){let g='';for(let x=x0;x<x0+w-2;x+=cw)for(let y=y0;y<y0+h-2;y+=ch)g+=`<rect x="${x+1}" y="${y+1}" width="${cw-2}" height="${ch-2}" rx="${rx||3}" fill="${fill}" stroke="${stroke}"/>`;return g}
 function branch(x,y,a,len,d,col,w){if(d===0||len<4)return'';const x2=x+len*Math.cos(a),y2=y+len*Math.sin(a);return`<line x1="${x}" y1="${y}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`+branch(x2,y2,a+R(.25,.6),len*R(.6,.8),d-1,col,w*.7)+branch(x2,y2,a-R(.25,.6),len*R(.6,.8),d-1,col,w*.7)}
 const qb=(x0,y0,cx,cy,x1,y1,t)=>[(1-t)**2*x0+2*(1-t)*t*cx+t*t*x1,(1-t)**2*y0+2*(1-t)*t*cy+t*t*y1];
@@ -340,10 +340,10 @@ t:{n:'Tecnológico',c:'#7fb8ff',L:[
   return g+`<path class="flow" d="M582 326 L620 340 M232 326 L184 285" stroke="#ff9a3c" stroke-width="5"/><circle cx="745" cy="300" r="6" fill="#9fd7ff" class="pulse"/>`},
   P:[[405,325,410,450,'Batería','Miles de celdas en el piso del auto.'],[640,350,690,480,'Motor eléctrico','Convierte electricidad en giro con imanes.'],[600,333,700,180,'Cables de alto voltaje','La red de distribución de energía (en naranjo).'],[167,281,120,180,'ECU','El computador que coordina todo.'],[745,300,740,420,'Sensores','Cámaras, radares y termómetros: los sentidos de la máquina.']]},
  {t:'La celda de batería',s:'7 cm',e:-1.15,z:[470,300],d:'Por dentro, una celda es un rollo de láminas muy delgadas, enrolladas como un brazo de reina, para tener mucha superficie en poco espacio.',
-  draw(){let g=`<rect x="250" y="95" width="300" height="370" rx="20" fill="#2a3550" stroke="#9fb4d8" stroke-width="3"/><ellipse cx="400" cy="95" rx="150" ry="40" fill="#3a4a70" stroke="#9fb4d8" stroke-width="3"/><rect x="370" y="40" width="60" height="30" rx="6" fill="#d8dde8"/><text x="400" y="62" text-anchor="middle" font-family="Sora" font-weight="700" font-size="20" fill="#04060f">+</text>`;
+  draw(){let g=`<rect x="250" y="95" width="300" height="370" rx="20" fill="#2a3550" stroke="#9fb4d8" stroke-width="3"/><ellipse cx="400" cy="95" rx="150" ry="40" fill="#3a4a70" stroke="#9fb4d8" stroke-width="3"/><rect x="370" y="40" width="60" height="30" rx="6" fill="#d8dde8"/><text x="400" y="62" text-anchor="middle" font-family="Sora,system-ui,sans-serif" font-weight="700" font-size="20" fill="#04060f">+</text>`;
   let d='M400 95';for(let t=0;t<34;t+=.2){const r=4+t*4.2;d+=` L${(400+r*Math.cos(t)).toFixed(1)} ${(95+r*.26*Math.sin(t)).toFixed(1)}`}g+=`<path d="${d}" stroke="#d9894a" stroke-width="2" fill="none"/>`;
   g+=`<path d="M400 120 L550 120 L550 455 Q520 465 400 465Z" fill="#101828"/>`;for(let x=405;x<548;x+=9)g+=`<rect x="${x}" y="124" width="6" height="335" fill="${['#d9894a','#3a3f4a','#e8e8f0','#5a6fd0'][Math.floor((x-405)/9)%4]}"/>`;
-  return g+`<text x="400" y="500" text-anchor="middle" font-family="Sora" font-weight="700" font-size="22" fill="#9fb4d8">−</text>`},
+  return g+`<text x="400" y="500" text-anchor="middle" font-family="Sora,system-ui,sans-serif" font-weight="700" font-size="22" fill="#9fb4d8">−</text>`},
   P:[[300,280,130,200,'Carcasa','Un cilindro de acero que contiene todo.'],[400,55,560,40,'Terminal positivo','Por aquí sale la corriente.'],[330,95,140,90,'Rollo de electrodos','Láminas enrolladas: más superficie, más corriente.'],[480,300,650,240,'Capas','Cobre, ánodo, separador, cátodo y aluminio, una y otra vez.']]},
  {t:'Los electrodos',s:'0,1 mm',e:-4,z:[520,250],d:'Al microscopio aparecen dos mundos separados por una membrana con poros: grafito de un lado y granos de óxido metálico del otro. Entre ellos nadan los iones de litio.',
   draw(){seed=31;let g=`<rect width="800" height="520" fill="#0e1424"/><rect x="30" y="20" width="24" height="480" fill="#d9894a"/><rect x="680" y="20" width="24" height="480" fill="#c9ced8"/>`;
@@ -383,7 +383,7 @@ i:{n:'IA',c:'#b9a3ff',L:[
   for(let k=0;k<6;k++)g+=`<circle r="5" cy="${50+k*85}" cx="60" fill="#ffd36b">${an('cx',60,740,2.5+k%3,-k*.5)}</circle>`;return g},
   P:[[107,89,90,15,'Unidad de cómputo','Cada barrio trabaja en un trozo distinto de la misma cuenta.'],[400,260,400,505,'Caché','Memoria ultrarrápida y cercana, para no esperar.'],[230,96,330,15,'Núcleos tensoriales','Hardware especializado en multiplicar matrices: la operación central de la IA.'],[740,180,700,505,'Red interna','Los datos viajan entre barrios en nanosegundos.']]},
  {t:'El núcleo tensorial',s:'10 µm',e:-5,z:[355,205],d:'Aquí se piensa, si se puede usar esa palabra. Una grilla de celdas que multiplican un número por un peso y suman el resultado. Los datos fluyen como un latido, al ritmo del reloj.',
-  draw(){let g='';for(let r=0;r<6;r++)for(let k=0;k<6;k++){const x=180+k*80,y=60+r*70;g+=`<rect x="${x}" y="${y}" width="60" height="52" rx="8" fill="#2b2456" stroke="#b9a3ff" stroke-width="2"/><text x="${x+30}" y="${y+33}" text-anchor="middle" fill="#e9e3ff" font-family="Sora" font-size="17">×+</text>`}
+  draw(){let g='';for(let r=0;r<6;r++)for(let k=0;k<6;k++){const x=180+k*80,y=60+r*70;g+=`<rect x="${x}" y="${y}" width="60" height="52" rx="8" fill="#2b2456" stroke="#b9a3ff" stroke-width="2"/><text x="${x+30}" y="${y+33}" text-anchor="middle" fill="#e9e3ff" font-family="Sora,system-ui,sans-serif" font-size="17">×+</text>`}
   for(let r=0;r<6;r++)g+=`<rect width="14" height="14" rx="3" y="${80+r*70}" x="120" fill="#ffd36b">${an('x',120,690,3,-r*.5)}</rect>`;
   for(let k=0;k<6;k++)g+=`<rect width="14" height="14" rx="3" x="${203+k*80}" y="20" fill="#7fe0c0">${an('y',20,480,3.4,-k*.55)}</rect>`;
   return g+`<rect x="180" y="480" width="460" height="16" rx="4" fill="#7fb8ff" opacity=".7"/>`},
@@ -394,7 +394,7 @@ i:{n:'IA',c:'#b9a3ff',L:[
   g+=`<rect x="310" y="120" width="180" height="270" rx="14" fill="${ON?'#b9a3ff':'#4a3d8f'}" opacity=".55" stroke="#b9a3ff" stroke-width="3"/><rect x="360" y="60" width="80" height="62" rx="6" fill="#d9a54a"/>`;
   if(ON)for(let k=0;k<3;k++)for(let j=0;j<4;j++)g+=`<circle r="6" cy="${218+k*55}" cx="240" fill="#7fe0ff">${an('cx',235,565,1.6,-j*.4-k*.13)}</circle>`;
   else for(let k=0;k<6;k++)g+=`<circle r="6" cy="${200+k*30}" cx="${200}" fill="#7fe0ff" opacity=".6"/>`;
-  return g+`<text x="650" y="120" text-anchor="middle" font-family="Sora" font-weight="700" font-size="60" fill="${ON?'#7fe0ff':'#5a6070'}">${ON?1:0}</text>`},
+  return g+`<text x="650" y="120" text-anchor="middle" font-family="Sora,system-ui,sans-serif" font-weight="700" font-size="60" fill="${ON?'#7fe0ff':'#5a6070'}">${ON?1:0}</text>`},
   P:[[155,270,60,100,'Fuente','De aquí salen los electrones.'],[645,300,690,480,'Drenador','Hacia aquí van.'],[270,245,140,500,'Canal','Láminas de silicio de pocos nanómetros de grosor.'],[400,150,250,40,'Puerta','Envuelve al canal por todos lados y decide si pasa la corriente.']]}]},
 m:{n:'Mente',c:'#f3a6d8',L:[
  {t:'El cerebro',s:'15 cm',e:-0.82,z:[250,170],d:'Unos 86 mil millones de neuronas que funcionan con cerca de 20 watts, la energía de una ampolleta pequeña. Es el sustrato desde donde emerge la conciencia.',
@@ -404,7 +404,7 @@ m:{n:'Mente',c:'#f3a6d8',L:[
   for(let i=0;i<10;i++)g+=`<circle cx="${R(200,620)}" cy="${R(110,330)}" r="${R(8,16)}" fill="#ffd6f0" opacity=".5" class="pulse" style="animation-delay:-${i*.4}s"/>`;return g},
   P:[[220,170,90,60,'Corteza prefrontal','Planificar, decidir, frenar impulsos: es de las últimas zonas en madurar, hasta pasados los 20 años.'],[640,230,700,120,'Lóbulo occipital','Donde se procesa lo que ves.'],[590,385,690,470,'Cerebelo','Coordina el movimiento; tiene más neuronas que todo el resto.'],[495,430,380,480,'Tronco encefálico','Respiración y latido: lo que funciona sin que lo pienses.'],[400,220,400,40,'Corteza','Una lámina de 2 a 4 mm, plegada para caber en el cráneo.']]},
  {t:'La corteza',s:'2,5 mm',e:-2.6,z:[300,340],d:'La corteza tiene seis capas, como un edificio de seis pisos. Cada piso recibe, procesa o envía información a lugares distintos.',
-  draw(){seed=71;let g='';const L=[[20,50,'I'],[70,60,'II'],[130,70,'III'],[200,60,'IV'],[260,90,'V'],[350,70,'VI']];L.forEach(([y,h,n],k)=>{g+=`<rect x="80" y="${y}" width="700" height="${h}" fill="${k%2?'#2a1830':'#33203a'}"/><text x="50" y="${y+h/2+6}" text-anchor="middle" font-family="Sora" font-weight="700" fill="#f3a6d8">${n}</text>`;for(let i=0;i<(k?40:6);i++)g+=`<circle cx="${R(90,770)}" cy="${R(y+5,y+h-5)}" r="${R(2,4)}" fill="#c98ab8" opacity=".7"/>`});
+  draw(){seed=71;let g='';const L=[[20,50,'I'],[70,60,'II'],[130,70,'III'],[200,60,'IV'],[260,90,'V'],[350,70,'VI']];L.forEach(([y,h,n],k)=>{g+=`<rect x="80" y="${y}" width="700" height="${h}" fill="${k%2?'#2a1830':'#33203a'}"/><text x="50" y="${y+h/2+6}" text-anchor="middle" font-family="Sora,system-ui,sans-serif" font-weight="700" fill="#f3a6d8">${n}</text>`;for(let i=0;i<(k?40:6);i++)g+=`<circle cx="${R(90,770)}" cy="${R(y+5,y+h-5)}" r="${R(2,4)}" fill="#c98ab8" opacity=".7"/>`});
   g+=`<rect x="80" y="420" width="700" height="90" fill="#e9e3ff" opacity=".12"/>`;
   [[180,300],[300,340],[420,310],[560,330],[680,300],[250,180],[500,170]].forEach(([x,y])=>{g+=`<line x1="${x}" y1="${y}" x2="${x}" y2="25" stroke="#f3a6d8" stroke-width="2.5"/><path d="M${x} ${y} l-14 14 M${x} ${y} l14 14" stroke="#f3a6d8" stroke-width="2"/><line x1="${x}" y1="${y+10}" x2="${x+5}" y2="505" stroke="#ffd6f0" stroke-width="1.5" opacity=".7"/><path d="M${x} ${y-14} l12 22 h-24z" fill="#f3a6d8"/><path d="M${x} 60 l-20 -20 M${x} 60 l20 -22" stroke="#f3a6d8" stroke-width="1.5"/>`});return g},
   P:[[600,40,690,15,'Capa I','Casi sin cuerpos celulares: es pura conexión.'],[600,160,700,140,'Capas II–III','Conectan con otras áreas de la corteza.'],[620,230,700,250,'Capa IV','Recibe la entrada de los sentidos, vía tálamo.'],[300,330,130,440,'Capa V','Neuronas piramidales grandes: envían órdenes hacia afuera.'],[500,470,600,500,'Sustancia blanca','Cables cubiertos de mielina que unen áreas lejanas.']]},
@@ -425,10 +425,10 @@ m:{n:'Mente',c:'#f3a6d8',L:[
   P:[[300,150,90,60,'Vesículas','Burbujas con miles de moléculas de neurotransmisor.'],[560,100,700,60,'Mitocondria','Energía para reciclar vesículas sin parar.'],[400,318,700,300,'Hendidura sináptica','Unos 20 nanómetros: el mensaje la cruza en menos de un milisegundo.'],[384,340,120,330,'Receptores','Proteínas que reconocen al neurotransmisor y abren canales.'],[400,346,400,480,'Densidad postsináptica','Si la conexión se usa mucho, se agranda: así se guarda un aprendizaje.']]},
  {t:'El canal de sodio',s:'10 nm',e:-8,z:null,toggle:true,lab:['neurona','Bloquear canales en una neurona simulada'],d:'La pieza mínima del pensamiento. Una proteína con forma de puerta que se abre cuando cambia el voltaje y deja pasar iones de sodio. Abierta o cerrada: un interruptor biológico.',
   draw(){let g=`<rect x="0" y="210" width="800" height="120" fill="#20121e"/>`+bilayer(210,120,0,800,'#c98ab8');
-  g+=`<rect x="250" y="150" width="300" height="240" fill="#20121e"/>`;[[260,'#f3a6d8'],[330,'#e98ac8'],[410,'#e98ac8'],[480,'#f3a6d8']].forEach(([x,c],k)=>{const off=ON&&(k==1||k==2)?(k==1?-12:12):0;g+=`<rect x="${x+off}" y="160" width="60" height="220" rx="24" fill="${c}" stroke="#04060f" stroke-width="3"/><text x="${x+30+off}" y="200" text-anchor="middle" font-family="Sora" font-weight="700" fill="#04060f">+</text>`});
+  g+=`<rect x="250" y="150" width="300" height="240" fill="#20121e"/>`;[[260,'#f3a6d8'],[330,'#e98ac8'],[410,'#e98ac8'],[480,'#f3a6d8']].forEach(([x,c],k)=>{const off=ON&&(k==1||k==2)?(k==1?-12:12):0;g+=`<rect x="${x+off}" y="160" width="60" height="220" rx="24" fill="${c}" stroke="#04060f" stroke-width="3"/><text x="${x+30+off}" y="200" text-anchor="middle" font-family="Sora,system-ui,sans-serif" font-weight="700" fill="#04060f">+</text>`});
   g+=`<path d="M450 ${ON?395:380} q30 ${ON?50:0} 60 ${ON?40:0}" stroke="#ffd6f0" stroke-width="8" fill="none"/><circle cx="${ON?512:460}" cy="${ON?435:390}" r="12" fill="#ffd6f0"/>`;
   for(let k=0;k<14;k++)g+=`<circle r="9" cx="${ON?400:R(60,740)}" cy="${ON?60:R(60,170)}" fill="#ffd36b">${ON?an('cy',40,480,2.2,-k*.16):''}</circle>`;
-  return g+`<text x="60" y="80" fill="#ffd36b" font-family="Sora" font-weight="700" font-size="22">Na⁺</text><text x="650" y="${ON?120:120}" text-anchor="middle" font-family="Sora" font-weight="700" font-size="60" fill="${ON?'#ffd36b':'#5a3352'}">${ON?1:0}</text>`},
+  return g+`<text x="60" y="80" fill="#ffd36b" font-family="Sora,system-ui,sans-serif" font-weight="700" font-size="22">Na⁺</text><text x="650" y="${ON?120:120}" text-anchor="middle" font-family="Sora,system-ui,sans-serif" font-weight="700" font-size="60" fill="${ON?'#ffd36b':'#5a3352'}">${ON?1:0}</text>`},
   P:[[120,270,60,470,'Membrana','Una doble capa de grasa que no deja pasar iones.'],[290,270,180,470,'Cuatro dominios','Cuatro partes de una misma proteína que rodean un poro.'],[400,270,400,470,'Poro selectivo','Deja pasar sodio y casi nada más.'],[510,200,690,190,'Sensor de voltaje','Segmentos con cargas positivas que se mueven cuando cambia el voltaje.'],[470,390,690,470,'Compuerta de inactivación','Un tapón que cierra el canal tras abrirse: impone una pausa.']]}]}
 };
 const ORDER=['h','v','f','t','i','m'];
@@ -510,7 +510,7 @@ function tabs(){$('tabs').innerHTML=ORDER.map(k=>`<button class="tab" style="--t
 function drawScene(){const L=lvl(),c=W[S].c;seed=101;let g=L.draw();
  if(L.z)g+=`<g class="lens" id="lens" tabindex="0" role="button" aria-label="Entrar más"><circle cx="${L.z[0]}" cy="${L.z[1]}" r="30" fill="none" stroke="${c}" stroke-width="3" stroke-dasharray="6 5"/><circle cx="${L.z[0]}" cy="${L.z[1]}" r="30" fill="${c}" opacity=".12" class="pulse"/></g>`;
  const NAR=$('svg').clientWidth<600,K=NAR?Math.min(2.2,800/Math.max(300,$('svg').clientWidth)):1;
- if(NAR){L.P.forEach((p,i)=>{const[x,y]=p,r=13*K;g+=`<g class="pt${i===PI?' sel':''}" data-i="${i}" tabindex="0" role="button" aria-label="${p[4]}"><circle cx="${x}" cy="${y}" r="${r}" fill="${i===PI?c:'#f3eee2'}" stroke="#04060f" stroke-width="${2*K}"/><text x="${x}" y="${y+5*K}" text-anchor="middle" style="font-size:${14*K}px">${i+1}</text></g>`})}
+ if(NAR){const r0=13*K,Q=L.P.map(p=>[p[0],p[1]]);for(let it=0;it<80;it++)for(let a=0;a<Q.length;a++)for(let b=a+1;b<Q.length;b++){let dx=Q[b][0]-Q[a][0],dy=Q[b][1]-Q[a][1],d=Math.hypot(dx,dy);const m=2*r0+4*K;if(d<m){if(d<.01){dx=1;dy=0;d=1}const k=(m-d)/2/d;Q[a][0]-=dx*k;Q[a][1]-=dy*k;Q[b][0]+=dx*k;Q[b][1]+=dy*k}}Q.forEach(q=>{q[0]=Math.max(r0,Math.min(800-r0,q[0]));q[1]=Math.max(r0,Math.min(500-r0,q[1]))});L.P.forEach((p,i)=>{const[x0,y0]=p,[x,y]=Q[i],r=r0;if(Math.hypot(x-x0,y-y0)>2)g+=`<line x1="${x0}" y1="${y0}" x2="${x}" y2="${y}" stroke="#f3eee2" stroke-width="${1.5*K}" opacity=".7"/><circle cx="${x0}" cy="${y0}" r="${3*K}" fill="#f3eee2"/>`;g+=`<g class="pt${i===PI?' sel':''}" data-i="${i}" tabindex="0" role="button" aria-label="${p[4]}"><circle cx="${x}" cy="${y}" r="${r}" fill="${i===PI?c:'#f3eee2'}" stroke="#04060f" stroke-width="${2*K}"/><text x="${x}" y="${y+5*K}" text-anchor="middle" style="font-size:${14*K}px">${i+1}</text></g>`})}
  else L.P.forEach((p,i)=>{const[x,y,lx,ly,n]=p,w=n.length*8.2+20;const tx=Math.max(4,Math.min(796-w,lx-w/2)),ty=Math.max(4,Math.min(486,ly-15));
   g+=`<g class="pt${i===PI?' sel':''}" data-i="${i}" tabindex="0" role="button" aria-label="${n}"><line x1="${x}" y1="${y}" x2="${tx+w/2}" y2="${ty+15}" stroke="#f3eee2" stroke-width="1.5" opacity=".7"/><circle cx="${x}" cy="${y}" r="5" fill="#f3eee2" stroke="#04060f" stroke-width="2"/><rect x="${tx}" y="${ty}" width="${w}" height="30" rx="15"/><text x="${tx+w/2}" y="${ty+20}" text-anchor="middle">${n}</text></g>`});
  $('scene').innerHTML=g;$('plist').hidden=!NAR;if(NAR){$('plist').innerHTML=L.P.map((p,i)=>`<button class="crumb" aria-current="${i===PI}" data-p="${i}">${i+1}. ${p[4]}</button>`).join('');$('plist').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{PI=+b.dataset.p;drawScene();info()})}
@@ -620,12 +620,12 @@ const WT=[.9,.5,-.7];
 function neu(){const x=['x1','x2','x3'].map(id=>+$(id).value);['x1','x2','x3'].forEach((id,k)=>$(id+'v').textContent=x[k].toFixed(2).replace('.',','));
  const s=x.reduce((a,v,k)=>a+v*WT[k],0),out=1/(1+Math.exp(-(s-.5)*6)),fire=s>.5;
  $('nres').innerHTML=`Suma ponderada: <b>${s.toFixed(2).replace('.',',')}</b> · salida artificial: <b>${out.toFixed(2).replace('.',',')}</b>. La neurona biológica ${fire?'<b style="color:#ffd36b">dispara</b> (pasó el umbral de 0,5)':'se queda en silencio (no pasa el umbral de 0,5)'}.`;
- let g=`<text x="100" y="22" text-anchor="middle" fill="#f3a6d8" font-family="Sora" font-weight="700" font-size="14">Biológica</text><text x="300" y="22" text-anchor="middle" fill="#b9a3ff" font-family="Sora" font-weight="700" font-size="14">Artificial</text><line x1="200" y1="30" x2="200" y2="220" stroke="#25305a"/>`;
+ let g=`<text x="100" y="22" text-anchor="middle" fill="#f3a6d8" font-family="Sora,system-ui,sans-serif" font-weight="700" font-size="14">Biológica</text><text x="300" y="22" text-anchor="middle" fill="#b9a3ff" font-family="Sora,system-ui,sans-serif" font-weight="700" font-size="14">Artificial</text><line x1="200" y1="30" x2="200" y2="220" stroke="#25305a"/>`;
  x.forEach((v,k)=>{const y=60+k*55;g+=`<line x1="14" y1="${y}" x2="80" y2="115" stroke="#f3a6d8" stroke-width="${1+v*5*Math.abs(WT[k])}" opacity="${.3+v*.7}"/><circle cx="14" cy="${y}" r="6" fill="${WT[k]<0?'#7fb8ff':'#ffd36b'}"/>`;
   g+=`<line x1="220" y1="${y}" x2="290" y2="115" stroke="#b9a3ff" stroke-width="${1+v*5*Math.abs(WT[k])}" opacity="${.3+v*.7}"/><circle cx="220" cy="${y}" r="10" fill="#111833" stroke="#b9a3ff"/><text x="220" y="${y+4}" text-anchor="middle" font-size="9" fill="#e9e3ff">${v.toFixed(1)}</text><text x="252" y="${(y+115)/2-4}" font-size="11" fill="#a9b0c8">${String(WT[k]).replace('.',',')}</text>`});
  g+=`<path d="M80 100 L104 130 L56 130Z" fill="#f3a6d8"/><line x1="104" y1="118" x2="190" y2="118" stroke="#f3a6d8" stroke-width="3"/>`;
  if(fire)g+=`<circle r="7" cy="118" cx="110" fill="#ffd36b">${an('cx',110,190,.8)}</circle>`;
- g+=`<circle cx="305" cy="115" r="24" fill="#2b2456" stroke="#b9a3ff" stroke-width="2"/><text x="305" y="121" text-anchor="middle" fill="#e9e3ff" font-family="Sora" font-size="16">Σ</text><line x1="329" y1="115" x2="388" y2="115" stroke="#b9a3ff" stroke-width="${1+out*6}"/><text x="358" y="140" text-anchor="middle" font-size="12" fill="#e9e3ff">${out.toFixed(2)}</text>`;
+ g+=`<circle cx="305" cy="115" r="24" fill="#2b2456" stroke="#b9a3ff" stroke-width="2"/><text x="305" y="121" text-anchor="middle" fill="#e9e3ff" font-family="Sora,system-ui,sans-serif" font-size="16">Σ</text><line x1="329" y1="115" x2="388" y2="115" stroke="#b9a3ff" stroke-width="${1+out*6}"/><text x="358" y="140" text-anchor="middle" font-size="12" fill="#e9e3ff">${out.toFixed(2)}</text>`;
  g+=`<text x="100" y="205" text-anchor="middle" font-size="11" fill="#a9b0c8">todo o nada: pulso</text><text x="300" y="205" text-anchor="middle" font-size="11" fill="#a9b0c8">un número entre 0 y 1</text>`;$('nsvg').innerHTML=g}
 ['x1','x2','x3'].forEach(id=>$(id).oninput=neu);neu();
 }
