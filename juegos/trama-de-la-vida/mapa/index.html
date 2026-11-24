@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#04060f">
+<title>El mapa de la Trama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* IDEA: once puertas ordenadas en un viaje de cuatro movimientos (ver, entrar, pensar, encontrarse)
+   y la idea que las une: los mismos seis problemas se repiten en cada escala. */
+:root{color-scheme:dark;--bg:#04060f;--bg2:#0b1024;--card:#111833;--line:#25305a;--ink:#f3eee2;--mute:#a9b0c8;--acc:#ffb35c}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;line-height:1.1;text-wrap:balance;margin:0 0 .4em}
+h1{font-size:clamp(34px,6vw,52px)}h2{font-size:clamp(25px,4vw,34px)}h3{font-size:19px}
+p{margin:0 0 .8em;max-width:68ch}
+.band{padding:clamp(28px,4vw,60px) max(5vw,16px)}
+.wrap{max-width:1000px;margin:0 auto}
+.alt{background:var(--bg2)}
+.lead{color:var(--mute);font-size:18px}
+.mute{color:var(--mute)}
+a{color:var(--acc)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.chip{min-height:44px;padding:8px 15px;border-radius:99px;border:1.5px solid var(--c,var(--line));background:transparent;font-weight:700}
+.chip[aria-pressed=true]{background:var(--c,var(--ink));color:#04060f}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+/* Viaje */
+.mov{position:relative;padding-left:34px;margin-top:22px}
+.mov:before{content:"";position:absolute;left:11px;top:8px;bottom:-22px;width:3px;background:var(--line)}
+.mov:last-child:before{bottom:8px}
+.mov .dotm{position:absolute;left:0;top:2px;width:25px;height:25px;border-radius:50%;background:var(--c);box-shadow:0 0 0 5px var(--bg)}
+.mov .k{font:700 14px Sora,system-ui,sans-serif;letter-spacing:.06em;color:var(--c);text-transform:uppercase}
+.mov h3{margin:2px 0 10px}
+.st{display:flex;gap:12px;align-items:flex-start;text-decoration:none;color:inherit;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:8px;min-height:44px}
+.st .n{flex:none;width:28px;height:28px;border-radius:50%;border:2px solid var(--c);display:grid;place-items:center;font:700 13px Sora,system-ui,sans-serif}
+.st.done .n{background:var(--c);color:#04060f}
+.st.next{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc) inset}
+.st b{display:block;font-family:Sora,system-ui,sans-serif}
+.st span.d{color:var(--mute);font-size:15px}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:99px;background:var(--acc);color:#04060f;margin-left:6px;vertical-align:middle}
+.bar{height:10px;border-radius:9px;background:var(--line);overflow:hidden;margin:8px 0 6px}.bar i{display:block;height:100%;background:var(--acc)}
+/* Matriz */
+.rows{display:grid;gap:10px;margin-top:14px}
+.row{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+@media (max-width:560px){.row{grid-template-columns:minmax(0,1fr);gap:4px}}
+.row .lv{font:700 14px Sora,system-ui,sans-serif;color:var(--c)}
+.row .lv small{display:block;color:var(--mute);font:400 13px "Atkinson Hyperlegible",system-ui,sans-serif}
+.row p{margin:0}
+.row.none p{color:var(--mute);font-style:italic}
+.phrase{margin-top:14px;padding:14px 18px;border-left:4px solid var(--c,var(--acc));background:var(--card);border-radius:0 14px 14px 0;font:700 19px/1.4 Sora,system-ui,sans-serif}
+.detours{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.detours a{display:inline-flex;align-items:center;min-height:44px;padding:8px 14px;border-radius:12px;border:1.5px solid var(--line);color:var(--ink);text-decoration:none;font-weight:700}
+footer{color:var(--mute);font-size:14px}
+</style>
+</head>
+<body>
+
+<section class="band"><div class="wrap">
+  <p class="mute" style="margin-bottom:6px"><a href="../">← Los cinco mundos en 3D</a></p>
+  <h1>El mapa de la Trama</h1>
+  <p class="lead">Más de diez puertas sin orden eran demasiadas. Aquí están ordenadas en un viaje de cuatro movimientos: la vida que se ve, lo que ocurre por dentro, la mente que se mira a sí misma y, al final, el encuentro con seres distintos.</p>
+  <div class="card">
+    <b>Tu recorrido</b>
+    <div class="bar"><i id="pbar" style="width:0"></i></div>
+    <p class="mute" id="ptxt" style="margin:0;font-size:15px"></p>
+  </div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>Cuatro movimientos</h2>
+  <p class="mute">Cada movimiento responde una pregunta. Puedes saltar a cualquier parada, pero este orden construye la idea de a poco.</p>
+  <div id="viaje"></div>
+  <h3 style="margin-top:30px">Desvíos</h3>
+  <p class="mute" style="font-size:15px;margin:0">Para profundizar cuando quieras.</p>
+  <div class="detours" id="detours"></div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>La idea que cuesta ver</h2>
+  <p class="lead">Los mismos seis problemas se repiten en cada escala. Si entiendes cómo se protege una célula, ya sabes algo de cómo se protege una amistad.</p>
+  <p class="mute">Elige un hilo y lee de arriba abajo: del bosque a la célula, a la mente y a la relación con otros.</p>
+  <div class="chips" id="hilos" role="group" aria-label="Hilos"></div>
+  <div class="rows" id="rows" aria-live="polite"></div>
+  <div class="phrase" id="phrase"></div>
+  <p class="mute" style="font-size:15px;margin-top:14px">Es una analogía útil, no una igualdad: en cada escala los mecanismos son distintos. Por eso cada parada del viaje marca qué está comprobado y qué no.</p>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>Por qué este orden</h2>
+  <p>A los humanos nos cuesta ver la trama porque la miramos por partes: la biología por un lado, la psicología por otro y la tecnología aparte. El viaje está ordenado para cruzar esas fronteras de a una.</p>
+  <p><b style="color:#7fd67a">Ver</b> te da el mapa grande. <b style="color:#ff8a6b">Entrar</b> te muestra que el mapa se repite por dentro. <b style="color:#c9a3ff">Pensar</b> te pone a ti dentro del mapa. <b style="color:#9ad7ff">Encontrarse</b> te devuelve hacia los otros: animales, plantas y máquinas, con lo que compartimos y lo que no.</p>
+  <p class="mute">Es el mismo arco que sigue La psique: unida, separada y reunida. Y el de las tradiciones iniciáticas: mirar, entrar, transformarse y volver a la comunidad.</p>
+  <footer style="margin-top:22px">La Trama de la Vida · Universo Gao Yu · Mapa</footer>
+</div></section>
+
+<script src="nav.js" data-slug="mapa"></script>
+<script>
+{
+const $=id=>document.getElementById(id);
+const T=window.TRAMA_MAPA,base='../';
+const seen=s=>{try{return localStorage.getItem('trama-visto-'+s)==='1'}catch(e){return false}};
+const done=T.ST.filter(x=>seen(x.s)).length,nextI=T.ST.findIndex(x=>!seen(x.s));
+$('pbar').style.width=(done/T.ST.length*100)+'%';
+$('ptxt').textContent=done===0?'Aún no empiezas. Te sugerimos partir por la parada 1.':done===T.ST.length?'Recorriste las '+T.ST.length+' paradas. La trama completa es tuya.':'Llevas '+done+' de '+T.ST.length+' paradas. Te sugerimos seguir por la marcada.';
+$('viaje').innerHTML=T.M.map((m,mi)=>`<div class="mov" style="--c:${m.c}"><span class="dotm" aria-hidden="true"></span><div class="k">${m.n} · ${m.e}</div><h3>${m.q}</h3>${T.ST.map((st,i)=>st.m!==mi?'':`<a class="st${seen(st.s)?' done':''}${i===nextI?' next':''}" style="--c:${m.c}" href="${base+st.p}"><span class="n" aria-hidden="true">${seen(st.s)?'✓':i+1}</span><span><b>${st.n}${i===nextI?'<span class="badge">Sigue aquí</span>':''}</b><span class="d">${st.d}</span><span class="sr" style="position:absolute;left:-9999px">${seen(st.s)?' (visitada)':''}</span></span></a>`).join('')}</div>`).join('');
+$('detours').innerHTML=T.D.map(d=>`<a href="${base+d.p}">${d.n}</a>`).join('')+'<a href="../creditos/">Créditos</a>';
+const H=[
+ {n:'Energía',c:'#ffb35c',r:['La luz del sol entra por las hojas y fluye por toda la cadena alimentaria.','La mitocondria convierte glucosa y oxígeno en ATP, la moneda de energía de la célula.','La motivación. El cerebro gasta cerca del 20% de tu energía en reposo y la orienta hacia lo que importa.','El tiempo y el cuidado. Una relación que nadie alimenta se desordena, como cualquier sistema vivo.'],f:'Sol en el bosque, mitocondria en la célula, motivación en la mente, cuidado entre personas.'},
+ {n:'Distribución',c:'#ff6f91',r:['Ríos, viento y micelio mueven agua y nutrientes por el territorio.','La sangre lleva oxígeno a cada célula; dentro, proteínas transportan carga de un lado a otro.','La atención decide qué recibe primero tus recursos. No alcanza para todo a la vez.','Compartir. Quién recibe primero y quién al final dice cuán justa es una comunidad.'],f:'Ríos, sangre, atención y equidad: siempre la pregunta es quién recibe y cuándo.'},
+ {n:'Información',c:'#9ad7ff',r:['Señales químicas: una planta atacada libera sustancias que otras plantas detectan.','El ADN guarda instrucciones; el impulso nervioso lleva mensajes en milésimas de segundo.','Percibir es predecir: el cerebro apuesta qué hay afuera y corrige con lo que llega.','Conversar. Un mensaje importa cuando hace una diferencia en el otro.'],f:'Del aroma de una hoja a una conversación: información es lo que cambia al que la recibe.'},
+ {n:'Protección',c:'#c9a3ff',r:['La biodiversidad amortigua plagas y sequías: un bosque variado resiste mejor.','La membrana filtra lo que entra; el sistema inmune distingue lo propio de lo extraño.','Las defensas y las creencias nos protegen; en exceso, nos encierran.','Límites y confianza: protegen el vínculo sin cerrarlo.'],f:'Toda protección es un filtro. Si no deja pasar nada, también enferma.'},
+ {n:'Adaptación',c:'#6fd3b8',r:['La evolución: las especies cambian a lo largo de generaciones.','Las sinapsis que se usan juntas se refuerzan: la red cambia con la experiencia.','Aprender: asimilar lo nuevo a lo que sabes, o cambiar lo que sabes.','Negociar y reconciliarse: cambiar juntos sin romper el nosotros.'],f:'Cambiar sin dejar de ser: lo hace una especie, una neurona, una persona y un vínculo.'},
+ {n:'Sentido',c:'#ffe08a',r:[null,null,'Preguntarse para qué. Es lo nuevo que la mente trae a la trama.','Un nosotros: el sentido que se construye con otros y que nadie tiene solo.'],f:'El sentido no está en todas las escalas: aparece con la mente y crece en la relación.'}];
+const NONE=['Que sepamos, el bosque no tiene un «para qué» propio: existe y se sostiene.','La célula se mantiene viva a sí misma, pero no se pregunta por qué.'];
+let hi=0;
+function draw(){
+  $('hilos').innerHTML=H.map((h,i)=>`<button class="chip" style="--c:${h.c}" aria-pressed="${i===hi}" data-i="${i}">${h.n}</button>`).join('');
+  const h=H[hi];
+  $('rows').innerHTML=T.M.map((m,i)=>{const t=h.r[i];return`<div class="row${t?'':' none'}" style="--c:${m.c}"><div class="lv">${m.e}<small>${m.n}</small></div><p>${t||NONE[i]}</p></div>`}).join('');
+  $('phrase').style.setProperty('--c',h.c);$('phrase').textContent=h.f;
+  $('hilos').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{hi=+b.dataset.i;draw()});
+}
+draw();
+}
+</script>
+</body>
+</html>
