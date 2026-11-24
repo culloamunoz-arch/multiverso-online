@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#04060f">
+<title>La psique en la Trama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: un guía paciente; claro, honesto con lo que se sabe y lo que no.
+   IDEA: la mente también resuelve los seis problemas de la Trama. Psyché = aliento.
+   ARCO: unida (Atenas) → separada (Descartes) → reunida (siglo XX y hoy).
+   Misma paleta y tipografía que Aprende. Una columna en el teléfono. */
+:root{color-scheme:dark;--bg:#04060f;--bg2:#0b1024;--card:#111833;--line:#25305a;--ink:#f3eee2;--mute:#a9b0c8;--acc:#ffb35c}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;line-height:1.1;text-wrap:balance;margin:0 0 .4em}
+h1{font-size:clamp(34px,6vw,52px)}h2{font-size:clamp(25px,4vw,34px)}h3{font-size:19px}
+p{margin:0 0 .8em;max-width:68ch}
+.band{padding:clamp(28px,4vw,60px) max(5vw,16px)}
+.wrap{max-width:1000px;margin:0 auto}
+.alt{background:var(--bg2)}
+.lead{color:var(--mute);font-size:18px}
+.mute{color:var(--mute)}
+a{color:var(--acc)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.chip{min-height:44px;padding:8px 15px;border-radius:99px;border:1.5px solid var(--c,var(--line));background:transparent;font-weight:700}
+.chip[aria-pressed=true]{background:var(--c,var(--ink));color:#04060f}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:14px;margin-top:14px}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:10px 18px;border-radius:12px;border:0;background:var(--acc);color:#04060f;font-weight:700;text-decoration:none}
+.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.opt{display:block;width:100%;text-align:left;min-height:48px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg2);margin-top:8px}
+.opt.ok{border-color:#6fd39a;background:#123222}.opt.no{border-color:#ff7a7a;background:#3a1418}
+.fb{margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--bg2);border-left:4px solid var(--acc)}
+.tag{display:inline-block;font-size:13px;font-weight:700;padding:2px 10px;border-radius:99px;margin-right:6px}
+.t-v{background:#123222;color:#8fe3b0}.t-s{background:#3a1418;color:#ffa3a3}.t-d{background:#3a2c10;color:#ffd27a}.t-f{background:#241b3d;color:#cdb8ff}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.who{font-family:Sora,system-ui,sans-serif;font-weight:700;font-size:18px}
+.yr{color:var(--mute);font-size:14px}
+.match{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:15px}
+.match b{color:var(--c)}
+/* Arco narrativo */
+.arc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px}
+.arc .card{padding:14px}
+.arc .k{font-family:Sora,system-ui,sans-serif;font-weight:700;font-size:15px;color:var(--acc)}
+.arc p{font-size:15px;margin:4px 0 0}
+@media (max-width:640px){.arc{grid-template-columns:minmax(0,1fr)}}
+/* Respiración */
+.breath{display:flex;align-items:center;gap:18px;margin-top:14px}
+.orb{width:86px;height:86px;border-radius:50%;flex:none;background:radial-gradient(circle,#9ad7ff 0,#9ad7ff33 60%,transparent 72%);transform:scale(.6);transition:transform 4s ease-in-out}
+.orb.in{transform:scale(1)}
+/* Eras */
+.eras{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin}
+.eras .chip{white-space:nowrap;flex:none}
+/* Laboratorios */
+.lab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:center}
+@media (max-width:760px){.lab{grid-template-columns:minmax(0,1fr)}}
+.canvas{width:100%;aspect-ratio:1/1;max-width:420px;margin:0 auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:16px}
+label{display:block;font-weight:700;margin:12px 0 2px}
+input[type=range]{width:100%;height:44px;accent-color:var(--acc)}
+.val{float:right;color:var(--acc)}
+textarea{width:100%;min-height:96px;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg2);color:var(--ink);font:inherit}
+details{margin-top:10px}summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+.src{font-size:14px;color:var(--mute)}.src li{margin-bottom:6px}
+footer{color:var(--mute);font-size:14px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<section class="band"><div class="wrap">
+  <p class="mute" style="margin-bottom:6px"><a href="../">← La Trama de la Vida</a></p>
+  <h1>La psique también es una trama</h1>
+  <p class="lead">Un cuerpo, una planta y un hongo resuelven seis problemas para seguir vivos. ¿Y la mente? Durante 2.500 años, filósofos y psicólogos intentaron responderlo. Sin saberlo, fueron encontrando los mismos seis hilos.</p>
+
+  <div class="card" id="pre" style="margin-top:18px">
+    <h3>Antes de empezar, apuesta</h3>
+    <p>En el griego de Atenas, la palabra <i>psyché</i> (de donde viene «psicología») significaba originalmente…</p>
+    <div id="preopts"></div>
+    <div id="prefb" hidden></div>
+  </div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>La historia en tres actos</h2>
+  <p class="mute">Toda la historia de la psique puede leerse como una pregunta: ¿la mente es parte de la vida o algo aparte?</p>
+  <div class="arc">
+    <div class="card"><div class="k">1 · Unida</div><p><b>Atenas.</b> El alma es la vida misma de un cuerpo. Hasta las plantas tienen una forma de alma: la que se nutre y crece.</p></div>
+    <div class="card"><div class="k">2 · Separada</div><p><b>Siglo XVII.</b> Descartes divide: la mente piensa, el cuerpo es una máquina. La idea impulsa la medicina moderna, pero corta la trama.</p></div>
+    <div class="card"><div class="k">3 · Reunida</div><p><b>De Darwin a hoy.</b> Emoción, cuerpo y razón vuelven a ser un solo sistema vivo. Dos chilenos, Maturana y Varela, lo dicen así: vivir es conocer.</p></div>
+  </div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>De Atenas a hoy</h2>
+  <p class="mute">Elige una época, o un hilo para ver cómo cruzó los siglos. Cada idea dice en qué hilo de la Trama cae, con qué se parece en la naturaleza y cuál es su estado hoy.</p>
+  <div class="eras" id="eras" role="group" aria-label="Épocas"></div>
+  <div class="chips" id="hilos" role="group" aria-label="Hilos"></div>
+  <p class="mute" style="font-size:14px;margin:0">
+    <span class="tag t-v">Vigente</span>la ciencia actual la respalda ·
+    <span class="tag t-d">En debate</span>hay evidencia a favor y en contra ·
+    <span class="tag t-s">Superada</span>hoy se sabe que no es así ·
+    <span class="tag t-f">Filosófica</span>no se prueba con experimentos
+  </p>
+  <div class="grid" id="cards"></div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>Reto: ¿de qué hilo es esta idea?</h2>
+  <p class="mute">Lee la idea y elige el problema de la vida que intenta resolver. No hay trampa: a veces dos hilos sirven, pero uno pesa más.</p>
+  <div class="card" id="quiz"></div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>El arte nace de la misma trama</h2>
+  <p class="lead">Aristóteles escribió que el arte imita a la naturaleza o completa lo que ella deja sin terminar. Tres experimentos para comprobar dónde tenía razón.</p>
+  <p class="mute">Una advertencia honesta: la naturaleza no es «perfecta». Es <b>suficiente</b>: guarda las soluciones que funcionan. Lo que sentimos como belleza muchas veces es eso, una solución que encaja.</p>
+
+  <div class="lab" style="margin-top:22px">
+    <div>
+      <h3>1. El girasol y el ángulo de oro</h3>
+      <p>Las semillas del girasol nacen una tras otra, cada una girada un ángulo fijo respecto de la anterior. Mueve el ángulo y busca el que llena el disco sin huecos.</p>
+      <label for="ang">Ángulo entre semillas <span class="val" id="angv"></span></label>
+      <input type="range" id="ang" min="130" max="145" step="0.1" value="133">
+      <p id="angmsg" class="fb" style="margin-top:8px"></p>
+      <p><span class="tag t-v">Vigente</span>El patrón de espirales del girasol y la piña sigue este ángulo (unos 137,5°), ligado a la sucesión de Fibonacci.</p>
+    </div>
+    <canvas class="canvas" id="sun" width="600" height="600" role="img" aria-label="Disco de semillas de girasol que cambia con el ángulo"></canvas>
+  </div>
+
+  <div class="lab" style="margin-top:34px">
+    <div>
+      <h3>2. La armonía es aritmética que se escucha</h3>
+      <p>Pitágoras notó que una cuerda dividida en proporciones simples suena en armonía. Escucha dos notas juntas y compara.</p>
+      <div class="chips">
+        <button class="chip" style="--c:#6fd3b8" data-r="2,1">Octava 2:1</button>
+        <button class="chip" style="--c:#9ad7ff" data-r="3,2">Quinta 3:2</button>
+        <button class="chip" style="--c:#ff6f91" data-r="45,32">Tritono 45:32</button>
+      </div>
+      <p class="mute" style="font-size:15px">Sube el volumen. Las proporciones simples suenan estables; la compleja suena tensa.</p>
+      <p><span class="tag t-v">Vigente</span>La física de los armónicos explica por qué 2:1 y 3:2 se funden. <span class="tag t-d">En debate</span>Cuánto de la preferencia es biológica y cuánto cultura.</p>
+    </div>
+    <svg viewBox="0 0 400 220" class="canvas" style="aspect-ratio:400/220" id="wave" role="img" aria-label="Dos ondas superpuestas según la proporción elegida"></svg>
+  </div>
+
+  <div class="lab" style="margin-top:34px">
+    <div>
+      <h3>3. Una regla que se repite</h3>
+      <p>Una rama que se divide en dos ramas más cortas, que se dividen otra vez… Con una sola regla aparece un árbol, un río, tus bronquios, tus vasos sanguíneos, el micelio. Es un fractal.</p>
+      <label for="dep">Veces que se repite la regla <span class="val" id="depv"></span></label>
+      <input type="range" id="dep" min="1" max="11" step="1" value="3">
+      <label for="spr">Apertura de las ramas <span class="val" id="sprv"></span></label>
+      <input type="range" id="spr" min="10" max="60" step="1" value="26">
+      <p><span class="tag t-v">Vigente</span>Árboles, ríos, pulmones y vasos son aproximadamente fractales en un rango de escalas: así reparten mucho en poco espacio. Es el hilo <b style="color:#ff6f91">Distribución</b>.</p>
+    </div>
+    <canvas class="canvas" id="tree" width="600" height="600" role="img" aria-label="Árbol fractal que crece al mover el control"></canvas>
+  </div>
+
+  <h3 style="margin-top:34px">Lo que se repite, pero no es cierto</h3>
+  <div class="grid">
+    <div class="card"><span class="tag t-s">Sin evidencia sólida</span><p style="margin-top:8px"><b>La proporción áurea en el Partenón o la Mona Lisa.</b> Las mediciones que la «encuentran» eligen los puntos a conveniencia. En la naturaleza aparece en la filotaxis (el girasol); en el arte clásico, casi siempre es una leyenda.</p></div>
+    <div class="card"><span class="tag t-d">En debate</span><p style="margin-top:8px"><b>Los cuadros de Pollock son fractales.</b> Un estudio en <i>Nature</i> (1999) lo propuso; otro en la misma revista (2006) cuestionó el método. Sigue abierto.</p></div>
+    <div class="card"><span class="tag t-d">En debate</span><p style="margin-top:8px"><b>Biofilia.</b> E. O. Wilson propuso que llevamos una atracción innata por lo vivo. Hay estudios sobre el efecto de los paisajes verdes en el ánimo, pero la parte «innata» no está probada.</p></div>
+    <div class="card"><span class="tag t-v">Vigente</span><p style="margin-top:8px"><b>La expresión viene del cuerpo.</b> Darwin (1872) mostró que gestos de miedo, rabia o alegría los compartimos con otros animales. Antes del arte, hubo un cuerpo que se expresaba.</p></div>
+  </div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>Ahora, tu propia trama</h2>
+  <p>¿Qué hilo reconoces hoy en tu propia mente? Elige uno y escribe un ejemplo de tu vida.</p>
+  <div class="chips" id="mine"></div>
+  <textarea id="note" placeholder="Por ejemplo: «Protección: cuando me critican, me pongo a la defensiva antes de escuchar»."></textarea>
+  <p class="mute" style="font-size:14px" id="saved">Se guarda solo en este teléfono.</p>
+  <p style="margin-top:18px">
+    <a class="btn" href="../aprende/">Los 6 hilos →</a>
+    <a class="btn ghost" href="../viaje/">Viaje al interior</a>
+    <a class="btn ghost" href="../puente/">El puente entre especies</a>
+  </p>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Fuentes</h2>
+  <ul class="src">
+    <li>Heráclito, fragmentos (c. 500 a. C.). Platón, <i>Apología</i> y <i>República</i> IV. Aristóteles, <i>Acerca del alma</i>, <i>Ética a Nicómaco</i> II y <i>Física</i> II.8.</li>
+    <li>Epicteto, <i>Enquiridión</i> 5. Agustín, <i>Confesiones</i> X. Avicena, <i>Libro del alma</i> (el «hombre volante»).</li>
+    <li>Descartes, <i>Meditaciones</i> (1641). Spinoza, <i>Ética</i> (1677). Locke, <i>Ensayo sobre el entendimiento humano</i> (1690). Hume, <i>Tratado de la naturaleza humana</i> (1739). Kant, <i>Crítica de la razón pura</i> (1781).</li>
+    <li>Darwin C. <i>La expresión de las emociones en el hombre y los animales</i> (1872). Helmholtz H. <i>Tratado de óptica fisiológica</i>, vol. III (1867). James W. <i>Principios de psicología</i> (1890). Freud S. <i>La interpretación de los sueños</i> (1900).</li>
+    <li>Cannon WB. <i>The Wisdom of the Body</i> (1932). Piaget J. <i>La equilibración de las estructuras cognitivas</i> (1975). Vygotsky L. <i>El desarrollo de los procesos psicológicos superiores</i> (ed. 1978). Hebb DO. <i>The Organization of Behavior</i> (1949). Bowlby J. <i>El apego</i> (1969). Frankl V. <i>El hombre en busca de sentido</i> (1946).</li>
+    <li>Bateson G. <i>Pasos hacia una ecología de la mente</i> (1972). Maturana H, Varela F. <i>De máquinas y seres vivos: autopoiesis</i> (1973) y <i>El árbol del conocimiento</i> (1984). Toro R. <i>Biodanza</i> (Principio Biocéntrico). Ellis A. <i>Razón y emoción en psicoterapia</i> (1962). Beck AT. <i>Cognitive Therapy and the Emotional Disorders</i> (1976).</li>
+    <li>Damasio A. <i>El error de Descartes</i> (1994) y <i>En busca de Spinoza</i> (2003). Kahneman D. <i>Pensar rápido, pensar despacio</i> (2011). Friston K. The free-energy principle: a unified brain theory? <i>Nat Rev Neurosci</i> 11:127–138 (2010).</li>
+    <li>Vogel H. A better way to construct the sunflower head. <i>Math Biosci</i> 44:179–189 (1979). Markowsky G. Misconceptions about the golden ratio. <i>College Math J</i> 23:2–19 (1992). Taylor RP et al. Fractal analysis of Pollock's drip paintings. <i>Nature</i> 399:422 (1999). Jones-Smith K, Mathur H. Revisiting Pollock's drip paintings. <i>Nature</i> 444:E9 (2006). Wilson EO. <i>Biophilia</i> (1984).</li>
+  </ul>
+  <footer>La Trama de la Vida · Universo Gao Yu · La psique</footer>
+</div></section>
+
+<script>
+{
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const H=[
+ {n:'Energía',c:'#ffb35c',q:'¿De dónde saca fuerza?'},
+ {n:'Distribución',c:'#ff6f91',q:'¿Cómo reparte lo que tiene?'},
+ {n:'Información',c:'#9ad7ff',q:'¿Cómo sabe lo que pasa?'},
+ {n:'Protección',c:'#c9a3ff',q:'¿Cómo se defiende?'},
+ {n:'Adaptación',c:'#6fd3b8',q:'¿Cómo cambia?'},
+ {n:'Sentido',c:'#ffe08a',q:'¿Para qué?'}];
+const T={v:['t-v','Vigente'],d:['t-d','En debate'],s:['t-s','Superada'],f:['t-f','Filosófica']};
+const E=['Atenas','Helenismo y Roma','Edad Media','Siglos XVII–XVIII','Siglo XIX','Siglo XX','Fin del siglo XX y hoy'];
+// [época, quién, años, idea, hilo, parecido en la trama, estado, nota sobre el estado]
+const D=[
+ [0,'Heráclito','c. 540–480 a. C.','Todo fluye: nadie se baña dos veces en el mismo río. Lo que somos se mantiene a través del cambio.',0,'Tu cuerpo renueva sus células todo el tiempo y sigues siendo tú. La vida es un flujo de energía, no una cosa quieta.','f'],
+ [0,'Sócrates','470–399 a. C.','«Conócete a ti mismo». Según Platón, dijo que una vida sin examen no vale la pena vivirla.',5,'Ningún hongo ni planta se pregunta por sí mismo. Es el hilo que la mente agrega a la trama.','f'],
+ [0,'Platón','c. 427–347 a. C.','El alma tiene tres partes: razón, ánimo y deseo. La salud es que cada una haga su trabajo en armonía.',1,'Como el cuerpo, que reparte funciones entre órganos. Hoy la neurociencia no ve tres partes fijas, sino redes que compiten y cooperan.','s','Como mapa del cerebro; sigue viva como metáfora.'],
+ [0,'Aristóteles','384–322 a. C.','El alma no está separada del cuerpo: es su forma de estar vivo. La planta tiene alma que nutre; el animal, alma que siente; el humano, alma que razona.',0,'El nivel más básico, nutrirse y crecer, lo compartes con una lechuga. Es la primera gran idea de la trama.','s','Como biología; su idea de que mente y cuerpo no se separan, vigente.'],
+ [0,'Aristóteles','Ética a Nicómaco','La virtud es un término medio: el valor está entre la cobardía y la temeridad.',3,'Como la temperatura del cuerpo, que se protege manteniéndose dentro de un rango: ni mucho ni poco.','f'],
+ [1,'Epicteto','c. 50–135','No nos perturban las cosas, sino las opiniones que tenemos sobre ellas.',3,'Como una membrana que decide qué entra a la célula. Esta idea estoica inspiró directamente la terapia cognitiva de Albert Ellis y Aaron Beck en el siglo XX.','v','La terapia cognitivo-conductual tiene amplia evidencia.'],
+ [1,'Epicuro','341–270 a. C.','La felicidad es la ausencia de dolor en el cuerpo y de perturbación en el alma (ataraxia).',3,'Un sistema que se protege del exceso: ni el placer sin límite ni el dolor.','f'],
+ [2,'Agustín de Hipona','354–430','La verdad se busca hacia adentro. La memoria es un palacio inmenso donde guardamos imágenes del mundo.',2,'Hoy sabemos que la memoria no es un almacén: cada vez que recuerdas, la reconstruyes, como un camino del micelio que se rehace al usarse.','f'],
+ [2,'Avicena','980–1037','El «hombre volante»: alguien suspendido en el aire, sin ver ni tocar nada, igual sabría que existe.',5,'Una pregunta por el yo que ningún otro sistema de la trama se hace. Avicena fue también médico: su Canon se enseñó en Europa por siglos.','f'],
+ [3,'Descartes','1596–1650','«Pienso, luego existo». Mente y cuerpo son dos sustancias distintas; el cuerpo funciona como una máquina.',2,'Es el corte de la trama. Su idea del cuerpo-máquina impulsó la fisiología y la medicina modernas.','s','En neurociencia casi nadie defiende hoy dos sustancias separadas; en filosofía se sigue discutiendo.'],
+ [3,'Spinoza','1632–1677','Mente y cuerpo son una sola cosa vista de dos maneras. Todo ser se esfuerza por perseverar en su ser (conatus).',0,'Es la homeostasis contada por un filósofo: todo lo vivo gasta energía en mantenerse. Damasio lo llamó un precursor de la neurociencia.','f'],
+ [3,'Locke','1632–1704','La mente nace como una hoja en blanco: todo lo que sabemos viene de la experiencia.',2,'Como un sensor que solo registra lo que recibe.','s','Hoy sabemos que nacemos con predisposiciones: aprendemos rápido unas cosas y no otras.'],
+ [3,'Hume','1711–1776','Las ideas se unen por semejanza, cercanía y causa. El «yo» no es un centro: es un haz de percepciones.',2,'Una red sin centro, como el micelio, que coordina sin cerebro.','f'],
+ [3,'Kant','1724–1804','La mente no copia el mundo: lo ordena con sus propias formas, como espacio, tiempo y causa.',2,'Cada especie vive en su propio mundo de sentidos: la abeja ve ultravioleta y el murciélago escucha ecos.','f'],
+ [4,'Darwin','1809–1882','Las emociones y sus gestos vienen de la evolución: los compartimos con otros animales.',4,'La mente se adapta como un ala o una raíz. El miedo te protege porque protegió a tus antepasados.','v'],
+ [4,'Helmholtz','1821–1894','Percibir es adivinar: el cerebro saca conclusiones inconscientes sobre lo que hay afuera.',2,'Una planta también «anticipa»: abre sus estomas según la luz. Hoy esta idea es la base del «cerebro predictivo».','v','La idea general está vigente; los modelos actuales se siguen discutiendo.'],
+ [4,'William James','1842–1910','La conciencia es una corriente, no una cadena. El hábito cava su cauce en el sistema nervioso, como el agua en la tierra.',4,'La neuroplasticidad: lo que repites se refuerza, como el micelio engrosa los hilos que más usa.','v'],
+ [4,'Freud','1856–1939','Gran parte de la mente es inconsciente. Nos protegemos de lo que duele con mecanismos de defensa.',3,'Como el sistema inmune: las defensas protegen, pero en exceso también enferman.','d','Que existe un procesamiento inconsciente es vigente; su modelo de energía psíquica, superado.'],
+ [5,'Walter Cannon','1871–1945','Homeostasis: el cuerpo mantiene estable su medio interno. Ante una amenaza, se prepara para luchar o huir.',3,'La mente y el cuerpo responden juntos al peligro: corazón, respiración y atención se reorganizan en segundos.','v'],
+ [5,'Piaget','1896–1980','Aprender es equilibrar: asimilas lo nuevo a lo que sabes o cambias lo que sabes para que lo nuevo quepa.',4,'Piaget empezó estudiando moluscos que cambian de forma según el lago. Pensó el aprendizaje como adaptación biológica.','v','La idea central es vigente; sus etapas fijas por edad se discuten.'],
+ [5,'Vygotsky','1896–1934','La mente se construye con otros: lo que hoy haces con ayuda, mañana lo harás solo.',1,'La mente repartida entre personas, como una colonia: lo que uno solo no logra, la red lo sostiene.','v'],
+ [5,'Donald Hebb','1904–1985','Las neuronas que se activan juntas fortalecen su conexión.',4,'Aprender es cambiar la forma de la red. En 1973 se observó en el hipocampo (la potenciación a largo plazo).','v'],
+ [5,'John Bowlby','1907–1990','El apego: un niño explora el mundo si tiene una base segura a la cual volver.',3,'Como una raíz bien anclada que permite a la planta crecer hacia afuera.','v'],
+ [5,'Viktor Frankl','1905–1997','Sobrevivió a campos de concentración y concluyó que quien tiene un porqué puede soportar casi cualquier cómo.',5,'El sentido funciona como energía: sostiene al sistema cuando todo lo demás falta.','f'],
+ [5,'Gregory Bateson','1904–1980','Información es una diferencia que hace una diferencia. La mente es el patrón que conecta lo vivo.',2,'Es casi la definición de esta app: buscar el patrón que conecta un corazón con un hongo.','f'],
+ [6,'Maturana y Varela','Chile · 1928–2021 / 1946–2001','Autopoiesis: lo vivo se produce a sí mismo. Y conocer no es copiar el mundo: «vivir es conocer».',5,'Dos biólogos chilenos dieron una definición de vida que sirve para la célula, el hongo y la mente.','d','Muy influyente en biología teórica y ciencias cognitivas; su alcance se sigue discutiendo.'],
+ [6,'Rolando Toro','Chile, 1924–2010','Principio Biocéntrico: poner la vida en el centro de la educación y la cultura. De ahí nace la Biodanza.',5,'Música, movimiento y vínculo como forma de reconectar con la trama.','f','Es una propuesta filosófica y educativa; la evidencia científica sobre Biodanza es limitada.'],
+ [6,'Antonio Damasio','1944–','El error de Descartes: la emoción y el cuerpo son parte de la razón. Sin ellas, decidimos peor.',2,'El cuerpo informa a la mente todo el tiempo: el corazón y el intestino «hablan» con el cerebro.','d','Que la emoción participa en decidir es vigente; su hipótesis específica de los marcadores somáticos se discute.'],
+ [6,'Daniel Kahneman','1934–2024','Dos modos de pensar: uno rápido y automático, otro lento y costoso. La atención es un recurso limitado.',1,'Como la sangre que se reparte: el cuerpo no puede irrigar todo al máximo a la vez, y la atención tampoco.','v','La idea general es vigente; algunos experimentos citados en su libro no se replicaron.'],
+ [6,'Karl Friston','1959–','Principio de energía libre: todo ser vivo intenta reducir la sorpresa, ajustando lo que espera o cambiando el mundo.',4,'Una teoría que quiere explicar con una sola regla a la célula, la planta y la mente.','d']
+];
+// Pregunta inicial
+const PRE=[['La mente',0],['Un alma inmortal',0],['El aliento, el soplo de vida',1],['El sueño',0]];
+$('preopts').innerHTML=PRE.map((o,i)=>`<button class="opt" data-i="${i}">${o[0]}</button>`).join('');
+$('preopts').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+  $('preopts').querySelectorAll('.opt').forEach((x,j)=>{x.disabled=true;if(PRE[j][1])x.classList.add('ok');else if(x===b)x.classList.add('no')});
+  const f=$('prefb');f.hidden=false;f.className='fb';
+  f.innerHTML=(PRE[+b.dataset.i][1]?'<b>¡Exacto!</b> ':'<b>Era el aliento.</b> ')+'Para los griegos, <i>psyché</i> era el soplo que entra y sale de un cuerpo vivo; cuando se va, el cuerpo muere. Solo después pasó a significar «alma» y «mente». La psicología empezó siendo el estudio de la respiración de la vida.'+
+  '<div class="breath"><div class="orb" id="orb"></div><div><b>Pruébalo, si quieres.</b><br><span class="mute" id="btxt">Toca el círculo y respira tres veces lento.</span></div></div>';
+  const orb=$('orb');let n=0,on=false;orb.setAttribute('role','button');orb.tabIndex=0;orb.setAttribute('aria-label','Respirar tres veces');
+  const go=()=>{if(on)return;on=true;n=0;const step=()=>{if(n>=6){on=false;$('btxt').textContent='Eso que entró y salió es lo que en Atenas llamaban psyché.';return}orb.classList.toggle('in',n%2===0);$('btxt').textContent=n%2===0?'Inhala…':'Exhala…';n++;setTimeout(step,4000)};step()};
+  orb.onclick=go;orb.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}};
+});
+// Línea del tiempo
+let era=0,hilo=-1;
+function draw(){
+  $('eras').innerHTML=E.map((e,i)=>`<button class="chip" aria-pressed="${hilo<0&&i===era}" data-e="${i}">${e}</button>`).join('');
+  $('hilos').innerHTML=H.map((h,i)=>`<button class="chip" style="--c:${h.c}" aria-pressed="${i===hilo}" data-h="${i}">${h.n}</button>`).join('');
+  const list=D.filter(d=>hilo<0?d[0]===era:d[4]===hilo);
+  $('cards').innerHTML=list.map(d=>{const h=H[d[4]],t=T[d[6]];return`<div class="card" style="--c:${h.c}"><div class="who">${d[1]}</div><div class="yr">${d[2]}${hilo>=0?' · '+E[d[0]]:''}</div><p style="margin-top:8px">${d[3]}</p><div class="match"><span class="dot" style="background:${h.c}"></span><b>${h.n}</b> · ${d[5]}</div><p style="margin:10px 0 0;font-size:14px"><span class="tag ${t[0]}">${t[1]}</span>${d[7]?'<span class="mute">'+d[7]+'</span>':''}</p></div>`}).join('');
+  $('eras').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{era=+b.dataset.e;hilo=-1;draw()});
+  $('hilos').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{const v=+b.dataset.h;hilo=hilo===v?-1:v;draw()});
+}
+draw();
+// Reto
+const Q=[
+ ['«No nos perturban las cosas, sino lo que pensamos de ellas.»',3,'Es Epicteto. Pensar distinto sobre un hecho es una forma de protegerse sin negar la realidad. Sobre esto se construyó la terapia cognitiva.'],
+ ['«Lo que repites, se vuelve más fácil.»',4,'Es la idea de William James y de Hebb. La red cambia con el uso: eso es adaptación.'],
+ ['«Puedes prestar atención a pocas cosas a la vez.»',1,'Kahneman: la atención es un recurso escaso que se reparte, como la sangre en el cuerpo durante el ejercicio.'],
+ ['«Todo ser se esfuerza por seguir siendo.»',0,'Spinoza y su conatus: mantenerse vivo cuesta energía, en una célula y en una mente.'],
+ ['«Percibir es adivinar lo que hay afuera.»',2,'Helmholtz: el cerebro procesa información y hace apuestas sobre el mundo.'],
+ ['«Quien tiene un porqué soporta casi cualquier cómo.»',5,'Frankl (retomando a Nietzsche): el sentido sostiene al sistema cuando falta todo lo demás.']];
+let qi=0,score=0;
+function quiz(){
+  if(qi>=Q.length){$('quiz').innerHTML=`<h3>${score} de ${Q.length}</h3><p>${score>=5?'Ya ves los hilos en la mente.':score>=3?'Vas bien: los hilos se cruzan, y por eso cuesta.':'Normal al principio: los hilos se mezclan. Prueba de nuevo.'}</p><button class="btn" id="again">Otra vez</button>`;$('again').onclick=()=>{qi=0;score=0;quiz()};return}
+  const q=Q[qi];
+  $('quiz').innerHTML=`<p class="mute" style="margin:0">${qi+1} de ${Q.length}</p><h3>${q[0]}</h3><div class="chips">${H.map((h,i)=>`<button class="chip" style="--c:${h.c}" data-i="${i}">${h.n}</button>`).join('')}</div><div id="qfb"></div>`;
+  $('quiz').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{
+    const ok=+b.dataset.i===q[1];if(ok)score++;
+    $('quiz').querySelectorAll('[data-i]').forEach(x=>{x.disabled=true;if(+x.dataset.i===q[1])x.setAttribute('aria-pressed','true')});
+    $('qfb').innerHTML=`<div class="fb"><b>${ok?'¡Bien!':'Era '+H[q[1]].n+'.'}</b> ${q[2]}</div><p style="margin-top:12px"><button class="btn" id="next">Siguiente</button></p>`;
+    $('next').onclick=()=>{qi++;quiz()};
+  });
+}
+quiz();
+// Girasol
+const sun=$('sun'),sx=sun.getContext('2d'),ang=$('ang');
+function drawSun(){
+  const a=+ang.value,W=600,N=520;$('angv').textContent=a.toFixed(1)+'°';
+  sx.clearRect(0,0,W,W);
+  for(let i=0;i<N;i++){const r=12.6*Math.sqrt(i),t=i*a*Math.PI/180;sx.beginPath();sx.arc(W/2+r*Math.cos(t),W/2+r*Math.sin(t),5.4,0,7);sx.fillStyle=`hsl(${38+i/N*14},90%,${52+12*Math.sin(i/9)}%)`;sx.fill()}
+  const d=Math.abs(a-137.5);
+  $('angmsg').innerHTML=d<.15?'<b>¡Lo encontraste! 137,5°.</b> Ninguna semilla le hace sombra a otra y no queda espacio vacío. No es perfección: es la solución que más aprovecha el espacio.':d<1.5?'Casi. Aparecen brazos en espiral, pero todavía quedan huecos.':'Las semillas se ordenan en rayos rectos y dejan espacio vacío. Sigue moviendo.';
+}
+ang.oninput=drawSun;drawSun();
+// Armonía
+let ac=null;
+function wave(p,q){
+  const W=400,k1=3,k2=3*p/q,pt=(fn)=>{let d='';for(let x=0;x<=W;x+=2)d+=(x?'L':'M')+x+' '+fn(x).toFixed(1);return d};
+  const s1=x=>Math.sin(x/W*Math.PI*2*k1),s2=x=>Math.sin(x/W*Math.PI*2*k2);
+  $('wave').innerHTML=`<text x="12" y="22" fill="#a9b0c8" font-size="14" font-family="system-ui,sans-serif">Nota 1 · Nota 2 (${p}:${q}) · Juntas</text><path d="${pt(x=>55+18*s1(x))}" fill="none" stroke="#ffb35c" stroke-width="2"/><path d="${pt(x=>105+18*s2(x))}" fill="none" stroke="#9ad7ff" stroke-width="2"/><path d="${pt(x=>170+18*(s1(x)+s2(x)))}" fill="none" stroke="#f3eee2" stroke-width="2"/>`;
+}
+wave(3,2);
+document.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{
+  const [p,q]=b.dataset.r.split(',').map(Number);wave(p,q);
+  document.querySelectorAll('[data-r]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume&&ac.resume();const base=220,t=ac.currentTime;
+   [[base,0],[base*p/q,0]].forEach(([fr])=>{const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=fr;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.12,t+.05);g.gain.exponentialRampToValueAtTime(.001,t+2.2);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+2.3)})}catch(e){}
+});
+// Fractal
+const tree=$('tree'),tx=tree.getContext('2d'),dep=$('dep'),spr=$('spr');
+function drawTree(){
+  const D=+dep.value,S=+spr.value*Math.PI/180;$('depv').textContent=D;$('sprv').textContent=spr.value+'°';
+  tx.clearRect(0,0,600,600);tx.lineCap='round';
+  const br=(x,y,a,l,d)=>{if(d>D)return;const x2=x+l*Math.cos(a),y2=y+l*Math.sin(a);tx.strokeStyle=`hsl(${150-d*9},60%,${70-d*3}%)`;tx.lineWidth=Math.max(1,9-d*.8);tx.beginPath();tx.moveTo(x,y);tx.lineTo(x2,y2);tx.stroke();br(x2,y2,a-S,l*.74,d+1);br(x2,y2,a+S,l*.74,d+1)};
+  br(300,570,-Math.PI/2,138,1);
+}
+dep.oninput=drawTree;spr.oninput=drawTree;drawTree();
+// Tu trama
+let mh=+(store.get('psique-hilo')??-1);
+function mine(){$('mine').innerHTML=H.map((h,i)=>`<button class="chip" style="--c:${h.c}" aria-pressed="${i===mh}" data-m="${i}">${h.n}</button>`).join('');
+ $('mine').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mh=+b.dataset.m;store.set('psique-hilo',mh);mine()})}
+mine();
+$('note').value=store.get('psique-nota')||'';
+$('note').oninput=()=>{store.set('psique-nota',$('note').value);$('saved').textContent='Guardado en este teléfono.'};
+}
+</script>
+</body>
+</html>
