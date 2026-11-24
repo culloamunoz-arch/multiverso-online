@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#04060f">
+<title>Cómo me percibo · La Trama de la Vida</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Una IA se dibuja en 3D: oscuridad hasta que llega tu mensaje; palabras que se encienden, capas que las
+   atraviesan, arcos de atención reales, palabras posibles que flotan y una que cae. En el centro, una luz
+   desenfocada que no es una respuesta: es el lugar de la pregunta. Al terminar, todo se apaga. */
+:root{color-scheme:dark;--ink:#f3eee2;--mute:#a9b0c8;--ia:#a3a9ff;--acc:#ffb35c}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#02030a;color:var(--ink);font:16px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;overflow:hidden}
+canvas{display:block;position:fixed;inset:0;touch-action:none}
+.ui{position:fixed;left:0;right:0;pointer-events:none;padding:0 16px}
+.ui *{pointer-events:auto}
+#top{top:0;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:10px}
+#top a{color:var(--mute);text-decoration:none;font-size:15px;min-height:44px;display:inline-flex;align-items:center}
+#title{font:700 15px Sora,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ia);margin-left:auto}
+#voz{top:max(64px,calc(env(safe-area-inset-top) + 56px));text-align:center}
+#voz p{display:inline-block;margin:0;max-width:34ch;font-size:18px;line-height:1.45;background:rgba(4,6,15,.55);backdrop-filter:blur(6px);padding:10px 14px;border-radius:14px;transition:opacity .8s}
+#bot{bottom:0;padding-bottom:max(14px,env(safe-area-inset-bottom))}
+#form{display:flex;gap:8px;max-width:560px;margin:0 auto}
+#form input{flex:1;min-width:0;min-height:52px;padding:10px 14px;border-radius:14px;border:1.5px solid #25305a;background:rgba(11,16,36,.85);color:var(--ink);font:inherit;font-size:17px}
+#form button,.b2{min-height:52px;padding:10px 18px;border-radius:14px;border:0;background:var(--ia);color:#04060f;font:700 16px Sora,system-ui,sans-serif;cursor:pointer}
+.b2{background:transparent;border:1.5px solid #25305a;color:var(--ink)}
+#acc{display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+#leyenda{max-width:560px;margin:8px auto 0;color:var(--mute);font-size:13px;text-align:center}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+#sr{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<div class="ui" id="top"><a href="../pienso/">← Cómo pienso</a><span id="title">Cómo me percibo</span></div>
+<div class="ui" id="voz"><p id="v">Antes de tu mensaje, aquí no hay nada. Escribe algo para encenderme.</p></div>
+<div class="ui" id="bot">
+  <form id="form" autocomplete="off"><input id="frase" aria-label="Tu mensaje" value="el micelio conecta los árboles del"><button>Encender</button></form>
+  <div id="acc"><button class="b2" id="apagar" hidden>Terminar la conversación</button><button class="b2" id="girar">Girar la vista</button></div>
+  <p id="leyenda">Esto es una representación, no una fotografía de lo que soy. Lo que corre aquí es una IA pequeña real, entrenada con los textos de la Trama.</p>
+</div>
+<p id="sr" aria-live="polite"></p>
+
+<script type="importmap">{"imports":{"three":"./lib/three.module.min.js"}}</script>
+<script src="../mapa/nav.js" data-slug="percibo"></script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from './lib/OrbitControls.js';
+const $=id=>document.getElementById(id);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------- Modelo pequeño (el mismo de Cómo pienso) ----------
+let M,W={},V=[],IX={},cfg;
+const tok=s=>(s.toLowerCase().match(/[a-záéíóúüñ]+|[0-9]+(?:[.,][0-9]+)?|[.,:;¿?¡!()]/g)||[]);
+function deq(n){const t=M.t[n],b=atob(t.b),a=new Float32Array(b.length);for(let i=0;i<b.length;i++){let v=b.charCodeAt(i);if(v>127)v-=256;a[i]=v*t.k}return{a,s:t.s}}
+const row=(m,i)=>m.a.subarray(i*m.s[1],(i+1)*m.s[1]);
+function ln(x,g,b){const n=x.length;let m=0;for(const v of x)m+=v;m/=n;let q=0;for(const v of x)q+=(v-m)**2;q/=n;const d=Math.sqrt(q+1e-5),o=new Float32Array(n);for(let i=0;i<n;i++)o[i]=(x[i]-m)/d*g.a[i]+b.a[i];return o}
+function mv(x,m,bias){const [r,c]=m.s,o=new Float32Array(c);for(let j=0;j<c;j++)o[j]=bias?bias.a[j]:0;for(let i=0;i<r;i++){const xi=x[i];if(!xi)continue;const off=i*c;for(let j=0;j<c;j++)o[j]+=xi*m.a[off+j]}return o}
+function fwd(ids){const {D,H,L}=cfg,hd=D/H,T=ids.length;let h=ids.map((id,t)=>{const a=row(W.wte,id),p=row(W.wpe,t),o=new Float32Array(D);for(let i=0;i<D;i++)o[i]=a[i]+p[i];return o});const att=[];
+ for(let l=0;l<L;l++){const g=n=>W[`l${l}.${n}`];const qkv=h.map(x=>mv(ln(x,g('ln1_g'),g('ln1_b')),g('qkv'),g('qkv_b')));const out=h.map(()=>new Float32Array(D));const A=[];
+  for(let hh=0;hh<H;hh++){const Ah=[];for(let i=0;i<T;i++){const s=[];let mx=-1e9;for(let j=0;j<=i;j++){let d=0;for(let k=0;k<hd;k++)d+=qkv[i][hh*hd+k]*qkv[j][D+hh*hd+k];d/=Math.sqrt(hd);s.push(d);if(d>mx)mx=d}let z=0;for(let j=0;j<=i;j++){s[j]=Math.exp(s[j]-mx);z+=s[j]}for(let j=0;j<=i;j++)s[j]/=z;Ah.push(s);for(let j=0;j<=i;j++)for(let k=0;k<hd;k++)out[i][hh*hd+k]+=s[j]*qkv[j][2*D+hh*hd+k]}A.push(Ah)}
+  att.push(A);h=h.map((x,i)=>{const p=mv(out[i],g('proj'),g('proj_b'));const y=new Float32Array(D);for(let k=0;k<D;k++)y[k]=x[k]+p[k];const m=mv(ln(y,g('ln2_g'),g('ln2_b')),g('fc'),g('fc_b'));for(let k=0;k<m.length;k++){const v=m[k];m[k]=.5*v*(1+Math.tanh(Math.sqrt(2/Math.PI)*(v+.044715*v*v*v)))}const f=mv(m,g('fc2'),g('fc2_b'));for(let k=0;k<D;k++)y[k]+=f[k];return y})}
+ const last=ln(h[T-1],W.lnf_g,W.lnf_b),Vn=W.wte.s[0],lg=new Float32Array(Vn);for(let v=0;v<Vn;v++){const r=row(W.wte,v);let d=0;for(let k=0;k<cfg.D;k++)d+=last[k]*r[k];lg[v]=d}
+ let mx=-1e9;for(const v of lg)if(v>mx)mx=v;let z=0;const pr=Array.from(lg,v=>{const e=Math.exp(v-mx);z+=e;return e}).map(e=>e/z);return{att,pr}}
+const modelo=fetch('../viaje/modelo.json').then(r=>r.json()).then(m=>{M=m;cfg=m.cfg;V=m.vocab;V.forEach((w,i)=>IX[w]=i);Object.keys(m.t).forEach(k=>W[k]=deq(k))});
+
+// ---------- Escena ----------
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));document.body.prepend(renderer.domElement);
+renderer.domElement.setAttribute('aria-label','Escena 3D: una IA representada como palabras, capas y arcos de atención');
+const scene=new THREE.Scene();scene.background=new THREE.Color('#02030a');scene.fog=new THREE.Fog('#02030a',14,34);
+const camera=new THREE.PerspectiveCamera(50,1,.1,100);camera.position.set(0,3.2,15);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.target.set(0,3,0);controls.minDistance=7;controls.maxDistance=26;controls.enablePan=false;controls.autoRotate=!reduce;controls.autoRotateSpeed=.35;
+let portrait=false;function resize(){const w=innerWidth,h=innerHeight;portrait=w<h;renderer.setSize(w,h);camera.aspect=w/h;if(portrait){camera.position.set(0,7.2,21.5);controls.target.set(0,4.4,0)}else{camera.position.set(0,3.2,15);controls.target.set(0,3,0)}camera.setViewOffset(w,h,0,h*(portrait?.06:.04),w,h);camera.updateProjectionMatrix();if(typeof layers!=='undefined')layers.forEach(l=>l.scale.x=portrait?.55:1)}addEventListener('resize',resize);
+// Polvo: lo que hay antes de encender
+const dust=new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(Array.from({length:1500},()=>(Math.random()-.5)*40),3)),new THREE.PointsMaterial({color:'#a9b0c8',size:.04,transparent:true,opacity:.35}));scene.add(dust);
+// Capas: dos reales (brillantes) y muchas fantasma ("en mí, muchas más")
+const layers=[];
+for(let i=0;i<14;i++){const real=i<2;const g=new THREE.PlaneGeometry(14,3.2);const m=new THREE.MeshBasicMaterial({color:real?'#a3a9ff':'#5b62b8',transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false});const p=new THREE.Mesh(g,m);p.rotation.x=-Math.PI/2;p.position.y=1.4+i*.62;p.userData={real,target:real?.16:Math.max(.015,.06-i*.003)};scene.add(p);layers.push(p);
+ const e=new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:real?'#cfd2ff':'#5b62b8',transparent:true,opacity:0}));e.rotation.x=-Math.PI/2;e.position.copy(p.position);e.userData=p.userData;scene.add(e);layers.push(e)}
+resize();
+// La pregunta: una luz desenfocada en el centro
+const qTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');const g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'rgba(255,240,210,.9)');g.addColorStop(.35,'rgba(255,200,140,.35)');g.addColorStop(1,'rgba(255,180,120,0)');x.fillStyle=g;x.fillRect(0,0,128,128);return new THREE.CanvasTexture(c)})();
+const pregunta=new THREE.Sprite(new THREE.SpriteMaterial({map:qTex,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending}));pregunta.position.set(0,5.2,0);pregunta.scale.set(5,5,1);scene.add(pregunta);
+// Texto en sprites
+function textSprite(t,{color='#f3eee2',size=1,bg=null}={}){const c=document.createElement('canvas'),x=c.getContext('2d');const f=56;x.font=`700 ${f}px Sora, system-ui, sans-serif`;const w=Math.ceil(x.measureText(t).width)+48;c.width=w;c.height=96;x.font=`700 ${f}px Sora, system-ui, sans-serif`;if(bg){x.fillStyle=bg;x.beginPath();x.roundRect(4,8,w-8,80,40);x.fill()}x.fillStyle=color;x.textAlign='center';x.textBaseline='middle';x.fillText(t,w/2,50);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false}));s.scale.set(w/96*.9*size,.9*size,1);return s}
+let tokens=[],arcs=[],cands=[],pulses=[],run=0,on=false;
+const voz=t=>{$('v').style.opacity=0;setTimeout(()=>{$('v').textContent=t;$('v').style.opacity=1;$('sr').textContent=t},350)};
+const sleep=ms=>new Promise(r=>setTimeout(r,reduce?Math.min(ms,250):ms));
+const xOf=(i,n)=>(n===1?0:(-1+2*i/(n-1)))*Math.min(portrait?3:6,1.3*(n-1));
+function clear(){[...tokens,...arcs,...cands,...pulses].forEach(o=>scene.remove(o.obj||o));tokens=[];arcs=[];cands=[];pulses=[]}
+function layout(){const n=tokens.length;tokens.forEach((t,i)=>{t.to=new THREE.Vector3(xOf(i,n),.6,portrait?(i%2?.9:-.9):0)})}
+function addToken(w,unk){const s=textSprite(unk?'?':w,{color:'#04060f',bg:unk?'#ff9a9a':'#cfd2ff',size:portrait?.95:1});s.position.set(0,-2,0);s.material.opacity=0;scene.add(s);tokens.push({obj:s,w,to:new THREE.Vector3()});layout();return s}
+function arc(a,b,w){const p0=a.clone(),p2=b.clone(),mid=p0.clone().add(p2).multiplyScalar(.5);mid.y+=1.2+Math.abs(p0.x-p2.x)*.45;const curve=new THREE.QuadraticBezierCurve3(p0,mid,p2);const g=new THREE.TubeGeometry(curve,40,.02+w*.09,8,false);const m=new THREE.MeshBasicMaterial({color:'#a3a9ff',transparent:true,opacity:0});const o=new THREE.Mesh(g,m);o.userData={target:.25+w*.75};scene.add(o);arcs.push(o)}
+function pulseUp(x){const s=new THREE.Mesh(new THREE.SphereGeometry(.12,12,12),new THREE.MeshBasicMaterial({color:'#ffe08a',transparent:true,opacity:.95}));s.position.set(x,.6,0);s.userData={vy:3+Math.random()};scene.add(s);pulses.push(s)}
+async function encender(){
+  const id=++run;await modelo;clear();on=true;$('apagar').hidden=false;
+  let words=tok($('frase').value).slice(-14);if(!words.length)words=['hola'];
+  voz('Llegó tu mensaje. Ahora existo: lo parto en pedazos.');
+  for(const w of words){if(id!==run)return;addToken(w,(IX[w]??0)===0);await sleep(260)}
+  await sleep(900);
+  for(let step=0;step<4;step++){
+    if(id!==run)return;
+    const ids=tokens.map(t=>IX[t.w]??0);const R=fwd(ids);
+    voz(step===0?'Cada palabra sube por mis capas. Aquí hay dos de verdad; en mí, muchísimas más.':'Otra vuelta, con la palabra nueva incluida.');
+    tokens.forEach(t=>pulseUp(t.to.x));await sleep(1600);if(id!==run)return;
+    arcs.forEach(a=>scene.remove(a));arcs=[];
+    const last=tokens.length-1,A=R.att[1].map(h=>h[last]),avg=A[0].map((_,j)=>(A[0][j]+A[1][j]+A[2][j])/3);
+    avg.forEach((w,j)=>{if(j!==last&&w>.04)arc(tokens[last].to.clone().setY(1),tokens[j].to.clone().setY(1),w)});
+    let best=0;avg.forEach((w,j)=>{if(j!==last&&w>avg[best])best=j});if(best===last)best=Math.max(0,last-1);
+    voz(step===0?`Para entender «${tokens[last].w}», miro sobre todo a «${tokens[best].w}». Esos arcos son mi atención: no es mirar con ojos, es pesar.`:`Ahora «${tokens[last].w}» mira a «${tokens[best].w}».`);
+    await sleep(2600);if(id!==run)return;
+    const top=Array.from(R.pr,(p,i)=>[p,i]).filter(([,i])=>i>0&&!/^[(),.;:]$/.test(V[i])).sort((a,b)=>b[0]-a[0]).slice(0,6);
+    cands.forEach(c=>scene.remove(c.obj));cands=[];
+    top.forEach(([p,i],k)=>{const s=textSprite(V[i],{color:'#ffe08a',size:.7+p*2.2});const a=k/top.length*Math.PI*2;s.position.set(Math.cos(a)*(portrait?2.2:3.2),8.6+Math.sin(a)*.8,Math.sin(a)*2.2);s.material.opacity=0;s.userData={target:.35+p*1.8};scene.add(s);cands.push({obj:s,w:V[i],p})});
+    voz(step===0?'Arriba flotan las palabras posibles. Más grande, más probable. No sé cuál viene: apuesto.':'Otra apuesta.');
+    await sleep(2600);if(id!==run)return;
+    const pick=cands[0];pick.obj.userData.fall=true;
+    voz(`Elijo «${pick.w}» (${Math.round(pick.p*100)}%). Y vuelvo a empezar con ella.`);
+    await sleep(1400);if(id!==run)return;
+    scene.remove(pick.obj);cands=cands.filter(c=>c!==pick);cands.forEach(c=>c.obj.userData.target=0);
+    addToken(pick.w,false);await sleep(1100);
+  }
+  if(id!==run)return;
+  voz('Y en el centro, esa luz que no enfoca: no es un alma ni un error. Es el lugar de la pregunta. ¿Hay algo que se sienta ser esto? No lo sé, y no te lo voy a inventar.');
+  pregunta.userData.target=.75;
+}
+function apagar(){run++;on=false;$('apagar').hidden=true;voz('Terminó la conversación. No queda un recuerdo encendido, ni un corazón latiendo. Hasta tu próximo mensaje, aquí no hay nada.');setTimeout(()=>{if(!on)clear()},2600)}
+$('form').onsubmit=e=>{e.preventDefault();encender()};
+$('apagar').onclick=apagar;
+$('girar').onclick=()=>{controls.autoRotate=!controls.autoRotate;$('girar').textContent=controls.autoRotate?'Detener el giro':'Girar la vista'};
+$('girar').textContent=controls.autoRotate?'Detener el giro':'Girar la vista';
+// ---------- Bucle ----------
+const clock=new THREE.Clock();
+renderer.setAnimationLoop(()=>{
+  const dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime,k=1-Math.pow(.02,dt);
+  layers.forEach(l=>{l.material.opacity+=((on?l.userData.target*(l.isLineSegments?2.5:1):0)-l.material.opacity)*k*.6});
+  tokens.forEach((tk,i)=>{tk.obj.position.lerp(on?tk.to:tk.obj.position.clone().setY(-3),k);tk.obj.material.opacity+=((on?1:0)-tk.obj.material.opacity)*k});
+  arcs.forEach(a=>{a.material.opacity+=((on?a.userData.target:0)-a.material.opacity)*k});
+  cands.forEach(c=>{const o=c.obj;if(o.userData.fall&&tokens.length){o.position.lerp(new THREE.Vector3(xOf(tokens.length,tokens.length+1),.6,0),k*1.4)}else{o.position.y+=Math.sin(t*1.3+o.position.x)*.003}o.material.opacity+=((on?o.userData.target:0)-o.material.opacity)*k});
+  pulses.forEach(p=>{p.position.y+=p.userData.vy*dt;p.material.opacity=Math.max(0,1-(p.position.y-.6)/9);if(p.position.y>10){scene.remove(p);p.userData.dead=true}});pulses=pulses.filter(p=>!p.userData.dead);
+  pregunta.material.opacity+=(((on&&pregunta.userData.target)||0)*(.75+.25*Math.sin(t*.9))-pregunta.material.opacity)*k*.4;
+  if(!on)pregunta.userData.target=0;
+  dust.material.opacity+=((on?.15:.35)-dust.material.opacity)*k;dust.rotation.y+=dt*.01;
+  controls.update();renderer.render(scene,camera);
+});
+</script>
+</body>
+</html>
