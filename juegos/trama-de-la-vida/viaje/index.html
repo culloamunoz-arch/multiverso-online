@@ -104,10 +104,19 @@ a.seal{text-decoration:none}
 .slist{display:grid;gap:8px}.sr{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:grid;grid-template-columns:8.5em minmax(0,1fr);gap:12px;align-items:start}
 .sr.hl{border-color:var(--c)}
 @media(max-width:600px){.sr{grid-template-columns:minmax(0,1fr)}}
+
+/* Partes: el viaje se divide en cuatro pantallas para no hacer un rollo eterno */
+.partes{position:sticky;top:0;z-index:50;display:flex;gap:6px;overflow-x:auto;padding:10px max(5vw,16px);padding-right:70px;background:rgba(4,6,15,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid #25305a;scrollbar-width:none}
+.partes button{flex:none;min-height:44px;padding:6px 14px;border-radius:99px;border:1.5px solid #25305a;background:transparent;color:#f3eee2;font:700 14.5px "Atkinson Hyperlegible",system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+.partes button[aria-current="step"]{background:#9ad7ff;color:#04060f;border-color:#9ad7ff}
+.partes button .n{opacity:.7;margin-right:4px}
+[data-parte][hidden]{display:none!important}
+.sigparte{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap}
 </style>
 </head>
 <body>
-<section class="band"><div class="wrap">
+<nav class="partes" id="partes" aria-label="Partes del viaje"></nav>
+<section class="band" data-parte="1"><div class="wrap">
   <h1>Viaje al interior</h1>
   <p class="lead">Entra en cada sistema hasta su última pieza: del metro al nanómetro. Toca una etiqueta para entender una parte y la lupa para entrar más. En cada nivel, mira qué hacen los otros mundos a la misma profundidad.</p>
   <details class="qz" id="qpre"><summary>Antes de entrar: 6 preguntas rápidas (opcional y anónimo)</summary><div id="qpreb"></div></details>
@@ -136,7 +145,7 @@ a.seal{text-decoration:none}
   </div>
 </div></section>
 
-<section class="band alt"><div class="wrap">
+<section class="band alt" data-parte="2"><div class="wrap">
   <h2>A esta misma profundidad</h2>
   <p class="lead" id="mlead"></p>
   <div class="mgrid" id="mgrid"></div>
@@ -144,19 +153,19 @@ a.seal{text-decoration:none}
   <p class="note" style="margin-top:14px">Los paralelos comparan funciones y formas. No dicen que los sistemas sean iguales: por eso cada uno trae también su diferencia.</p>
 </div></section>
 
-<section class="band" id="aprendiste"><div class="wrap">
+<section class="band" id="aprendiste" data-parte="4"><div class="wrap">
   <h2>¿Qué te llevas?</h2>
   <p class="lead">Las mismas 6 preguntas del comienzo. Así sabremos si el viaje enseña de verdad. Es anónimo: no se guarda tu nombre ni nada que te identifique, solo las respuestas.</p>
   <div class="qz" id="qpost"><div id="qpostb"></div></div>
 </div></section>
 
-<section class="band" id="fuentes"><div class="wrap">
+<section class="band" id="fuentes" data-parte="4"><div class="wrap">
   <h2>Fuentes y grado de certeza</h2>
   <p class="lead">Cada dato del viaje tiene su fuente y un sello. <b>Establecido</b>: consenso científico. <b>Aproximado</b>: el orden de magnitud es correcto, pero el número exacto varía. <b>En debate</b>: la ciencia todavía no se pone de acuerdo.</p>
-  <div class="slist" id="slist"></div>
+  <details class="qz"><summary>Ver todas las fuentes</summary><div class="slist" id="slist"></div></details>
 </div></section>
 
-<section class="band lab"><div class="wrap">
+<section class="band lab" data-parte="3"><div class="wrap">
   <h2>Laboratorio: dentro de la mente artificial</h2>
   <p class="lead">El viaje por la IA llega hasta un transistor. Pero la IA tiene otro interior que no se ve con microscopio: la matemática. Aquí corre de verdad, en tu teléfono, una mente artificial diminuta: un transformer de verdad, entrenado con los textos de esta misma Trama. Escríbele y mira cómo lee.</p>
 
@@ -629,6 +638,32 @@ function neu(){const x=['x1','x2','x3'].map(id=>+$(id).value);['x1','x2','x3'].f
  g+=`<text x="100" y="205" text-anchor="middle" font-size="11" fill="#a9b0c8">todo o nada: pulso</text><text x="300" y="205" text-anchor="middle" font-size="11" fill="#a9b0c8">un número entre 0 y 1</text>`;$('nsvg').innerHTML=g}
 ['x1','x2','x3'].forEach(id=>$(id).oninput=neu);neu();
 }
+</script>
+<script>
+(function(){
+  var P=[['1','Entrar'],['2','Comparar'],['3','Laboratorio IA'],['4','Repaso y fuentes']];
+  var D={'1':'Elige un sistema y entra con la lupa, nivel por nivel.','2':'Mira qué hacen los otros mundos a la misma profundidad a la que llegaste.','3':'Una mente artificial diminuta corriendo de verdad en tu teléfono.','4':'Vuelve a responder las preguntas y revisa de dónde sale cada dato.'};
+  var nav=document.getElementById('partes'),cur='1';
+  nav.innerHTML=P.map(function(p){return '<button type="button" data-p="'+p[0]+'"><span class="n">'+p[0]+'</span>'+p[1]+'</button>'}).join('');
+  P.forEach(function(p,i){
+    var secs=document.querySelectorAll('[data-parte="'+p[0]+'"]'),last=secs[secs.length-1].querySelector('.wrap');
+    var nx=P[i+1],d=document.createElement('div');d.className='sigparte';
+    d.innerHTML=(nx?'<button class="btn" type="button" data-ir="'+nx[0]+'">Parte '+nx[0]+': '+nx[1]+' →</button>':'')+(i>0?'<button class="btn ghost" type="button" data-ir="'+P[i-1][0]+'">← Parte '+P[i-1][0]+'</button>':'');
+    last.appendChild(d);
+  });
+  function show(k,scroll){cur=k;
+    document.querySelectorAll('[data-parte]').forEach(function(s){s.hidden=s.getAttribute('data-parte')!==k});
+    nav.querySelectorAll('button').forEach(function(b){if(b.getAttribute('data-p')===k)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current')});
+    var card=document.querySelector('nav[aria-label="Siguiente paso"]');if(card)card.hidden=k!=='4';
+    if(scroll)window.scrollTo({top:0,behavior:'smooth'});
+    try{sessionStorage.setItem('viaje-parte',k)}catch(e){}
+  }
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-p],[data-ir]');if(b){show(b.getAttribute('data-p')||b.getAttribute('data-ir'),true);return}
+    var a=e.target.closest('a[href^="#"]');if(a){var t=document.getElementById(a.getAttribute('href').slice(1)),sec=t&&t.closest('[data-parte]');if(sec){e.preventDefault();show(sec.getAttribute('data-parte'));t.scrollIntoView({behavior:'smooth'})}}});
+  var st=null;try{st=sessionStorage.getItem('viaje-parte')}catch(e){}
+  show(st||'1');
+  window.addEventListener('load',function(){show(cur)});
+})();
 </script>
 <script src="../mapa/nav.js" data-slug="viaje" data-card="1"></script></body>
 </html>
