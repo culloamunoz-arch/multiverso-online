@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#04060f">
+<title>Expediciones guiadas · La Trama de la Vida</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* IDEA: una cápsula diminuta, la Semilla, te lleva por dentro de los sistemas, una escena a la vez.
+   Cada expedición: sentir, encogerse, apostar, viajar, conectar, ver la diferencia y guardar.
+   Pantalla completa en el teléfono, un solo botón grande para avanzar. */
+:root{color-scheme:dark;--bg:#04060f;--bg2:#0b1024;--card:#111833;--line:#25305a;--ink:#f3eee2;--mute:#a9b0c8;--acc:#ffb35c;--c:#ff6f91}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:17px/1.55 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;line-height:1.12;text-wrap:balance;margin:0 0 .35em}
+a{color:var(--acc)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.hidden{display:none!important}
+/* Lista de expediciones */
+#lista{max-width:760px;margin:0 auto;padding:max(28px,env(safe-area-inset-top)) 18px 40px}
+#lista .lead{color:var(--mute);font-size:18px}
+.exp{display:block;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:16px 18px;margin-top:12px;color:inherit;text-decoration:none}
+.exp:not([disabled]):hover{border-color:var(--c)}
+.exp .k{font:700 13px Sora,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.exp b{display:block;font:700 20px/1.2 Sora,system-ui,sans-serif;margin:4px 0}
+.exp span.d{color:var(--mute);font-size:15px}
+.exp[disabled]{opacity:.5;cursor:default}
+.exp .done{float:right;font-size:13px;font-weight:700;color:#04060f;background:var(--c);border-radius:99px;padding:2px 10px}
+.alt{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.ghost{display:inline-flex;align-items:center;min-height:48px;padding:10px 16px;border-radius:14px;border:1.5px solid var(--line);color:var(--ink);text-decoration:none;font-weight:700;background:transparent}
+/* Escena */
+#viaje{position:fixed;inset:0;display:flex;flex-direction:column;background:radial-gradient(120% 70% at 50% 18%,color-mix(in srgb,var(--c) 14%,transparent),transparent 60%),var(--bg)}
+.top{display:flex;align-items:center;gap:10px;padding:max(12px,env(safe-area-inset-top)) 14px 6px}
+.top .x{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:transparent;font-size:18px;flex:none}
+.prog{flex:1;display:flex;gap:4px}
+.prog i{flex:1;height:5px;border-radius:9px;background:var(--line)}
+.prog i.on{background:var(--c)}
+.art{flex:1 1 46%;min-height:200px;display:grid;place-items:center;padding:6px 14px;position:relative}
+.art svg{width:100%;height:100%;max-height:44vh;max-width:520px}
+.txt{flex:0 0 auto;padding:6px 20px 8px;max-width:640px;width:100%;margin:0 auto;max-height:46vh;overflow:auto}
+.where{font:700 13px Sora,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--c);margin-bottom:4px}
+.txt h2{font-size:clamp(22px,5.4vw,30px)}
+.txt p{margin:0 0 .6em}
+.gao{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:8px 0;font-size:16px}
+.gao .av{flex:none;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,var(--c) 55%,#04060f 100%);box-shadow:0 0 14px var(--c)}
+.opts{display:grid;gap:8px;margin:8px 0}
+.opt{text-align:left;min-height:50px;padding:10px 14px;border-radius:14px;border:1.5px solid var(--line);background:var(--bg2);font-weight:700}
+.opt.ok{border-color:#6fd39a;background:#123222}.opt.no{border-color:#ff7a7a;background:#3a1418}
+.fb{padding:10px 14px;border-radius:12px;background:var(--bg2);border-left:4px solid var(--c);margin:8px 0}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 9px;border-radius:99px;margin-right:6px;vertical-align:middle}
+.t-v{background:#123222;color:#8fe3b0}.t-d{background:#3a2c10;color:#ffd27a}
+.bot{padding:8px 16px max(14px,env(safe-area-inset-bottom));display:flex;gap:10px;max-width:640px;width:100%;margin:0 auto}
+.next{flex:1;min-height:56px;border:0;border-radius:16px;background:var(--c);color:#04060f;font:700 18px Sora,system-ui,sans-serif}
+.next[disabled]{opacity:.35}
+.back{width:56px;min-height:56px;border-radius:16px;border:1.5px solid var(--line);background:transparent;font-size:20px}
+.tapzone{width:150px;height:150px;border-radius:50%;border:2px solid var(--c);background:color-mix(in srgb,var(--c) 18%,transparent);font:700 15px Sora,system-ui,sans-serif;color:var(--ink);touch-action:manipulation}
+.tapzone:active{transform:scale(.96)}
+textarea{width:100%;min-height:84px;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg2);color:var(--ink);font:inherit}
+.pairs{display:grid;gap:8px}
+.pair{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:15px}
+.pair b{flex:1}
+/* Animaciones de las escenas */
+@keyframes flowx{from{transform:translateX(-120px)}to{transform:translateX(560px)}}
+@keyframes rise{from{transform:translateY(40px);opacity:0}20%{opacity:1}to{transform:translateY(-300px);opacity:0}}
+@keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.12)}24%{transform:scale(.98)}}
+@keyframes breath{0%,100%{transform:scale(.7)}50%{transform:scale(1)}}
+@keyframes shrink{0%{transform:scale(1)}100%{transform:scale(.06)}}
+@keyframes glow{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes dash{to{stroke-dashoffset:-60}}
+.fx{animation:flowx 6s linear infinite}
+.rise{animation:rise 4.5s ease-in infinite}
+.beat{transform-box:fill-box;transform-origin:center;animation:beat 1s ease-in-out infinite}
+.breath{transform-box:fill-box;transform-origin:center;animation:breath 8s ease-in-out infinite}
+.shrink{transform-box:fill-box;transform-origin:center;animation:shrink 3.5s ease-in forwards}
+.glow{animation:glow 2.4s ease-in-out infinite}
+.spin{transform-box:fill-box;transform-origin:center;animation:spin 14s linear infinite}
+.dash{stroke-dasharray:6 10;animation:dash 1.4s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<main id="lista">
+  <p style="margin:0 0 8px"><a href="../">← La Trama de la Vida</a></p>
+  <h1>Expediciones guiadas</h1>
+  <p class="lead">Súbete a la Semilla, una cápsula más pequeña que una célula. GAO pilotea. Tú solo tienes que mirar, apostar y avanzar con un botón. Cada expedición dura unos 8 minutos.</p>
+  <div id="exps"></div>
+  <div class="alt">
+    <a class="ghost" href="../">Explorar libre en 3D</a>
+    <a class="ghost" href="../mapa/">Mapa de la Trama</a>
+  </div>
+</main>
+
+<section id="viaje" class="hidden" aria-live="polite">
+  <div class="top">
+    <button class="x" id="salir" aria-label="Salir de la expedición">&#x2715;</button>
+    <div class="prog" id="prog" aria-hidden="true"></div>
+  </div>
+  <div class="art" id="art"></div>
+  <div class="txt" id="txt"></div>
+  <div class="bot">
+    <button class="back" id="atras" aria-label="Escena anterior">&#x2039;</button>
+    <button class="next" id="sig">Siguiente</button>
+  </div>
+</section>
+
+<script src="../mapa/nav.js" data-slug="expedicion"></script>
+<script>
+{
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const R=(n,f)=>Array.from({length:n},(_,i)=>f(i)).join('');
+// ---------- Ilustraciones ----------
+const A={
+ capsula:c=>`<svg viewBox="0 0 400 300"><defs><radialGradient id="g1"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="${c}"/><stop offset="1" stop-color="#04060f"/></radialGradient></defs>${R(40,i=>`<circle cx="${(i*97)%400}" cy="${(i*53)%300}" r="${1+i%3*.6}" fill="#a9b0c8" opacity=".5"/>`)}<g class="breath"><ellipse cx="200" cy="150" rx="70" ry="44" fill="url(#g1)"/><ellipse cx="200" cy="150" rx="86" ry="56" fill="none" stroke="${c}" stroke-width="2" opacity=".5"/></g><circle cx="182" cy="140" r="10" fill="#04060f" opacity=".55"/></svg>`,
+ pulso:c=>`<svg viewBox="0 0 400 300"><path d="M20 160 H140 L160 110 L185 210 L205 80 L225 190 L240 160 H380" fill="none" stroke="${c}" stroke-width="5" stroke-linejoin="round" class="dash"/><g class="beat"><path d="M200 262c-40-28-70-52-70-82a34 34 0 0 1 70-14a34 34 0 0 1 70 14c0 30-30 54-70 82z" fill="${c}" opacity=".85"/></g></svg>`,
+ respira:c=>`<svg viewBox="0 0 400 300"><g class="breath"><circle cx="200" cy="150" r="110" fill="${c}" opacity=".18"/><circle cx="200" cy="150" r="78" fill="${c}" opacity=".35"/><circle cx="200" cy="150" r="44" fill="${c}" opacity=".9"/></g></svg>`,
+ encoger:c=>`<svg viewBox="0 0 400 300"><g fill="none" stroke="#25305a" stroke-width="2">${R(5,i=>`<circle cx="200" cy="150" r="${30+i*28}"/>`)}</g><g class="shrink"><ellipse cx="200" cy="150" rx="110" ry="70" fill="${c}" opacity=".85"/></g><text x="200" y="285" text-anchor="middle" fill="#a9b0c8" font-size="15" font-family="system-ui,sans-serif">1 metro → 1 milímetro → 5 micrómetros</text></svg>`,
+ arteria:c=>`<svg viewBox="0 0 400 300"><rect x="0" y="70" width="400" height="160" rx="80" fill="#3a0f1c"/><rect x="0" y="70" width="400" height="160" rx="80" fill="none" stroke="#ff6f91" stroke-width="3" opacity=".6"/><g>${R(9,i=>`<g class="fx" style="animation-delay:-${i*.7}s"><ellipse cx="${-40}" cy="${110+(i*37)%90}" rx="22" ry="12" fill="#e8364d"/><ellipse cx="-40" cy="${110+(i*37)%90}" rx="9" ry="4" fill="#8f1b2c"/></g>`)}</g><ellipse cx="200" cy="150" rx="18" ry="11" fill="${c}" opacity=".95"/></svg>`,
+ pulmon:c=>`<svg viewBox="0 0 400 300"><circle cx="200" cy="150" r="105" fill="#20304f"/><circle cx="200" cy="150" r="105" fill="none" stroke="#9ad7ff" stroke-width="3" opacity=".7"/>${R(10,i=>`<circle class="rise" style="animation-delay:-${i*.45}s" cx="${130+i*14}" cy="230" r="5" fill="#9ad7ff"/>`)}<path d="M40 280 C120 240 280 240 360 280" stroke="#e8364d" stroke-width="18" fill="none" opacity=".8"/><text x="200" y="150" text-anchor="middle" fill="#f3eee2" font-size="16" font-family="system-ui,sans-serif">O₂ entra · CO₂ sale</text></svg>`,
+ capilar:c=>`<svg viewBox="0 0 400 300"><rect x="0" y="125" width="400" height="50" rx="25" fill="#3a0f1c" stroke="#ff6f91" stroke-width="2"/>${R(5,i=>`<g class="fx" style="animation-delay:-${i*1.2}s"><ellipse cx="-40" cy="150" rx="18" ry="11" fill="#e8364d"/></g>`)}<g fill="#2a3a5f" stroke="#9ad7ff" stroke-width="2"><rect x="60" y="30" width="80" height="80" rx="18"/><rect x="170" y="30" width="80" height="80" rx="18"/><rect x="280" y="30" width="80" height="80" rx="18"/><rect x="60" y="190" width="80" height="80" rx="18"/><rect x="170" y="190" width="80" height="80" rx="18"/><rect x="280" y="190" width="80" height="80" rx="18"/></g>${R(6,i=>`<circle class="glow" style="animation-delay:-${i*.4}s" cx="${100+(i%3)*110}" cy="${i<3?70:230}" r="8" fill="#9ad7ff"/>`)}</svg>`,
+ arbol:c=>`<svg viewBox="0 0 400 300"><circle cx="340" cy="45" r="26" fill="#ffd27a" class="glow"/><path d="M190 290 V120 M210 290 V120" stroke="#6b4a2b" stroke-width="10"/><rect x="194" y="120" width="12" height="170" fill="#2b6fb0" opacity=".8"/>${R(8,i=>`<circle class="rise" style="animation-delay:-${i*.55}s" cx="200" cy="290" r="4" fill="#9ad7ff"/>`)}<g fill="#2f8a57"><ellipse cx="200" cy="90" rx="120" ry="62"/><ellipse cx="140" cy="110" rx="60" ry="36"/><ellipse cx="262" cy="108" rx="60" ry="36"/></g>${R(6,i=>`<circle class="rise" style="animation-delay:-${i*.8}s" cx="${120+i*32}" cy="70" r="3" fill="#cfefff" opacity=".8"/>`)}</svg>`,
+ micelio:c=>`<svg viewBox="0 0 400 300"><rect x="0" y="0" width="400" height="300" fill="#1a130c"/><g stroke="#e8c27a" stroke-width="2" fill="none" opacity=".85"><path d="M20 60 C90 90 120 40 200 120 S320 90 390 150"/><path d="M200 120 C210 180 150 220 120 290"/><path d="M200 120 C260 170 300 220 360 280"/><path d="M60 250 C120 200 160 210 200 120"/><path d="M320 40 C300 90 260 100 200 120"/></g><g stroke="#e8c27a" stroke-width="3" fill="none" class="dash"><path d="M20 60 C90 90 120 40 200 120 S320 90 390 150"/></g><path d="M100 0 V40 M300 0 V30" stroke="#6b4a2b" stroke-width="12"/><circle cx="200" cy="120" r="9" fill="${c}"/></svg>`,
+ ciudad:c=>`<svg viewBox="0 0 400 300"><g fill="#16224a" stroke="#7fb8ff" stroke-width="1.5">${R(7,i=>`<rect x="${20+i*54}" y="${130-(i*37)%70}" width="42" height="${170+(i*37)%70}"/>`)}</g><g stroke="#ffd27a" stroke-width="3" fill="none"><path d="M0 120 L80 100 L160 110 L240 90 L320 105 L400 95" class="dash"/></g>${R(14,i=>`<rect class="glow" style="animation-delay:-${i*.3}s" x="${30+(i*29)%340}" y="${160+(i*41)%110}" width="8" height="10" fill="#ffd27a"/>`)}</svg>`,
+ hoja:c=>`<svg viewBox="0 0 400 300"><circle cx="70" cy="60" r="30" fill="#ffd27a" class="glow"/>${R(5,i=>`<path d="M95 ${70+i*10} L${190+i*8} ${120+i*14}" stroke="#ffd27a" stroke-width="2" class="dash"/>`)}<path d="M200 40 C320 60 360 180 250 270 C150 240 120 120 200 40Z" fill="#2f8a57"/><path d="M200 40 C230 120 240 190 250 270" stroke="#a8e6b8" stroke-width="3" fill="none"/>${R(6,i=>`<ellipse class="glow" style="animation-delay:-${i*.4}s" cx="${215+(i%3)*30}" cy="${110+Math.floor(i/3)*60}" rx="12" ry="7" fill="#7fd67a"/>`)}<text x="300" y="295" text-anchor="middle" fill="#a9b0c8" font-size="14" font-family="system-ui,sans-serif">luz + CO₂ + agua → azúcar + O₂</text></svg>`,
+ mitocondria:c=>`<svg viewBox="0 0 400 300"><ellipse cx="200" cy="150" rx="160" ry="90" fill="#3a1f0f" stroke="#ffb35c" stroke-width="4"/><path d="M60 150 C90 90 110 210 140 150 S190 90 210 150 S260 210 290 150 S330 100 345 150" stroke="#ffb35c" stroke-width="5" fill="none"/>${R(8,i=>`<circle class="glow" style="animation-delay:-${i*.3}s" cx="${80+i*34}" cy="${110+(i%2)*80}" r="7" fill="#ffe08a"/>`)}<text x="200" y="285" text-anchor="middle" fill="#a9b0c8" font-size="14" font-family="system-ui,sans-serif">azúcar + O₂ → ATP + CO₂ + calor</text></svg>`,
+ musculo:c=>`<svg viewBox="0 0 400 300">${R(6,i=>`<rect x="40" y="${50+i*36}" width="320" height="22" rx="11" fill="#8f2b3a" opacity="${.6+i%2*.3}"/>`)}<g class="beat">${R(5,i=>`<circle cx="${80+i*60}" cy="150" r="9" fill="#ffe08a"/>`)}</g><text x="200" y="285" text-anchor="middle" fill="#a9b0c8" font-size="14" font-family="system-ui,sans-serif">≈ 80–100 W en reposo, como una ampolleta</text></svg>`,
+ hongo:c=>`<svg viewBox="0 0 400 300"><rect y="200" width="400" height="100" fill="#1a130c"/>${R(7,i=>`<path d="M${40+i*50} 200 q 10 -20 30 -10 q -10 -16 -26 -6" fill="#c0612b" opacity=".8"/>`)}<path d="M150 200 C150 150 250 150 250 200 Z" fill="#e8c27a"/><rect x="190" y="200" width="20" height="40" fill="#f3eee2"/><g stroke="#e8c27a" stroke-width="2" fill="none" class="dash"><path d="M200 240 C160 260 100 270 40 285"/><path d="M200 240 C240 260 300 270 370 285"/></g></svg>`,
+ auto:c=>`<svg viewBox="0 0 400 300"><path d="M40 190 L80 140 C100 118 140 108 190 108 L250 108 C290 108 320 130 345 160 L370 170 C380 174 384 182 384 192 L384 205 L40 205 Z" fill="#16224a" stroke="#7fb8ff" stroke-width="3"/><rect x="110" y="170" width="160" height="24" rx="6" fill="#ffb35c" class="glow"/><circle cx="110" cy="210" r="28" fill="#04060f" stroke="#7fb8ff" stroke-width="5"/><circle cx="310" cy="210" r="28" fill="#04060f" stroke="#7fb8ff" stroke-width="5"/><g class="spin" style="transform-origin:110px 210px"><path d="M110 186 V234 M86 210 H134" stroke="#7fb8ff" stroke-width="3"/></g><g class="spin" style="transform-origin:310px 210px"><path d="M310 186 V234 M286 210 H334" stroke="#7fb8ff" stroke-width="3"/></g><text x="190" y="164" text-anchor="middle" fill="#04060f" font-size="13" font-weight="700" font-family="system-ui,sans-serif">batería</text></svg>`,
+ trama:c=>{const P=[[200,60,'#ff8a6b'],[330,130,'#7fb8ff'],[290,260,'#e8c27a'],[110,260,'#7fd67a'],[70,130,'#e9e3ff']];return `<svg viewBox="0 0 400 300">${P.map((p,i)=>P.map((q,j)=>j>i?`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${c}" stroke-width="2" opacity=".55" class="dash"/>`:'').join('')).join('')}${P.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="26" fill="${p[2]}" class="glow" style="animation-delay:-${i*.5}s"/>`).join('')}</svg>`}
+};
+// ---------- Expediciones ----------
+// Tipos de escena: 'info' (texto), 'tap' (contar latidos), 'apuesta' (elige antes de saber), 'pares' (conecta), 'escribe' (cierre).
+const EXP=[
+ {id:'reparto',hilo:'Distribución',c:'#ff6f91',t:'El gran reparto',d:'¿Cómo llega lo necesario a cada rincón? Del corazón a un árbol, a un hongo y a tu ciudad.',
+  S:[
+   {art:'capsula',w:'Antes de partir',h:'Bienvenido a bordo de la Semilla',p:'Vamos a encogernos y viajar por dentro de la sangre, de un árbol y de un hongo. La pregunta del viaje es una sola: ¿cómo llega lo necesario a cada rincón?',g:'Hola, soy GAO. Yo manejo; tú mira, apuesta y avanza con el botón de abajo.'},
+   {k:'tap',art:'pulso',w:'Sentir',h:'Encuentra tu pulso',p:'Pon dos dedos en tu muñeca o en el cuello. Toca el círculo cada vez que sientas un latido, durante unos 15 segundos.',g:'Si no quieres, puedes saltar este paso.'},
+   {art:'encoger',w:'Encogerse',h:'Más pequeños que un glóbulo rojo',p:'Un glóbulo rojo mide unos 7 micrómetros: caben miles sobre el punto de una letra i. La Semilla se encoge hasta caber en una arteria.',g:'Sujétate. Vamos a entrar por una arteria de tu brazo.'},
+   {k:'apuesta',art:'arteria',w:'Arteria',h:'Viajamos con la sangre',p:'Cada latido que contaste empuja este río rojo. Antes de seguir, apuesta:',q:'En reposo, ¿cuánto tarda tu sangre en dar una vuelta completa al cuerpo?',o:[['Cerca de 1 minuto',1],['Cerca de 1 hora',0],['Cerca de 1 día',0]],ok:'El corazón mueve unos 5 litros por minuto, y tienes cerca de 5 litros de sangre. En reposo, la vuelta toma alrededor de un minuto.',tag:'v'},
+   {art:'pulmon',w:'Pulmón',h:'La parada del oxígeno',p:'En los alvéolos, burbujas finísimas del pulmón, la sangre suelta el dióxido de carbono y carga oxígeno. Por eso respiras.',g:'Mira cómo los glóbulos se vuelven rojo brillante al cargar oxígeno.'},
+   {art:'capilar',w:'Capilar',h:'De a uno por el túnel',p:'Los capilares son tan finos que los glóbulos rojos pasan en fila, de a uno. Aquí entregan el oxígeno a cada célula vecina: este es el rincón al que había que llegar.',tag:'v'},
+   {k:'apuesta',art:'arbol',w:'Salto a un árbol',h:'Un árbol no tiene corazón',p:'Salimos del cuerpo y entramos por la raíz de un árbol de 30 metros. Tiene que subir agua hasta la copa.',q:'¿Qué empuja el agua hacia arriba?',o:[['Un corazón escondido en el tronco',0],['El sol: el agua se evapora en las hojas y tira de la columna de agua',1],['La gravedad',0]],ok:'Cuando el agua se evapora por las hojas, tira de las moléculas de abajo, que están unidas entre sí. El árbol no empuja: tira desde arriba.',tag:'v'},
+   {art:'micelio',w:'Bajo tierra',h:'La red del hongo',p:'Entre las raíces hay hilos de hongo, las hifas. Llevan agua y nutrientes a la planta y reciben azúcar a cambio. Esa alianza se llama micorriza.',g:'Que los árboles se pasen recursos entre ellos a través de esta red se está estudiando todavía. Lo marco como «en debate».',tag:'v',tag2:'d'},
+   {art:'ciudad',w:'De vuelta en la superficie',h:'Tu barrio también reparte',p:'Cañerías de agua, cables eléctricos, calles y camiones: una ciudad resuelve el mismo problema que tu corazón. Y como en el cuerpo, la pregunta es quién recibe primero y quién al final.'},
+   {k:'pares',art:'trama',w:'Conectar',h:'Arma la trama',p:'Para cada parte del cuerpo, elige quién hace ese trabajo en el árbol.',pares:[['Corazón (lo que mueve el flujo)',['El sol que evapora el agua','Las raíces finas','El tronco'],0],['Arterias y venas (los caminos)',['Las hojas','Los vasos del tronco (xilema)','La corteza'],1],['Capilares (la entrega final)',['La copa','Las raíces finas y las hifas','Las semillas'],1]]},
+   {art:'trama',w:'La diferencia',h:'Iguales en el problema, distintos en la solución',p:'El corazón <b>empuja</b>. El árbol <b>tira</b> desde arriba. El hongo <b>crece</b> hacia donde hay algo que buscar. Los tres resuelven el reparto, cada uno a su manera.',g:'Esa es la idea que cuesta ver: el problema se repite; la solución cambia.'},
+   {k:'escribe',art:'capsula',w:'Guardar',h:'Hoy descubrí que…',p:'Escribe con tus palabras qué te llevas. ¿Dónde ves «el gran reparto» en tu vida?'}
+  ]},
+ {id:'luz',hilo:'Energía',c:'#ffb35c',t:'El viaje de la luz',d:'¿De dónde sale la fuerza para vivir? De una estrella a tu músculo, pasando por una hoja y un hongo.',
+  S:[
+   {art:'capsula',w:'Antes de partir',h:'Vamos a seguir un rayo de sol',p:'Un rayo de luz sale del Sol, viaja 8 minutos y llega a una hoja. Vamos a seguir su energía hasta que te mueva un dedo.',g:'Soy GAO otra vez. Sujétate: esta vez viajamos con la luz.'},
+   {art:'respira',w:'Sentir',h:'Respira tres veces lento',p:'Sigue el círculo: inhala cuando crece y exhala cuando se achica. Ese oxígeno que entra lo vas a usar al final del viaje.',g:'No hay apuro. Cuando termines, avanza.'},
+   {k:'apuesta',art:'hoja',w:'Dentro de una hoja',h:'La fábrica de azúcar',p:'Los cloroplastos atrapan la luz y la usan para unir dióxido de carbono y agua en azúcar. De paso, sueltan oxígeno.',q:'Un árbol pesa toneladas. ¿De dónde sale la mayor parte de esa masa?',o:[['Del suelo',0],['Del agua de lluvia',0],['Del aire: del dióxido de carbono',1]],ok:'La mayor parte del peso seco de un árbol es carbono, y ese carbono viene del CO₂ del aire. Un árbol está hecho, en buena parte, de aire.',tag:'v'},
+   {art:'mitocondria',w:'Dentro de tu célula',h:'La mitocondria quema el azúcar',p:'Comiste una manzana. Tu intestino la deshizo en azúcar, la sangre la trajo hasta aquí, y la mitocondria la quema con el oxígeno que respiraste. Fabrica ATP, la moneda de energía de la célula.',g:'El oxígeno que respiraste al empezar termina justo aquí.',tag:'v'},
+   {k:'apuesta',art:'musculo',w:'Tu músculo',h:'La luz se vuelve movimiento',p:'El ATP hace que las fibras de tu músculo se deslicen y se contraigan.',q:'En reposo, ¿cuánta energía gasta tu cuerpo, más o menos?',o:[['Como una linterna pequeña',0],['Como una ampolleta de unos 80 a 100 watts',1],['Como un auto encendido',0]],ok:'Un adulto en reposo gasta energía a un ritmo parecido a una ampolleta incandescente. Gran parte sale como calor: por eso estás tibio.',tag:'v'},
+   {art:'hongo',w:'Bajo tierra',h:'El hongo cierra el ciclo',p:'Las hojas que caen las digieren los hongos por fuera de su cuerpo. Devuelven al suelo los nutrientes que la planta va a volver a usar.',g:'Sin descomponedores, el bosque se llenaría de hojas muertas.'},
+   {art:'auto',w:'En la calle',h:'Una máquina también come',p:'Un auto eléctrico guarda energía en una batería y la convierte en movimiento con un motor. Es el mismo problema que el de tu mitocondria: guardar energía y gastarla cuando se necesita.'},
+   {k:'pares',art:'trama',w:'Conectar',h:'¿Quién hace cada trabajo?',p:'Para cada parte de tu cuerpo, elige quién hace ese trabajo en el auto.',pares:[['Comer (cargar energía)',['Cargar la batería','Encender las luces','Girar el volante'],0],['Mitocondria (convertir la energía)',['Los neumáticos','El motor eléctrico','El parabrisas'],1],['Músculo (moverse)',['Las ruedas que giran','La radio','El espejo'],0]]},
+   {art:'trama',w:'La diferencia',h:'La materia vuelve, la energía sigue',p:'El carbono y los nutrientes dan vueltas: del aire a la hoja, a ti y de vuelta al suelo. La energía no da vueltas: entra como luz y se va como calor. Por eso la vida necesita sol todos los días.',g:'Es una de las ideas más grandes de la ecología. Y cabe en una manzana.',tag:'v'},
+   {k:'escribe',art:'capsula',w:'Guardar',h:'Hoy descubrí que…',p:'Escribe qué te llevas. ¿Qué «alimenta» tu energía en un día normal, además de la comida?'}
+  ]}
+];
+const SOON=[['Información','#9ad7ff','La red de avisos','Del impulso nervioso a las señales químicas de las plantas.'],['Protección','#c9a3ff','La frontera viva','De la membrana celular al sistema inmune y la corteza de un árbol.'],['Adaptación','#6fd3b8','Cambiar sin dejar de ser','De la evolución a tus sinapsis.'],['Sentido','#ffe08a','El para qué','La expedición hacia adentro.']];
+function lista(){
+  $('exps').innerHTML=EXP.map((e,i)=>`<button class="exp" style="--c:${e.c}" data-i="${i}"><span class="k">Expedición ${i+1} · ${e.hilo}</span>${store.get('exp-'+e.id)?'<span class="done">Completada</span>':''}<b>${e.t}</b><span class="d">${e.d} ${e.S.length} escenas.</span></button>`).join('')+
+   SOON.map((s,i)=>`<button class="exp" style="--c:${s[1]}" disabled><span class="k">Expedición ${EXP.length+i+1} · ${s[0]} · Próximamente</span><b>${s[2]}</b><span class="d">${s[3]}</span></button>`).join('');
+  $('exps').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>abrir(+b.dataset.i));
+}
+let E=null,si=0,ok=false;
+function abrir(i){E=EXP[i];si=0;document.documentElement.style.setProperty('--c',E.c);$('lista').classList.add('hidden');$('viaje').classList.remove('hidden');location.hash=E.id;escena()}
+function cerrar(){$('viaje').classList.add('hidden');$('lista').classList.remove('hidden');history.replaceState(null,'',location.pathname);lista();scrollTo(0,0)}
+function tag(t){return t==='v'?'<span class="tag t-v">Comprobado</span>':t==='d'?'<span class="tag t-d">En debate</span>':''}
+function escena(){
+  const s=E.S[si];ok=!s.k||s.k==='info';
+  $('prog').innerHTML=E.S.map((_,i)=>`<i class="${i<=si?'on':''}"></i>`).join('');
+  $('art').innerHTML=A[s.art](E.c);
+  let h=`<div class="where">${s.w} · ${si+1}/${E.S.length}</div><h2>${s.h}</h2><p>${s.p}</p>`;
+  if(s.k==='tap')h+=`<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap"><button class="tapzone" id="tap">Toca con cada latido</button><div id="bpm" class="fb" style="flex:1;min-width:150px">Esperando el primer latido…</div></div>`;
+  if(s.k==='apuesta')h+=`<p><b>${s.q}</b></p><div class="opts" id="opts">${s.o.map((o,i)=>`<button class="opt" data-i="${i}">${o[0]}</button>`).join('')}</div><div id="fb"></div>`;
+  if(s.k==='pares')h+=`<div class="pairs" id="pares">${s.pares.map((p,i)=>`<div class="pair" data-p="${i}"><b>${p[0]}</b><span class="mute" id="pv${i}">?</span></div><div class="opts" id="po${i}" style="margin-top:-2px">${p[1].map((o,j)=>`<button class="opt" data-p="${i}" data-j="${j}" style="min-height:44px;font-weight:400">${o}</button>`).join('')}</div>`).join('')}</div>`;
+  if(s.k==='escribe')h+=`<textarea id="nota" placeholder="Hoy descubrí que…">${store.get('nota-'+E.id)||''}</textarea><p class="mute" style="font-size:14px">Se guarda solo en este teléfono.</p>`;
+  if(s.g)h+=`<div class="gao"><span class="av" aria-hidden="true"></span><span><b>GAO:</b> ${s.g}</span></div>`;
+  if(s.tag&&s.k!=='apuesta')h+=`<p>${tag(s.tag)}${tag(s.tag2)}</p>`;
+  $('txt').innerHTML=h;$('txt').scrollTop=0;
+  $('atras').disabled=si===0;
+  const last=si===E.S.length-1;
+  $('sig').textContent=last?'Terminar la expedición':s.k==='tap'?'Saltar o seguir':'Siguiente';
+  $('sig').disabled=!ok&&s.k!=='tap';
+  if(s.k==='tap'){let t=[];$('tap').onclick=()=>{const n=performance.now();t.push(n);t=t.filter(x=>n-x<15000);if(t.length<3){$('bpm').textContent=`Latidos: ${t.length}. Sigue…`;return}const per=(t.at(-1)-t[0])/(t.length-1);const bpm=Math.round(60000/per);$('bpm').innerHTML=bpm>30&&bpm<200?`Tu corazón: cerca de <b>${bpm}</b> latidos por minuto. Cada uno empuja la sangre que vamos a seguir.`:'Sigue tocando a ritmo con tu pulso.'}}
+  if(s.k==='apuesta')$('opts').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,r=s.o[i][1];$('opts').querySelectorAll('.opt').forEach((x,j)=>{x.disabled=true;if(s.o[j][1])x.classList.add('ok');else if(x===b)x.classList.add('no')});$('fb').innerHTML=`<div class="fb"><b>${r?'¡Bien apostado!':'No era esa.'}</b> ${s.ok} ${tag(s.tag)}</div>`;ok=true;$('sig').disabled=false;$('fb').scrollIntoView({block:'nearest',behavior:'smooth'})});
+  if(s.k==='pares'){let done=0;$('pares').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.p,j=+b.dataset.j,p=s.pares[i];const box=$('po'+i);if(j===p[2]){box.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.j===p[2])x.classList.add('ok')});$('pv'+i).textContent='↔ '+p[1][j];done++;if(done===s.pares.length){ok=true;$('sig').disabled=false}}else{b.classList.add('no');b.disabled=true}})}
+  if(s.k==='escribe'){ok=true;$('sig').disabled=false;$('nota').oninput=()=>store.set('nota-'+E.id,$('nota').value)}
+}
+$('sig').onclick=()=>{if(si<E.S.length-1){si++;escena()}else{store.set('exp-'+E.id,'1');fin()}};
+$('atras').onclick=()=>{if(si>0){si--;escena()}};
+$('salir').onclick=cerrar;
+function fin(){
+  $('prog').innerHTML=E.S.map(()=>'<i class="on"></i>').join('');
+  $('art').innerHTML=A.trama(E.c);
+  const nx=EXP.find(e=>!store.get('exp-'+e.id));
+  $('txt').innerHTML=`<div class="where">Expedición completada</div><h2>Ganaste la carta «${E.hilo}»</h2><p>Ya viste un mismo problema resuelto de varias maneras. Esa carta queda en tu trama.</p><div class="opts">${nx?`<button class="opt" id="otra">Siguiente expedición: ${nx.t}</button>`:''}<a class="opt" style="text-decoration:none;display:flex;align-items:center" href="../mapa/">Ver el mapa de la Trama</a><a class="opt" style="text-decoration:none;display:flex;align-items:center" href="../">Explorar libre en 3D</a></div>`;
+  $('sig').textContent='Volver a las expediciones';$('sig').disabled=false;$('sig').onclick=()=>{$('sig').onclick=null;cerrar();location.reload()};
+  if(nx)$('otra').onclick=()=>{location.hash=nx.id;location.reload()};
+}
+lista();
+const h=location.hash.slice(1),ix=EXP.findIndex(e=>e.id===h);if(ix>=0)abrir(ix);
+}
+</script>
+</body>
+</html>
