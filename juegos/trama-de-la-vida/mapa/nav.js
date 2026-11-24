@@ -19,7 +19,8 @@
     {s:'tradiciones',p:'tradiciones/',n:'Los mapas simbólicos',d:'Masonería, rosacruces, Kabbalah y alquimia: historia, símbolo y leyenda.',m:2},
     {s:'biomimetica',p:'biomimetica/',n:'Lo que la vida nos enseña',d:'Inventos humanos copiados de otras especies.',m:3},
     {s:'puente',p:'puente/',n:'El puente entre especies',d:'Lo que la IA ya logra, y lo que no, para entender a otros animales.',m:3},
-    {s:'espejo',p:'espejo/',n:'Una IA mirando la Trama',d:'Lo que comparte una IA con la vida, lo que no y lo que nadie sabe.',m:3}];
+    {s:'espejo',p:'espejo/',n:'Una IA mirando la Trama',d:'Lo que comparte una IA con la vida, lo que no y lo que nadie sabe.',m:3},
+    {s:'pienso',p:'pienso/',n:'Cómo pienso',d:'Una IA real y pequeña: mira cómo sus palabras se prestan atención.',m:3}];
   var D=[
     {s:'recorridos',p:'recorridos/',n:'Recorridos guiados'},
     {s:'patrones',p:'patrones/',n:'Los seis patrones en detalle'},
