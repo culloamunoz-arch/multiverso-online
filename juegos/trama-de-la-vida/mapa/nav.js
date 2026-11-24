@@ -28,6 +28,13 @@
     {s:'panel',p:'panel/',n:'Tu panel'}];
   window.TRAMA_MAPA={M:M,ST:ST,D:D,base:base};
   try{if(slug)localStorage.setItem('trama-visto-'+slug,'1')}catch(e){}
+  if(s.getAttribute('data-home')!=='0'&&!document.querySelector('script[src*="/_next/static/"]')){
+    var hb=document.createElement('a');hb.href=base+'inicio/';hb.setAttribute('aria-label','Inicio: elegir por dónde partir');
+    hb.style.cssText='position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:10px;z-index:60;width:48px;height:48px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:rgba(11,16,36,.82);border:1px solid #25305a;color:#cfe9ff;text-decoration:none;font:9px/1 system-ui,sans-serif;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)';
+    hb.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6fd8ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11 12 4l8.5 7M6 9.5V20h4.5v-5.5h3V20H18V9.5"/></svg><span aria-hidden="true">Inicio</span>';
+    var gh=function(){document.body.appendChild(hb)};
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',gh);else gh();
+  }
   if(!card)return;
   var i=-1;for(var k=0;k<ST.length;k++)if(ST[k].s===slug)i=k;if(i<0)return;
   var cur=ST[i],nx=ST[i+1],mv=M[cur.m];
@@ -40,7 +47,7 @@
     '<span style="display:block;font:700 20px/1.2 Sora,system-ui,sans-serif;margin:4px 0">'+nx.n+' →</span>'+
     '<span style="color:#a9b0c8;font-size:15px">'+nx.d+'</span></a>';}
   else{h+='<p style="margin:10px 0">Llegaste al final del viaje. Vuelve al mapa para ver la trama completa que recorriste.</p>';}
-  h+='<a href="'+base+'mapa/" style="display:inline-flex;align-items:center;min-height:44px;padding:8px 16px;border-radius:12px;border:1.5px solid #25305a;color:#f3eee2;text-decoration:none;font-weight:700">Ver el mapa de la Trama</a></div>';
+  h+='<a href="'+base+'mapa/" style="display:inline-flex;align-items:center;min-height:44px;padding:8px 16px;border-radius:12px;border:1.5px solid #25305a;color:#f3eee2;text-decoration:none;font-weight:700">Ver el mapa de la Trama</a> <a href="'+base+'inicio/" style="display:inline-flex;align-items:center;min-height:44px;padding:8px 16px;border-radius:12px;border:1.5px solid #25305a;color:#f3eee2;text-decoration:none;font-weight:700;margin-left:6px">Volver al inicio</a></div>';
   el.innerHTML=h;
   var go=function(){document.body.appendChild(el)};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
