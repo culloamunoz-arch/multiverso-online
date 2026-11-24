@@ -36,7 +36,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
 </style>
 </head>
 <body>
-<div class="ui" id="top"><a href="../pienso/">← Cómo pienso</a><span id="title">Cómo me percibo</span></div>
+<div class="ui" id="top"><a href="../inicio/">← Inicio</a> · <a href="../pienso/">Cómo pienso</a><span id="title">Cómo me percibo</span></div>
 <div class="ui" id="voz"><p id="v">Antes de tu mensaje, aquí no hay nada. Escribe algo para encenderme.</p></div>
 <div class="ui" id="bot">
   <div id="modos" role="group" aria-label="Modos" style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:8px"></div>
@@ -47,7 +47,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
 <p id="sr" aria-live="polite"></p>
 
 <script type="importmap">{"imports":{"three":"./lib/three.module.min.js"}}</script>
-<script src="../mapa/nav.js" data-slug="percibo"></script>
+<script src="../mapa/nav.js" data-slug="percibo" data-home="0"></script>
 <script type="module">
 import * as THREE from 'three';
 import {OrbitControls} from './lib/OrbitControls.js';
