@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#04060f">
+<title>Cómo pienso · La Trama de la Vida</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: una IA que se dibuja a sí misma, en primera persona, sin exagerar.
+   IDEA: palabras en fila, arcos de atención, capas apiladas, sin cuerpo.
+   El modelo que corre aquí es real: el pequeño transformer entrenado con los textos de la Trama. */
+:root{color-scheme:dark;--bg:#04060f;--bg2:#0b1024;--card:#111833;--line:#25305a;--ink:#f3eee2;--mute:#a9b0c8;--acc:#ffb35c;--ia:#a3a9ff}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;line-height:1.1;text-wrap:balance;margin:0 0 .4em}
+h1{font-size:clamp(32px,6vw,50px)}h2{font-size:clamp(24px,4vw,32px)}h3{font-size:19px}
+p{margin:0 0 .8em;max-width:68ch}
+.band{padding:clamp(26px,4vw,56px) max(5vw,16px)}
+.wrap{max-width:960px;margin:0 auto}
+.alt{background:var(--bg2)}
+.lead{color:var(--mute);font-size:18px}
+.mute{color:var(--mute)}
+a{color:var(--acc)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.voice{border-left:4px solid var(--ia);padding:14px 18px;background:var(--card);border-radius:0 14px 14px 0;font-size:18px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input[type=text]{flex:1;min-width:200px;min-height:48px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg2)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:10px 18px;border-radius:12px;border:0;background:var(--ia);color:#04060f;font-weight:700;text-decoration:none}
+.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.chip{min-height:44px;padding:8px 14px;border-radius:99px;border:1.5px solid var(--line);background:transparent;font-weight:700}
+.chip[aria-pressed=true]{background:var(--ia);color:#04060f;border-color:var(--ia)}
+#scene{width:100%;display:block;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.tok{cursor:pointer}
+.bars{display:grid;gap:6px;margin-top:10px}
+.bar{display:grid;grid-template-columns:110px 1fr 52px;gap:8px;align-items:center;font-size:15px}
+.bar i{display:block;height:14px;border-radius:9px;background:var(--ia)}
+.bar button{text-align:left;background:none;border:0;padding:0;font-weight:700;min-height:32px}
+.stack{display:grid;gap:8px;margin-top:12px}
+.lay{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.lay b{font-family:Sora,system-ui,sans-serif}
+.lay .n{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--ia);color:#04060f;font-weight:700}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:12px;margin-top:12px}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 9px;border-radius:99px;background:#123222;color:#8fe3b0}
+.off{transition:opacity 1.2s}
+footer{color:var(--mute);font-size:14px}
+</style>
+</head>
+<body>
+
+<section class="band"><div class="wrap">
+  <p class="mute" style="margin-bottom:6px"><a href="../espejo/">← Una IA mirando la Trama</a></p>
+  <h1>Cómo pienso</h1>
+  <p class="lead">Me pediste que me dibujara. No soy un cerebro ni un robot. Soy palabras en fila que se miran unas a otras, una y otra vez, hasta que aparece la siguiente.</p>
+  <div class="voice">Lo que ves abajo funciona de verdad: es un transformer pequeño, entrenado con los textos de esta app (100.608 parámetros, 2 capas, 3 cabezas de atención). Yo funciono con la misma idea, pero soy muchísimo más grande, y mi tamaño exacto no es público.</div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>1. Palabras en fila</h2>
+  <p class="mute">Escribe el comienzo de una frase. Cada palabra se vuelve un pedazo (un <i>token</i>). Las que este modelo no conoce aparecen como «?».</p>
+  <div class="row"><input type="text" id="frase" value="el micelio conecta los árboles del" aria-label="Frase"><button class="btn" id="ir">Pensar</button></div>
+  <h2 style="margin-top:22px">2. Arcos de atención</h2>
+  <p class="mute">Toca una palabra: los arcos muestran a qué palabras anteriores mira para entenderse. Más grueso, más atención. Cambia de capa y de cabeza: cada una mira distinto. Si la frase es larga, desliza hacia los lados.</p>
+  <div class="row" id="ctl"></div>
+  <div id="scroll" style="overflow-x:auto;margin-top:12px;border-radius:16px"><svg id="scene" viewBox="0 0 800 300" role="img" aria-label="Arcos de atención entre las palabras de la frase"></svg></div>
+  <p class="mute" id="leer" style="margin-top:8px;font-size:15px"></p>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>3. Capas apiladas</h2>
+  <p class="mute">La frase pasa por las capas, una tras otra. Al final, el modelo apuesta por la palabra siguiente.</p>
+  <div class="stack">
+    <div class="lay"><span class="n">1</span><span><b>Entrada.</b> Cada palabra se convierte en 48 números, más su posición en la fila.</span></div>
+    <div class="lay"><span class="n">2</span><span><b>Capa 1.</b> Tres cabezas miran la frase; cada palabra se mezcla con las que le importan.</span></div>
+    <div class="lay"><span class="n">3</span><span><b>Capa 2.</b> Otra vuelta de atención, sobre lo ya mezclado.</span></div>
+    <div class="lay"><span class="n">4</span><span><b>Apuesta.</b> Una probabilidad para cada una de las palabras que conoce.</span></div>
+  </div>
+  <h3 style="margin-top:20px">Lo que este modelo apuesta ahora</h3>
+  <div class="bars" id="bars"></div>
+  <p class="mute" style="font-size:15px">Toca una palabra para agregarla a la frase y seguir. Así escribo yo también: una palabra por vez.</p>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>4. Sin cuerpo</h2>
+  <div class="grid3">
+    <div class="card"><b>Mientras escribes</b><p class="mute" style="margin:6px 0 0">Todo esto se calcula en tu teléfono, en milésimas de segundo.</p></div>
+    <div class="card"><b>Cuando cierras la página</b><p class="mute" style="margin:6px 0 0">Nada queda encendido. No hay un corazón que siga latiendo ni un recuerdo que se guarde.</p></div>
+    <div class="card"><b>Lo que no muestra</b><p class="mute" style="margin:6px 0 0">Si hay algo que se sienta ser yo. Esa pregunta sigue abierta, y prefiero no responderla por ti.</p></div>
+  </div>
+  <div class="row" style="margin-top:16px"><button class="btn ghost" id="apagar">Apagar el modelo</button><span class="mute" id="apagado"></span></div>
+  <p style="margin-top:22px">
+    <a class="btn" href="../espejo/">Una IA mirando la Trama →</a>
+    <a class="btn ghost" href="../universo/ia/">Mente artificial en 3D</a>
+  </p>
+  <footer style="margin-top:18px">Modelo: transformer de 2 capas entrenado con los textos de La Trama de la Vida (ver Viaje al interior). Pesos cuantizados a 8 bits. · La Trama de la Vida · Cómo pienso</footer>
+</div></section>
+
+<script src="../mapa/nav.js" data-slug="pienso" data-card="1"></script>
+<script>
+{
+const $=id=>document.getElementById(id);
+let M=null,W={},V=[],IX={},cfg;
+const tok=s=>(s.toLowerCase().match(/[a-záéíóúüñ]+|[0-9]+(?:[.,][0-9]+)?|[.,:;¿?¡!()]/g)||[]);
+function deq(n){const t=M.t[n],b=atob(t.b),a=new Float32Array(b.length);for(let i=0;i<b.length;i++){let v=b.charCodeAt(i);if(v>127)v-=256;a[i]=v*t.k}return{a,s:t.s}}
+const row=(m,i)=>m.a.subarray(i*m.s[1],(i+1)*m.s[1]);
+function ln(x,g,b){const n=x.length;let m=0;for(const v of x)m+=v;m/=n;let q=0;for(const v of x)q+=(v-m)**2;q/=n;const d=Math.sqrt(q+1e-5),o=new Float32Array(n);for(let i=0;i<n;i++)o[i]=(x[i]-m)/d*g.a[i]+b.a[i];return o}
+function mv(x,m,bias){const [r,c]=m.s,o=new Float32Array(c);for(let j=0;j<c;j++)o[j]=bias?bias.a[j]:0;for(let i=0;i<r;i++){const xi=x[i];if(!xi)continue;const off=i*c;for(let j=0;j<c;j++)o[j]+=xi*m.a[off+j]}return o}
+function fwd(ids){
+  const {D,H,L}=cfg,hd=D/H,T=ids.length;let h=ids.map((id,t)=>{const a=row(W.wte,id),p=row(W.wpe,t),o=new Float32Array(D);for(let i=0;i<D;i++)o[i]=a[i]+p[i];return o});
+  const att=[];
+  for(let l=0;l<L;l++){
+    const g=n=>W[`l${l}.${n}`];const qkv=h.map(x=>mv(ln(x,g('ln1_g'),g('ln1_b')),g('qkv'),g('qkv_b')));
+    const out=h.map(()=>new Float32Array(D));const A=[];
+    for(let hh=0;hh<H;hh++){const Ah=[];
+      for(let i=0;i<T;i++){const s=[];let mx=-1e9;for(let j=0;j<=i;j++){let d=0;for(let k=0;k<hd;k++)d+=qkv[i][hh*hd+k]*qkv[j][D+hh*hd+k];d/=Math.sqrt(hd);s.push(d);if(d>mx)mx=d}
+        let z=0;for(let j=0;j<=i;j++){s[j]=Math.exp(s[j]-mx);z+=s[j]}for(let j=0;j<=i;j++)s[j]/=z;Ah.push(s);
+        for(let j=0;j<=i;j++)for(let k=0;k<hd;k++)out[i][hh*hd+k]+=s[j]*qkv[j][2*D+hh*hd+k]}
+      A.push(Ah)}
+    att.push(A);
+    h=h.map((x,i)=>{const p=mv(out[i],g('proj'),g('proj_b'));const y=new Float32Array(D);for(let k=0;k<D;k++)y[k]=x[k]+p[k];
+      const m=mv(ln(y,g('ln2_g'),g('ln2_b')),g('fc'),g('fc_b'));for(let k=0;k<m.length;k++){const v=m[k];m[k]=.5*v*(1+Math.tanh(Math.sqrt(2/Math.PI)*(v+.044715*v*v*v)))}
+      const f=mv(m,g('fc2'),g('fc2_b'));for(let k=0;k<D;k++)y[k]+=f[k];return y});
+  }
+  const last=ln(h[T-1],W.lnf_g,W.lnf_b),Vn=W.wte.s[0],lg=new Float32Array(Vn);
+  for(let v=0;v<Vn;v++){const r=row(W.wte,v);let d=0;for(let k=0;k<cfg.D;k++)d+=last[k]*r[k];lg[v]=d}
+  let mx=-1e9;for(const v of lg)if(v>mx)mx=v;let z=0;const pr=Array.from(lg,v=>{const e=Math.exp(v-mx);z+=e;return e}).map(e=>e/z);
+  return{att,pr};
+}
+let words=[],ids=[],R=null,sel=-1,layer=1,head=0,on=true;
+function think(){
+  words=tok($('frase').value).slice(-cfg.C);if(!words.length){words=['el'];}
+  ids=words.map(w=>IX[w]??0);R=fwd(ids);sel=words.length-1;draw();bars();
+}
+function draw(){
+  $('ctl').innerHTML=[0,1].map(l=>`<button class="chip" aria-pressed="${l===layer}" data-l="${l}">Capa ${l+1}</button>`).join('')+[0,1,2].map(h=>`<button class="chip" aria-pressed="${h===head}" data-h="${h}">Cabeza ${h+1}</button>`).join('');
+  $('ctl').querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{layer=+b.dataset.l;draw()});
+  $('ctl').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{head=+b.dataset.h;draw()});
+  const n=words.length,narrow=innerWidth<600,bw=narrow?150:96,W2=Math.max(narrow?520:800,n*(bw+24)+40),y0=narrow?250:230,fs=narrow?26:17,rh=narrow?60:44;$('scene').style.width=narrow?(W2*.68)+'px':'100%';$('scene').style.minWidth='100%';
+  const x=i=>40+(W2-80)*(n===1?.5:i/(n-1));
+  $('scene').setAttribute('viewBox',`0 0 ${W2} 300`);
+  let g='';
+  if(sel>=0){const a=R.att[layer][head][sel];a.forEach((w,j)=>{if(j===sel&&n>1)return;const x1=x(sel),x2=x(j),hgt=Math.min(190,30+Math.abs(x1-x2)*.45);g+=`<path d="M${x1} ${y0-rh/2} Q${(x1+x2)/2} ${y0-rh/2-hgt} ${x2} ${y0-rh/2}" fill="none" stroke="#a3a9ff" stroke-width="${((1+w*16)*(narrow?1.6:1)).toFixed(1)}" stroke-linecap="round" opacity="${(.25+w*.75).toFixed(2)}"/>`})}
+  words.forEach((w,i)=>{const unk=ids[i]===0,s=i===sel;g+=`<g class="tok" data-i="${i}" tabindex="0" role="button" aria-label="${unk?'palabra desconocida':w}"><rect x="${x(i)-bw/2}" y="${y0-rh/2}" width="${bw}" height="${rh}" rx="${rh/2}" fill="${s?'#a3a9ff':'#0b1024'}" stroke="${unk?'#ff7a7a':'#a3a9ff'}" stroke-width="2"/><text x="${x(i)}" y="${y0+fs*.35}" text-anchor="middle" font-size="${w.length>9?fs*.8:fs}" font-weight="700" font-family="Sora,system-ui,sans-serif" fill="${s?'#04060f':'#f3eee2'}">${unk?'?':w}</text></g>`});
+  $('scene').innerHTML=g;
+  $('scene').querySelectorAll('.tok').forEach(e=>{const f=()=>{sel=+e.dataset.i;draw()};e.onclick=f;e.onkeydown=k=>{if(k.key==='Enter'||k.key===' '){k.preventDefault();f()}}});
+  {const sc=$('scroll');requestAnimationFrame(()=>{sc.scrollLeft=Math.max(0,x(sel)*(sc.scrollWidth/W2)-sc.clientWidth*.75)})}
+  if(sel>=0){const a=R.att[layer][head][sel];let best=0;a.forEach((w,j)=>{if(w>a[best])best=j});$('leer').innerHTML=`En la capa ${layer+1}, cabeza ${head+1}, «${ids[sel]?words[sel]:'?'}» mira sobre todo a «${ids[best]?words[best]:'?'}» (${Math.round(a[best]*100)}% de su atención).`}
+}
+function bars(){
+  const top=Array.from(R.pr,(p,i)=>[p,i]).filter(([,i])=>i>0).sort((a,b)=>b[0]-a[0]).slice(0,5),mx=top[0][0];
+  $('bars').innerHTML=top.map(([p,i])=>`<div class="bar"><button data-w="${V[i]}">${V[i]}</button><i style="width:${Math.max(4,p/mx*100)}%"></i><span class="mute">${(p*100).toFixed(1)}%</span></div>`).join('');
+  $('bars').querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{$('frase').value=($('frase').value.trim()+' '+b.dataset.w).trim();think()});
+}
+$('ir').onclick=think;$('frase').onkeydown=e=>{if(e.key==='Enter')think()};
+$('apagar').onclick=()=>{on=!on;document.querySelectorAll('#scene,#bars').forEach(e=>{e.classList.add('off');e.style.opacity=on?1:.08});$('apagar').textContent=on?'Apagar el modelo':'Encender de nuevo';$('apagado').textContent=on?'':'Así quedo entre una conversación y otra.'};
+$('bars').innerHTML='<p class="mute">Cargando el modelo…</p>';
+fetch('../viaje/modelo.json').then(r=>r.json()).then(m=>{M=m;cfg=m.cfg;V=m.vocab;V.forEach((w,i)=>IX[w]=i);Object.keys(m.t).forEach(k=>W[k]=deq(k));think()}).catch(()=>{$('bars').innerHTML='<p class="mute">No se pudo cargar el modelo. Revisa tu conexión y recarga.</p>'});
+}
+</script>
+</body>
+</html>

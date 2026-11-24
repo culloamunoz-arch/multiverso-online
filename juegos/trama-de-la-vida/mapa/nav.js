@@ -10,6 +10,7 @@
     {n:'III · Pensar',q:'¿Cómo se mira a sí misma una mente?',e:'Mente',c:'#c9a3ff'},
     {n:'IV · Encontrarse',q:'¿Cómo nos entendemos con seres distintos?',e:'Relación',c:'#9ad7ff'}];
   var ST=[
+    {s:'expedicion',p:'expedicion/',n:'Expediciones guiadas',d:'Súbete a la Semilla: un viaje paso a paso, con un solo botón para avanzar.',m:0},
     {s:'tresd',p:'',n:'Los cinco mundos',d:'Recorre en 3D un cuerpo, una máquina, una planta, un hongo y una mente.',m:0},
     {s:'aprende',p:'aprende/',n:'Los 6 hilos',d:'Los seis problemas que todo sistema vivo tiene que resolver.',m:0},
     {s:'viaje',p:'viaje/',n:'Viaje al interior',d:'Del metro al nanómetro: entra en cada sistema hasta su última pieza.',m:1},
@@ -18,7 +19,8 @@
     {s:'tradiciones',p:'tradiciones/',n:'Los mapas simbólicos',d:'Masonería, rosacruces, Kabbalah y alquimia: historia, símbolo y leyenda.',m:2},
     {s:'biomimetica',p:'biomimetica/',n:'Lo que la vida nos enseña',d:'Inventos humanos copiados de otras especies.',m:3},
     {s:'puente',p:'puente/',n:'El puente entre especies',d:'Lo que la IA ya logra, y lo que no, para entender a otros animales.',m:3},
-    {s:'espejo',p:'espejo/',n:'Una IA mirando la Trama',d:'Lo que comparte una IA con la vida, lo que no y lo que nadie sabe.',m:3}];
+    {s:'espejo',p:'espejo/',n:'Una IA mirando la Trama',d:'Lo que comparte una IA con la vida, lo que no y lo que nadie sabe.',m:3},
+    {s:'pienso',p:'pienso/',n:'Cómo pienso',d:'Una IA real y pequeña: mira cómo sus palabras se prestan atención.',m:3}];
   var D=[
     {s:'recorridos',p:'recorridos/',n:'Recorridos guiados'},
     {s:'patrones',p:'patrones/',n:'Los seis patrones en detalle'},

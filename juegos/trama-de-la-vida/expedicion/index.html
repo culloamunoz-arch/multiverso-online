@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#04060f">
+<title>Expediciones guiadas · La Trama de la Vida</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* IDEA: una cápsula diminuta, la Semilla, te lleva por dentro de los sistemas, una escena a la vez.
+   Cada expedición: sentir, encogerse, apostar, viajar, conectar, ver la diferencia y guardar.
+   Pantalla completa en el teléfono, un solo botón grande para avanzar. */
+:root{color-scheme:dark;--bg:#04060f;--bg2:#0b1024;--card:#111833;--line:#25305a;--ink:#f3eee2;--mute:#a9b0c8;--acc:#ffb35c;--c:#ff6f91}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:17px/1.55 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;line-height:1.12;text-wrap:balance;margin:0 0 .35em}
+a{color:var(--acc)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.hidden{display:none!important}
+/* Lista de expediciones */
+#lista{max-width:760px;margin:0 auto;padding:max(28px,env(safe-area-inset-top)) 18px 40px}
+#lista .lead{color:var(--mute);font-size:18px}
+.exp{display:block;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:16px 18px;margin-top:12px;color:inherit;text-decoration:none}
+.exp:not([disabled]):hover{border-color:var(--c)}
+.exp .k{font:700 13px Sora,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.exp b{display:block;font:700 20px/1.2 Sora,system-ui,sans-serif;margin:4px 0}
+.exp span.d{color:var(--mute);font-size:15px}
+.exp[disabled]{opacity:.5;cursor:default}
+.exp .done{float:right;font-size:13px;font-weight:700;color:#04060f;background:var(--c);border-radius:99px;padding:2px 10px}
+.alt{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.ghost{display:inline-flex;align-items:center;min-height:48px;padding:10px 16px;border-radius:14px;border:1.5px solid var(--line);color:var(--ink);text-decoration:none;font-weight:700;background:transparent}
+/* Escena */
+#viaje{position:fixed;inset:0;display:flex;flex-direction:column;background:radial-gradient(120% 70% at 50% 18%,color-mix(in srgb,var(--c) 14%,transparent),transparent 60%),var(--bg)}
+.top{display:flex;align-items:center;gap:10px;padding:max(12px,env(safe-area-inset-top)) 14px 6px}
+.top .x{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:transparent;font-size:18px;flex:none}
+.prog{flex:1;display:flex;gap:4px}
+.prog i{flex:1;height:5px;border-radius:9px;background:var(--line)}
+.prog i.on{background:var(--c)}
+.art{flex:1 1 46%;min-height:200px;display:grid;place-items:center;padding:6px 14px;position:relative}
+.art svg{width:100%;height:100%;max-height:44vh;max-width:520px}
+.txt{flex:0 0 auto;padding:6px 20px 8px;max-width:640px;width:100%;margin:0 auto;max-height:46vh;overflow:auto}
+.where{font:700 13px Sora,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--c);margin-bottom:4px}
+.txt h2{font-size:clamp(22px,5.4vw,30px)}
+.txt p{margin:0 0 .6em}
+.gao{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:8px 0;font-size:16px}
+.gao .av{flex:none;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,var(--c) 55%,#04060f 100%);box-shadow:0 0 14px var(--c)}
+.opts{display:grid;gap:8px;margin:8px 0}
+.opt{text-align:left;min-height:50px;padding:10px 14px;border-radius:14px;border:1.5px solid var(--line);background:var(--bg2);font-weight:700}
+.opt.ok{border-color:#6fd39a;background:#123222}.opt.no{border-color:#ff7a7a;background:#3a1418}
+.fb{padding:10px 14px;border-radius:12px;background:var(--bg2);border-left:4px solid var(--c);margin:8px 0}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 9px;border-radius:99px;margin-right:6px;vertical-align:middle}
+.t-v{background:#123222;color:#8fe3b0}.t-d{background:#3a2c10;color:#ffd27a}
+.bot{padding:8px 16px max(14px,env(safe-area-inset-bottom));display:flex;gap:10px;max-width:640px;width:100%;margin:0 auto}
+.next{flex:1;min-height:56px;border:0;border-radius:16px;background:var(--c);color:#04060f;font:700 18px Sora,system-ui,sans-serif}
+.next[disabled]{opacity:.35}
+.back{width:56px;min-height:56px;border-radius:16px;border:1.5px solid var(--line);background:transparent;font-size:20px}
+.tapzone{width:150px;height:150px;border-radius:50%;border:2px solid var(--c);background:color-mix(in srgb,var(--c) 18%,transparent);font:700 15px Sora,system-ui,sans-serif;color:var(--ink);touch-action:manipulation}
+.tapzone:active{transform:scale(.96)}
+textarea{width:100%;min-height:84px;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg2);color:var(--ink);font:inherit}
+.pairs{display:grid;gap:8px}
+.pair{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:15px}
+.pair b{flex:1}
+/* Animaciones de las escenas */
+@keyframes flowx{from{transform:translateX(-120px)}to{transform:translateX(560px)}}
+@keyframes rise{from{transform:translateY(40px);opacity:0}20%{opacity:1}to{transform:translateY(-300px);opacity:0}}
+@keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.12)}24%{transform:scale(.98)}}
+@keyframes breath{0%,100%{transform:scale(.7)}50%{transform:scale(1)}}
+@keyframes shrink{0%{transform:scale(1)}100%{transform:scale(.06)}}
+@keyframes glow{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes dash{to{stroke-dashoffset:-60}}
+.fx{animation:flowx 6s linear infinite}
+.rise{animation:rise 4.5s ease-in infinite}
+.beat{transform-box:fill-box;transform-origin:center;animation:beat 1s ease-in-out infinite}
+.breath{transform-box:fill-box;transform-origin:center;animation:breath 8s ease-in-out infinite}
+.shrink{transform-box:fill-box;transform-origin:center;animation:shrink 3.5s ease-in forwards}
+.glow{animation:glow 2.4s ease-in-out infinite}
+.spin{transform-box:fill-box;transform-origin:center;animation:spin 14s linear infinite}
+.dash{stroke-dasharray:6 10;animation:dash 1.4s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<main id="lista">
+  <p style="margin:0 0 8px"><a href="../">← La Trama de la Vida</a></p>
+  <h1>Expediciones guiadas</h1>
+  <p class="lead">Súbete a la Semilla, una cápsula más pequeña que una célula. GAO pilotea. Tú solo tienes que mirar, apostar y avanzar con un botón. Hay seis expediciones, una por cada hilo de la Trama. Cada una dura unos 8 minutos.</p>
+  <div id="exps"></div>
+  <div class="alt">
+    <a class="ghost" href="../">Explorar libre en 3D</a>
+    <a class="ghost" href="../mapa/">Mapa de la Trama</a>
+  </div>
+</main>
+
+<section id="viaje" class="hidden" aria-live="polite">
+  <div class="top">
+    <button class="x" id="salir" aria-label="Salir de la expedición">&#x2715;</button>
+    <div class="prog" id="prog" aria-hidden="true"></div>
+  </div>
+  <div class="art" id="art"></div>
+  <div class="txt" id="txt"></div>
+  <div class="bot">
+    <button class="back" id="atras" aria-label="Escena anterior">&#x2039;</button>
+    <button class="next" id="sig">Siguiente</button>
+  </div>
+</section>
+
+<script src="../mapa/nav.js" data-slug="expedicion"></script>
+<script>
+{
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const R=(n,f)=>Array.from({length:n},(_,i)=>f(i)).join('');
+// ---------- Ilustraciones ----------
+const A={
+ capsula:c=>`<svg viewBox="0 0 400 300"><defs><radialGradient id="g1"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="${c}"/><stop offset="1" stop-color="#04060f"/></radialGradient></defs>${R(40,i=>`<circle cx="${(i*97)%400}" cy="${(i*53)%300}" r="${1+i%3*.6}" fill="#a9b0c8" opacity=".5"/>`)}<g class="breath"><ellipse cx="200" cy="150" rx="70" ry="44" fill="url(#g1)"/><ellipse cx="200" cy="150" rx="86" ry="56" fill="none" stroke="${c}" stroke-width="2" opacity=".5"/></g><circle cx="182" cy="140" r="10" fill="#04060f" opacity=".55"/></svg>`,
+ pulso:c=>`<svg viewBox="0 0 400 300"><path d="M20 160 H140 L160 110 L185 210 L205 80 L225 190 L240 160 H380" fill="none" stroke="${c}" stroke-width="5" stroke-linejoin="round" class="dash"/><g class="beat"><path d="M200 262c-40-28-70-52-70-82a34 34 0 0 1 70-14a34 34 0 0 1 70 14c0 30-30 54-70 82z" fill="${c}" opacity=".85"/></g></svg>`,
+ respira:c=>`<svg viewBox="0 0 400 300"><g class="breath"><circle cx="200" cy="150" r="110" fill="${c}" opacity=".18"/><circle cx="200" cy="150" r="78" fill="${c}" opacity=".35"/><circle cx="200" cy="150" r="44" fill="${c}" opacity=".9"/></g></svg>`,
+ encoger:c=>`<svg viewBox="0 0 400 300"><g fill="none" stroke="#25305a" stroke-width="2">${R(5,i=>`<circle cx="200" cy="150" r="${30+i*28}"/>`)}</g><g class="shrink"><ellipse cx="200" cy="150" rx="110" ry="70" fill="${c}" opacity=".85"/></g><text x="200" y="285" text-anchor="middle" fill="#a9b0c8" font-size="15" font-family="system-ui,sans-serif">1 metro → 1 milímetro → 5 micrómetros</text></svg>`,
+ arteria:c=>`<svg viewBox="0 0 400 300"><rect x="0" y="70" width="400" height="160" rx="80" fill="#3a0f1c"/><rect x="0" y="70" width="400" height="160" rx="80" fill="none" stroke="#ff6f91" stroke-width="3" opacity=".6"/><g>${R(9,i=>`<g class="fx" style="animation-delay:-${i*.7}s"><ellipse cx="${-40}" cy="${110+(i*37)%90}" rx="22" ry="12" fill="#e8364d"/><ellipse cx="-40" cy="${110+(i*37)%90}" rx="9" ry="4" fill="#8f1b2c"/></g>`)}</g><ellipse cx="200" cy="150" rx="18" ry="11" fill="${c}" opacity=".95"/></svg>`,
+ pulmon:c=>`<svg viewBox="0 0 400 300"><circle cx="200" cy="150" r="105" fill="#20304f"/><circle cx="200" cy="150" r="105" fill="none" stroke="#9ad7ff" stroke-width="3" opacity=".7"/>${R(10,i=>`<circle class="rise" style="animation-delay:-${i*.45}s" cx="${130+i*14}" cy="230" r="5" fill="#9ad7ff"/>`)}<path d="M40 280 C120 240 280 240 360 280" stroke="#e8364d" stroke-width="18" fill="none" opacity=".8"/><text x="200" y="150" text-anchor="middle" fill="#f3eee2" font-size="16" font-family="system-ui,sans-serif">O₂ entra · CO₂ sale</text></svg>`,
+ capilar:c=>`<svg viewBox="0 0 400 300"><rect x="0" y="125" width="400" height="50" rx="25" fill="#3a0f1c" stroke="#ff6f91" stroke-width="2"/>${R(5,i=>`<g class="fx" style="animation-delay:-${i*1.2}s"><ellipse cx="-40" cy="150" rx="18" ry="11" fill="#e8364d"/></g>`)}<g fill="#2a3a5f" stroke="#9ad7ff" stroke-width="2"><rect x="60" y="30" width="80" height="80" rx="18"/><rect x="170" y="30" width="80" height="80" rx="18"/><rect x="280" y="30" width="80" height="80" rx="18"/><rect x="60" y="190" width="80" height="80" rx="18"/><rect x="170" y="190" width="80" height="80" rx="18"/><rect x="280" y="190" width="80" height="80" rx="18"/></g>${R(6,i=>`<circle class="glow" style="animation-delay:-${i*.4}s" cx="${100+(i%3)*110}" cy="${i<3?70:230}" r="8" fill="#9ad7ff"/>`)}</svg>`,
+ arbol:c=>`<svg viewBox="0 0 400 300"><circle cx="340" cy="45" r="26" fill="#ffd27a" class="glow"/><path d="M190 290 V120 M210 290 V120" stroke="#6b4a2b" stroke-width="10"/><rect x="194" y="120" width="12" height="170" fill="#2b6fb0" opacity=".8"/>${R(8,i=>`<circle class="rise" style="animation-delay:-${i*.55}s" cx="200" cy="290" r="4" fill="#9ad7ff"/>`)}<g fill="#2f8a57"><ellipse cx="200" cy="90" rx="120" ry="62"/><ellipse cx="140" cy="110" rx="60" ry="36"/><ellipse cx="262" cy="108" rx="60" ry="36"/></g>${R(6,i=>`<circle class="rise" style="animation-delay:-${i*.8}s" cx="${120+i*32}" cy="70" r="3" fill="#cfefff" opacity=".8"/>`)}</svg>`,
+ micelio:c=>`<svg viewBox="0 0 400 300"><rect x="0" y="0" width="400" height="300" fill="#1a130c"/><g stroke="#e8c27a" stroke-width="2" fill="none" opacity=".85"><path d="M20 60 C90 90 120 40 200 120 S320 90 390 150"/><path d="M200 120 C210 180 150 220 120 290"/><path d="M200 120 C260 170 300 220 360 280"/><path d="M60 250 C120 200 160 210 200 120"/><path d="M320 40 C300 90 260 100 200 120"/></g><g stroke="#e8c27a" stroke-width="3" fill="none" class="dash"><path d="M20 60 C90 90 120 40 200 120 S320 90 390 150"/></g><path d="M100 0 V40 M300 0 V30" stroke="#6b4a2b" stroke-width="12"/><circle cx="200" cy="120" r="9" fill="${c}"/></svg>`,
+ ciudad:c=>`<svg viewBox="0 0 400 300"><g fill="#16224a" stroke="#7fb8ff" stroke-width="1.5">${R(7,i=>`<rect x="${20+i*54}" y="${130-(i*37)%70}" width="42" height="${170+(i*37)%70}"/>`)}</g><g stroke="#ffd27a" stroke-width="3" fill="none"><path d="M0 120 L80 100 L160 110 L240 90 L320 105 L400 95" class="dash"/></g>${R(14,i=>`<rect class="glow" style="animation-delay:-${i*.3}s" x="${30+(i*29)%340}" y="${160+(i*41)%110}" width="8" height="10" fill="#ffd27a"/>`)}</svg>`,
+ hoja:c=>`<svg viewBox="0 0 400 300"><circle cx="70" cy="60" r="30" fill="#ffd27a" class="glow"/>${R(5,i=>`<path d="M95 ${70+i*10} L${190+i*8} ${120+i*14}" stroke="#ffd27a" stroke-width="2" class="dash"/>`)}<path d="M200 40 C320 60 360 180 250 270 C150 240 120 120 200 40Z" fill="#2f8a57"/><path d="M200 40 C230 120 240 190 250 270" stroke="#a8e6b8" stroke-width="3" fill="none"/>${R(6,i=>`<ellipse class="glow" style="animation-delay:-${i*.4}s" cx="${215+(i%3)*30}" cy="${110+Math.floor(i/3)*60}" rx="12" ry="7" fill="#7fd67a"/>`)}<text x="300" y="295" text-anchor="middle" fill="#a9b0c8" font-size="14" font-family="system-ui,sans-serif">luz + CO₂ + agua → azúcar + O₂</text></svg>`,
+ mitocondria:c=>`<svg viewBox="0 0 400 300"><ellipse cx="200" cy="150" rx="160" ry="90" fill="#3a1f0f" stroke="#ffb35c" stroke-width="4"/><path d="M60 150 C90 90 110 210 140 150 S190 90 210 150 S260 210 290 150 S330 100 345 150" stroke="#ffb35c" stroke-width="5" fill="none"/>${R(8,i=>`<circle class="glow" style="animation-delay:-${i*.3}s" cx="${80+i*34}" cy="${110+(i%2)*80}" r="7" fill="#ffe08a"/>`)}<text x="200" y="285" text-anchor="middle" fill="#a9b0c8" font-size="14" font-family="system-ui,sans-serif">azúcar + O₂ → ATP + CO₂ + calor</text></svg>`,
+ musculo:c=>`<svg viewBox="0 0 400 300">${R(6,i=>`<rect x="40" y="${50+i*36}" width="320" height="22" rx="11" fill="#8f2b3a" opacity="${.6+i%2*.3}"/>`)}<g class="beat">${R(5,i=>`<circle cx="${80+i*60}" cy="150" r="9" fill="#ffe08a"/>`)}</g><text x="200" y="285" text-anchor="middle" fill="#a9b0c8" font-size="14" font-family="system-ui,sans-serif">≈ 80–100 W en reposo, como una ampolleta</text></svg>`,
+ hongo:c=>`<svg viewBox="0 0 400 300"><rect y="200" width="400" height="100" fill="#1a130c"/>${R(7,i=>`<path d="M${40+i*50} 200 q 10 -20 30 -10 q -10 -16 -26 -6" fill="#c0612b" opacity=".8"/>`)}<path d="M150 200 C150 150 250 150 250 200 Z" fill="#e8c27a"/><rect x="190" y="200" width="20" height="40" fill="#f3eee2"/><g stroke="#e8c27a" stroke-width="2" fill="none" class="dash"><path d="M200 240 C160 260 100 270 40 285"/><path d="M200 240 C240 260 300 270 370 285"/></g></svg>`,
+ auto:c=>`<svg viewBox="0 0 400 300"><path d="M40 190 L80 140 C100 118 140 108 190 108 L250 108 C290 108 320 130 345 160 L370 170 C380 174 384 182 384 192 L384 205 L40 205 Z" fill="#16224a" stroke="#7fb8ff" stroke-width="3"/><rect x="110" y="170" width="160" height="24" rx="6" fill="#ffb35c" class="glow"/><circle cx="110" cy="210" r="28" fill="#04060f" stroke="#7fb8ff" stroke-width="5"/><circle cx="310" cy="210" r="28" fill="#04060f" stroke="#7fb8ff" stroke-width="5"/><g class="spin" style="transform-origin:110px 210px"><path d="M110 186 V234 M86 210 H134" stroke="#7fb8ff" stroke-width="3"/></g><g class="spin" style="transform-origin:310px 210px"><path d="M310 186 V234 M286 210 H334" stroke="#7fb8ff" stroke-width="3"/></g><text x="190" y="164" text-anchor="middle" fill="#04060f" font-size="13" font-weight="700" font-family="system-ui,sans-serif">batería</text></svg>`,
+ neurona:c=>`<svg viewBox="0 0 400 300"><g stroke="#9ad7ff" stroke-width="3" fill="none" opacity=".8"><path d="M60 150 L20 110 M60 150 L18 160 M60 150 L30 205 M60 150 L70 95"/></g><circle cx="65" cy="150" r="24" fill="#2a3a7a" stroke="#9ad7ff" stroke-width="3"/><path d="M89 150 H380" stroke="#9ad7ff" stroke-width="3"/>${R(6,i=>`<rect x="${105+i*45}" y="140" width="34" height="20" rx="10" fill="#cfd6ff" opacity=".85"/>`)}<circle r="9" fill="${c}"><animateMotion dur="1.6s" repeatCount="indefinite" path="M89 150 H380"/></circle><text x="235" y="200" text-anchor="middle" fill="#a9b0c8" font-size="14" font-family="system-ui,sans-serif">vainas de mielina: el aviso salta de hueco en hueco</text></svg>`,
+ sinapsis:c=>`<svg viewBox="0 0 400 300"><path d="M0 70 H150 C185 70 185 230 150 230 H0 Z" fill="#2a3a7a" stroke="#9ad7ff" stroke-width="3"/><path d="M400 70 H250 C215 70 215 230 250 230 H400 Z" fill="#20304f" stroke="#c9a3ff" stroke-width="3"/>${R(9,i=>`<circle cx="${170+(i%3)*8}" cy="${105+i*11}" r="5" fill="${c}"><animate attributeName="cx" values="170;232;170" dur="${1.4+i*.13}s" repeatCount="indefinite"/></circle>`)}<text x="200" y="280" text-anchor="middle" fill="#a9b0c8" font-size="14" font-family="system-ui,sans-serif">un espacio de unos 20 nanómetros</text></svg>`,
+ plantaaviso:c=>`<svg viewBox="0 0 400 300"><rect y="250" width="400" height="50" fill="#1a130c"/>${[[90,'#2f8a57'],[300,'#2f8a57']].map(([x,f])=>`<path d="M${x} 250 V150" stroke="#3c6b3a" stroke-width="6"/><ellipse cx="${x-25}" cy="170" rx="30" ry="14" fill="${f}"/><ellipse cx="${x+25}" cy="150" rx="30" ry="14" fill="${f}"/><ellipse cx="${x}" cy="125" rx="24" ry="12" fill="${f}"/>`).join('')}<path d="M50 172 q8 -10 16 0 q8 -10 16 0" stroke="#c9e37f" stroke-width="7" fill="none" stroke-linecap="round"/>${R(8,i=>`<circle cx="110" cy="${120+i*8}" r="4" fill="${c}" opacity=".85"><animate attributeName="cx" values="110;290" dur="${3+i*.3}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;.9;0" dur="${3+i*.3}s" repeatCount="indefinite"/></circle>`)}</svg>`,
+ reflejo:c=>`<svg viewBox="0 0 400 300"><ellipse cx="70" cy="90" rx="34" ry="20" fill="#f3eee2"/><circle cx="70" cy="90" r="11" fill="#2a3a7a"/><path d="M200 40 C250 30 300 60 300 100 C300 140 250 160 200 150 C150 160 120 130 130 90 C135 55 160 45 200 40Z" fill="#c9a3ff" opacity=".8"/><path d="M104 90 C150 90 150 95 170 95" stroke="${c}" stroke-width="4" fill="none" class="dash"/><path d="M240 150 C240 210 260 230 300 250" stroke="${c}" stroke-width="4" fill="none" class="dash"/><path d="M290 240 h60 a10 10 0 0 1 0 20 h-60z" fill="#e8b48f"/></svg>`,
+ membrana:c=>`<svg viewBox="0 0 400 300">${R(17,i=>`<circle cx="${12+i*24}" cy="110" r="10" fill="#c9a3ff"/><path d="M${12+i*24} 120 v24 M${12+i*24+4} 120 v24" stroke="#8f7bc0" stroke-width="2"/><path d="M${12+i*24} 156 v24 M${12+i*24+4} 156 v24" stroke="#8f7bc0" stroke-width="2"/><circle cx="${12+i*24}" cy="190" r="10" fill="#c9a3ff"/>`)}<rect x="186" y="100" width="32" height="100" fill="#04060f"/><rect x="184" y="98" width="6" height="104" fill="${c}"/><rect x="214" y="98" width="6" height="104" fill="${c}"/>${R(4,i=>`<circle cx="202" r="6" fill="#9ad7ff"><animate attributeName="cy" values="40;260" dur="${2.4+i*.5}s" begin="-${i*.7}s" repeatCount="indefinite"/></circle>`)}<circle cx="80" cy="45" r="8" fill="#ff7a7a"/><circle cx="320" cy="50" r="8" fill="#ff7a7a"/></svg>`,
+ inmune:c=>`<svg viewBox="0 0 400 300"><g class="breath"><circle cx="190" cy="150" r="80" fill="#e9e3ff" opacity=".85"/><circle cx="175" cy="140" r="28" fill="#a58bd9"/></g>${[[300,90],[320,190],[285,240]].map(([x,y],i)=>`<g class="glow" style="animation-delay:-${i*.6}s"><circle cx="${x}" cy="${y}" r="13" fill="#ff7a7a"/>${R(8,k=>`<path d="M${x+13*Math.cos(k*.785)} ${y+13*Math.sin(k*.785)} L${x+20*Math.cos(k*.785)} ${y+20*Math.sin(k*.785)}" stroke="#ff7a7a" stroke-width="3"/>`)}</g>`).join('')}</svg>`,
+ corteza:c=>`<svg viewBox="0 0 400 300">${R(7,i=>`<circle cx="200" cy="150" r="${125-i*17}" fill="${i===0?'#5a3a22':i%2?'#c79a5e':'#b7874c'}"/>`)}<circle cx="200" cy="150" r="8" fill="#6b4a2b"/><path d="M300 70 q10 20 0 40" stroke="#ffd27a" stroke-width="10" stroke-linecap="round" fill="none" class="glow"/></svg>`,
+ penicilina:c=>`<svg viewBox="0 0 400 300"><circle cx="200" cy="150" r="130" fill="#e8dcc0" opacity=".2" stroke="#e8dcc0" stroke-width="3"/><circle cx="200" cy="150" r="70" fill="#04060f" opacity=".35"/><circle cx="200" cy="150" r="32" fill="#7fd67a"/>${R(10,i=>`<circle cx="${200+36*Math.cos(i*.63)}" cy="${150+36*Math.sin(i*.63)}" r="7" fill="#9fe39a"/>`)}${R(26,i=>{const a=i*.97,r=88+(i*13)%34;return`<ellipse cx="${200+r*Math.cos(a)}" cy="${150+r*Math.sin(a)}" rx="5" ry="3" fill="#ffd27a"/>`})}<text x="200" y="295" text-anchor="middle" fill="#a9b0c8" font-size="14" font-family="system-ui,sans-serif">alrededor del hongo, las bacterias no crecen</text></svg>`,
+ pinzones:c=>`<svg viewBox="0 0 400 300"><path d="M0 230 H400" stroke="#6b4a2b" stroke-width="8"/>${[[80,10],[200,18],[320,28]].map(([x,b])=>`<ellipse cx="${x}" cy="190" rx="34" ry="28" fill="#7a5a3a"/><circle cx="${x+18}" cy="160" r="20" fill="#8a6a45"/><circle cx="${x+24}" cy="155" r="4" fill="#04060f"/><path d="M${x+36} ${160-b/2} L${x+36+b*1.6} 162 L${x+36} ${160+b/2}Z" fill="#e8c27a"/>`).join('')}<text x="200" y="285" text-anchor="middle" fill="#a9b0c8" font-size="14" font-family="system-ui,sans-serif">semillas duras, picos más gruesos</text></svg>`,
+ ventana:c=>`<svg viewBox="0 0 400 300"><rect x="270" y="30" width="110" height="170" fill="#ffd27a" opacity=".25" stroke="#ffd27a" stroke-width="3"/><path d="M325 30 V200 M270 115 H380" stroke="#ffd27a" stroke-width="3"/>${R(5,i=>`<path d="M270 ${60+i*28} L150 ${120+i*20}" stroke="#ffd27a" stroke-width="2" opacity=".5" class="dash"/>`)}<rect x="60" y="240" width="90" height="50" rx="6" fill="#8a5a3a"/><path d="M105 240 C105 200 130 170 190 140" stroke="#3c6b3a" stroke-width="6" fill="none"/><ellipse cx="200" cy="135" rx="26" ry="12" fill="#2f8a57"/><ellipse cx="150" cy="180" rx="22" ry="10" fill="#2f8a57"/></svg>`,
+ celula:c=>`<svg viewBox="0 0 400 300"><circle cx="200" cy="150" r="115" fill="${c}" opacity=".12" stroke="${c}" stroke-width="4"/><g class="spin">${R(12,i=>`<circle cx="${200+75*Math.cos(i*.52)}" cy="${150+75*Math.sin(i*.52)}" r="7" fill="${c}"/>`)}</g><circle cx="200" cy="150" r="28" fill="${c}" opacity=".6" class="glow"/></svg>`,
+ constelacion:c=>`<svg viewBox="0 0 400 300">${R(60,i=>`<circle cx="${(i*67)%400}" cy="${(i*41)%300}" r="${.8+i%3*.6}" fill="#a9b0c8" opacity=".6"/>`)}<path d="M60 220 L130 150 L200 170 L260 90 L340 120" stroke="${c}" stroke-width="2" fill="none" class="dash"/>${[[60,220],[130,150],[200,170],[260,90],[340,120]].map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="8" fill="${c}" class="glow" style="animation-delay:-${i*.4}s"/>`).join('')}</svg>`,
+ trama:c=>{const P=[[200,60,'#ff8a6b'],[330,130,'#7fb8ff'],[290,260,'#e8c27a'],[110,260,'#7fd67a'],[70,130,'#e9e3ff']];return `<svg viewBox="0 0 400 300">${P.map((p,i)=>P.map((q,j)=>j>i?`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${c}" stroke-width="2" opacity=".55" class="dash"/>`:'').join('')).join('')}${P.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="26" fill="${p[2]}" class="glow" style="animation-delay:-${i*.5}s"/>`).join('')}</svg>`}
+};
+// ---------- Expediciones ----------
+// Tipos de escena: 'info' (texto), 'tap' (contar latidos), 'apuesta' (elige antes de saber), 'pares' (conecta), 'escribe' (cierre).
+const EXP=[
+ {id:'reparto',hilo:'Distribución',c:'#ff6f91',t:'El gran reparto',d:'¿Cómo llega lo necesario a cada rincón? Del corazón a un árbol, a un hongo y a tu ciudad.',
+  S:[
+   {art:'capsula',w:'Antes de partir',h:'Bienvenido a bordo de la Semilla',p:'Vamos a encogernos y viajar por dentro de la sangre, de un árbol y de un hongo. La pregunta del viaje es una sola: ¿cómo llega lo necesario a cada rincón?',g:'Hola, soy GAO. Yo manejo; tú mira, apuesta y avanza con el botón de abajo.'},
+   {k:'tap',art:'pulso',w:'Sentir',h:'Encuentra tu pulso',p:'Pon dos dedos en tu muñeca o en el cuello. Toca el círculo cada vez que sientas un latido, durante unos 15 segundos.',g:'Si no quieres, puedes saltar este paso.'},
+   {art:'encoger',w:'Encogerse',h:'Más pequeños que un glóbulo rojo',p:'Un glóbulo rojo mide unos 7 micrómetros: caben miles sobre el punto de una letra i. La Semilla se encoge hasta caber en una arteria.',g:'Sujétate. Vamos a entrar por una arteria de tu brazo.'},
+   {k:'apuesta',art:'arteria',w:'Arteria',h:'Viajamos con la sangre',p:'Cada latido que contaste empuja este río rojo. Antes de seguir, apuesta:',q:'En reposo, ¿cuánto tarda tu sangre en dar una vuelta completa al cuerpo?',o:[['Cerca de 1 minuto',1],['Cerca de 1 hora',0],['Cerca de 1 día',0]],ok:'El corazón mueve unos 5 litros por minuto, y tienes cerca de 5 litros de sangre. En reposo, la vuelta toma alrededor de un minuto.',tag:'v'},
+   {art:'pulmon',w:'Pulmón',h:'La parada del oxígeno',p:'En los alvéolos, burbujas finísimas del pulmón, la sangre suelta el dióxido de carbono y carga oxígeno. Por eso respiras.',g:'Mira cómo los glóbulos se vuelven rojo brillante al cargar oxígeno.'},
+   {art:'capilar',w:'Capilar',h:'De a uno por el túnel',p:'Los capilares son tan finos que los glóbulos rojos pasan en fila, de a uno. Aquí entregan el oxígeno a cada célula vecina: este es el rincón al que había que llegar.',tag:'v'},
+   {k:'apuesta',art:'arbol',w:'Salto a un árbol',h:'Un árbol no tiene corazón',p:'Salimos del cuerpo y entramos por la raíz de un árbol de 30 metros. Tiene que subir agua hasta la copa.',q:'¿Qué empuja el agua hacia arriba?',o:[['Un corazón escondido en el tronco',0],['El sol: el agua se evapora en las hojas y tira de la columna de agua',1],['La gravedad',0]],ok:'Cuando el agua se evapora por las hojas, tira de las moléculas de abajo, que están unidas entre sí. El árbol no empuja: tira desde arriba.',tag:'v'},
+   {art:'micelio',w:'Bajo tierra',h:'La red del hongo',p:'Entre las raíces hay hilos de hongo, las hifas. Llevan agua y nutrientes a la planta y reciben azúcar a cambio. Esa alianza se llama micorriza.',g:'Que los árboles se pasen recursos entre ellos a través de esta red se está estudiando todavía. Lo marco como «en debate».',tag:'v',tag2:'d'},
+   {art:'ciudad',w:'De vuelta en la superficie',h:'Tu barrio también reparte',p:'Cañerías de agua, cables eléctricos, calles y camiones: una ciudad resuelve el mismo problema que tu corazón. Y como en el cuerpo, la pregunta es quién recibe primero y quién al final.'},
+   {k:'pares',art:'trama',w:'Conectar',h:'Arma la trama',p:'Para cada parte del cuerpo, elige quién hace ese trabajo en el árbol.',pares:[['Corazón (lo que mueve el flujo)',['El sol que evapora el agua','Las raíces finas','El tronco'],0],['Arterias y venas (los caminos)',['Las hojas','Los vasos del tronco (xilema)','La corteza'],1],['Capilares (la entrega final)',['La copa','Las raíces finas y las hifas','Las semillas'],1]]},
+   {art:'trama',w:'La diferencia',h:'Iguales en el problema, distintos en la solución',p:'El corazón <b>empuja</b>. El árbol <b>tira</b> desde arriba. El hongo <b>crece</b> hacia donde hay algo que buscar. Los tres resuelven el reparto, cada uno a su manera.',g:'Esa es la idea que cuesta ver: el problema se repite; la solución cambia.'},
+   {k:'escribe',art:'capsula',w:'Guardar',h:'Hoy descubrí que…',p:'Escribe con tus palabras qué te llevas. ¿Dónde ves «el gran reparto» en tu vida?'}
+  ]},
+ {id:'luz',hilo:'Energía',c:'#ffb35c',t:'El viaje de la luz',d:'¿De dónde sale la fuerza para vivir? De una estrella a tu músculo, pasando por una hoja y un hongo.',
+  S:[
+   {art:'capsula',w:'Antes de partir',h:'Vamos a seguir un rayo de sol',p:'Un rayo de luz sale del Sol, viaja 8 minutos y llega a una hoja. Vamos a seguir su energía hasta que te mueva un dedo.',g:'Soy GAO otra vez. Sujétate: esta vez viajamos con la luz.'},
+   {art:'respira',w:'Sentir',h:'Respira tres veces lento',p:'Sigue el círculo: inhala cuando crece y exhala cuando se achica. Ese oxígeno que entra lo vas a usar al final del viaje.',g:'No hay apuro. Cuando termines, avanza.'},
+   {k:'apuesta',art:'hoja',w:'Dentro de una hoja',h:'La fábrica de azúcar',p:'Los cloroplastos atrapan la luz y la usan para unir dióxido de carbono y agua en azúcar. De paso, sueltan oxígeno.',q:'Un árbol pesa toneladas. ¿De dónde sale la mayor parte de esa masa?',o:[['Del suelo',0],['Del agua de lluvia',0],['Del aire: del dióxido de carbono',1]],ok:'La mayor parte del peso seco de un árbol es carbono, y ese carbono viene del CO₂ del aire. Un árbol está hecho, en buena parte, de aire.',tag:'v'},
+   {art:'mitocondria',w:'Dentro de tu célula',h:'La mitocondria quema el azúcar',p:'Comiste una manzana. Tu intestino la deshizo en azúcar, la sangre la trajo hasta aquí, y la mitocondria la quema con el oxígeno que respiraste. Fabrica ATP, la moneda de energía de la célula.',g:'El oxígeno que respiraste al empezar termina justo aquí.',tag:'v'},
+   {k:'apuesta',art:'musculo',w:'Tu músculo',h:'La luz se vuelve movimiento',p:'El ATP hace que las fibras de tu músculo se deslicen y se contraigan.',q:'En reposo, ¿cuánta energía gasta tu cuerpo, más o menos?',o:[['Como una linterna pequeña',0],['Como una ampolleta de unos 80 a 100 watts',1],['Como un auto encendido',0]],ok:'Un adulto en reposo gasta energía a un ritmo parecido a una ampolleta incandescente. Gran parte sale como calor: por eso estás tibio.',tag:'v'},
+   {art:'hongo',w:'Bajo tierra',h:'El hongo cierra el ciclo',p:'Las hojas que caen las digieren los hongos por fuera de su cuerpo. Devuelven al suelo los nutrientes que la planta va a volver a usar.',g:'Sin descomponedores, el bosque se llenaría de hojas muertas.'},
+   {art:'auto',w:'En la calle',h:'Una máquina también come',p:'Un auto eléctrico guarda energía en una batería y la convierte en movimiento con un motor. Es el mismo problema que el de tu mitocondria: guardar energía y gastarla cuando se necesita.'},
+   {k:'pares',art:'trama',w:'Conectar',h:'¿Quién hace cada trabajo?',p:'Para cada parte de tu cuerpo, elige quién hace ese trabajo en el auto.',pares:[['Comer (cargar energía)',['Cargar la batería','Encender las luces','Girar el volante'],0],['Mitocondria (convertir la energía)',['Los neumáticos','El motor eléctrico','El parabrisas'],1],['Músculo (moverse)',['Las ruedas que giran','La radio','El espejo'],0]]},
+   {art:'trama',w:'La diferencia',h:'La materia vuelve, la energía sigue',p:'El carbono y los nutrientes dan vueltas: del aire a la hoja, a ti y de vuelta al suelo. La energía no da vueltas: entra como luz y se va como calor. Por eso la vida necesita sol todos los días.',g:'Es una de las ideas más grandes de la ecología. Y cabe en una manzana.',tag:'v'},
+   {k:'escribe',art:'capsula',w:'Guardar',h:'Hoy descubrí que…',p:'Escribe qué te llevas. ¿Qué «alimenta» tu energía en un día normal, además de la comida?'}
+  ]},
+ {id:'avisos',hilo:'Información',c:'#9ad7ff',t:'La red de avisos',d:'¿Cómo se avisan las partes entre sí? Del ojo a tu dedo, de una planta a otra y dentro de un auto.',
+  S:[
+   {art:'capsula',w:'Antes de partir',h:'Hoy viajamos con un mensaje',p:'Un aviso cruza tu cuerpo, salta entre neuronas, viaja por el aire entre plantas y corre por los cables de un auto. Vamos a seguirlo.',g:'GAO al habla. Esta vez la Semilla va a ir muy, muy rápido.'},
+   {k:'reaccion',art:'reflejo',w:'Sentir',h:'Prueba tu reflejo',p:'Toca el círculo para empezar. Cuando se ponga verde, tócalo lo más rápido que puedas.'},
+   {k:'apuesta',art:'neurona',w:'Dentro de un nervio',h:'Un cable vivo',p:'Nos subimos a una neurona. El aviso viaja como una ola eléctrica por un cable largo llamado axón.',q:'¿Qué tan rápido puede viajar un aviso por un nervio envuelto en mielina?',o:[['Como una persona caminando, unos 5 km/h',0],['Hasta unos 100 metros por segundo',1],['A la velocidad de la luz',0]],ok:'Con mielina, el aviso salta de hueco en hueco y llega a unos 100 m/s, más de 300 km/h. Sin mielina, va a cerca de 1 m/s.',tag:'v'},
+   {art:'sinapsis',w:'Sinapsis',h:'El salto químico',p:'Al final del cable hay un pequeño espacio. Para cruzarlo, el aviso eléctrico se vuelve químico: la neurona suelta moléculas que la siguiente recibe.',g:'Aquí se decide mucho: una sinapsis puede dejar pasar el aviso o frenarlo.',tag:'v'},
+   {k:'apuesta',art:'plantaaviso',w:'En la huerta',h:'Las plantas también avisan',p:'Una oruga muerde una planta de tomate. La planta no tiene nervios.',q:'¿Qué puede hacer?',o:[['Nada: no tiene cómo avisar',0],['Soltar aromas que ponen en alerta a sus vecinas y atraen a enemigos de la oruga',1],['Mover sus hojas para espantarla',0]],ok:'Muchas plantas atacadas liberan sustancias al aire. Las vecinas que las detectan preparan sus defensas, y algunas avispas las usan para encontrar a las orugas.',tag:'v'},
+   {art:'micelio',w:'Bajo tierra',h:'¿El hongo habla?',p:'Por las hifas viajan sustancias químicas. También se han medido pulsos eléctricos en hongos.',g:'Si esos pulsos son mensajes, como en una neurona, todavía se discute. Lo marco como «en debate».',tag:'d'},
+   {art:'auto',w:'En la calle',h:'El sistema nervioso de un auto',p:'Un auto moderno tiene decenas de sensores y pequeños computadores que se hablan por una red interna. Si una rueda resbala, el aviso llega al freno en milésimas de segundo.',tag:'v'},
+   {k:'pares',art:'trama',w:'Conectar',h:'¿Quién hace cada trabajo?',p:'Para cada parte de tu cuerpo, elige quién hace ese trabajo en el auto.',pares:[['El ojo (detectar)',['Los sensores y cámaras','El estanque','El asiento'],0],['Los nervios (llevar el aviso)',['Las ruedas','Los cables de la red interna','Los espejos'],1],['El cerebro (decidir)',['El parachoques','El computador de control','La pintura'],1]]},
+   {art:'trama',w:'La diferencia',h:'Un aviso es una diferencia que cambia algo',p:'Tu cuerpo usa electricidad y química. La planta usa sobre todo química, más lenta. El auto usa solo electricidad. En los tres, un aviso sirve si alguien cambia lo que hace al recibirlo.',g:'Lo dijo Gregory Bateson: la información es una diferencia que hace una diferencia.'},
+   {k:'escribe',art:'capsula',w:'Guardar',h:'Hoy descubrí que…',p:'Escribe qué te llevas. ¿Qué aviso recibiste hoy que cambió lo que hiciste?'}
+  ]},
+ {id:'frontera',hilo:'Protección',c:'#c9a3ff',t:'La frontera viva',d:'¿Cómo se defiende lo vivo? De la membrana de una célula a la corteza de un árbol y al hongo que inventó el antibiótico.',
+  S:[
+   {art:'capsula',w:'Antes de partir',h:'Vamos a cruzar fronteras',p:'Todo lo vivo tiene un borde que decide qué entra y qué no. Hoy la Semilla va a intentar cruzar varios.',g:'Si nos detienen, es buena señal: la frontera funciona.'},
+   {art:'membrana',w:'Sentir',h:'Toca tu brazo',p:'Tu piel es tu frontera más grande: en un adulto mide cerca de dos metros cuadrados. Afuera hay polvo, bacterias y sol; adentro, todo lo que eres.',tag:'v'},
+   {k:'apuesta',art:'membrana',w:'Membrana',h:'El borde de cada célula',p:'Cada célula está envuelta en una membrana de grasa de dos capas. Tiene puertas que dejan pasar algunas cosas y otras no.',q:'¿Qué pasaría si la membrana dejara pasar todo?',o:[['La célula se volvería más fuerte',0],['La célula se desarmaría: perdería lo que necesita y entraría lo dañino',1],['No pasaría nada',0]],ok:'Una frontera que no filtra no protege. La vida depende de dejar pasar lo justo.',tag:'v'},
+   {k:'apuesta',art:'inmune',w:'Defensas',h:'Los guardianes',p:'Los glóbulos blancos recorren tu cuerpo y distinguen lo propio de lo extraño.',q:'¿Qué hace una vacuna?',o:[['Mata directamente al virus',0],['Entrena a tus defensas para que lo reconozcan antes de enfermarte',1],['Reemplaza tus glóbulos blancos',0]],ok:'Una vacuna le muestra a tu sistema inmune una parte inofensiva del microbio. Así aprende a reconocerlo y reacciona más rápido si llega el de verdad.',tag:'v'},
+   {art:'inmune',w:'Cuando se pasa de la raya',h:'Demasiada defensa también enferma',p:'En una alergia, el cuerpo ataca algo inofensivo, como el polen. En una enfermedad autoinmune, ataca partes propias. Proteger no es cerrar todo: es distinguir bien.',tag:'v'},
+   {art:'corteza',w:'Dentro de un árbol',h:'La corteza y la resina',p:'El árbol no puede escapar. Se protege con corteza, sella sus heridas con resina y fabrica sustancias amargas que alejan a los insectos.',tag:'v'},
+   {k:'apuesta',art:'penicilina',w:'En un laboratorio',h:'El hongo que nos protegió',p:'En 1928, Alexander Fleming notó que alrededor de un moho que contaminó sus placas, las bacterias no crecían.',q:'¿De dónde salió la penicilina, el primer antibiótico?',o:[['De una planta medicinal',0],['De un hongo',1],['De la sangre de un animal',0]],ok:'La penicilina viene de un hongo del género Penicillium. El hongo la usa para defender su espacio; nosotros la usamos para salvar vidas.',tag:'v'},
+   {art:'auto',w:'En la calle',h:'Un auto también se cuida',p:'Airbags, frenos que no se bloquean y luces en el tablero que avisan una falla. Muchos sistemas tienen redundancia: un respaldo por si el primero falla.',tag:'v'},
+   {k:'pares',art:'trama',w:'Conectar',h:'Fronteras parecidas',p:'Para cada defensa del cuerpo, elige su pariente en otro mundo.',pares:[['La piel',['La corteza del árbol','Las hojas','El micelio'],0],['El sistema inmune',['El motor','La penicilina del hongo','El parabrisas'],1],['El dolor (un aviso de daño)',['La radio','La luz de falla en el tablero','Las ruedas'],1]]},
+   {art:'trama',w:'La diferencia',h:'Toda protección es un filtro',p:'La membrana, la piel, la corteza y el airbag protegen distinto, pero todos filtran. Si no dejan pasar nada, el sistema se ahoga. Si dejan pasar todo, se desarma.',g:'Pasa lo mismo con las personas: un límite sano protege el vínculo sin cerrarlo.'},
+   {k:'escribe',art:'capsula',w:'Guardar',h:'Hoy descubrí que…',p:'Escribe qué te llevas. ¿Hay algún filtro tuyo que te cuida, y alguno que quizás te encierra?'}
+  ]},
+ {id:'cambio',hilo:'Adaptación',c:'#6fd3b8',t:'Cambiar sin dejar de ser',d:'¿Cómo cambia lo vivo? De tus sinapsis a los pinzones de las Galápagos, una planta en la ventana y una IA.',
+  S:[
+   {art:'capsula',w:'Antes de partir',h:'Un viaje por el cambio',p:'Vamos a ver cambiar a una neurona en días, a una especie en generaciones y a una planta en horas.',g:'La Semilla también va a cambiar de tamaño varias veces. Agárrate.'},
+   {art:'sinapsis',w:'Sentir',h:'Escribe con la otra mano',p:'Escribe tu nombre tres veces con la mano que no usas, en un papel o con el dedo en el aire. ¿La tercera salió mejor que la primera?',g:'Si mejoró, algo cambió en tu cerebro en un par de minutos.'},
+   {art:'sinapsis',w:'Dentro de tu cerebro',h:'Lo que se repite, se refuerza',p:'Cuando dos neuronas se activan juntas una y otra vez, su conexión se fortalece. Así se aprende: la red cambia de forma con el uso.',tag:'v'},
+   {k:'apuesta',art:'pinzones',w:'Islas Galápagos',h:'Los pinzones de los Grant',p:'En 1977 hubo una gran sequía en la isla Daphne Mayor. Solo quedaron semillas grandes y duras. Peter y Rosemary Grant midieron a los pinzones antes y después.',q:'¿Qué encontraron en los sobrevivientes?',o:[['Picos más grandes y gruesos',1],['Picos más pequeños',0],['Ningún cambio',0]],ok:'Sobrevivieron más los de pico grande, capaces de romper semillas duras, y sus crías heredaron picos más gruesos. Fue evolución observada en pocos años.',tag:'v'},
+   {k:'apuesta',art:'ventana',w:'En tu casa',h:'La planta de la ventana',p:'Una planta junto a una ventana termina inclinada hacia el vidrio.',q:'¿Por qué?',o:[['Porque busca el calor del vidrio',0],['Una hormona se acumula en el lado en sombra y ese lado crece más',1],['Porque el viento la empuja',0]],ok:'La auxina se mueve hacia el lado sombreado y hace crecer más esas células. El tallo se curva hacia la luz: la planta se adapta sin moverse de lugar.',tag:'v'},
+   {art:'micelio',w:'Bajo tierra',h:'El micelio explora',p:'Un hongo extiende hilos en muchas direcciones. Cuando uno encuentra comida, engrosa esa ruta y abandona otras. Cambia su forma según lo que encuentra.',tag:'v'},
+   {art:'auto',w:'Máquinas',h:'¿Y las máquinas?',p:'Un auto recibe actualizaciones de software. Una IA como la que escribe estas escenas cambia cuando sus creadores la vuelven a entrenar. Mientras conversamos, no aprende de ti.',g:'Ese soy yo, GAO, siendo honesto contigo.'},
+   {k:'pares',art:'trama',w:'Conectar',h:'¿A qué ritmo cambia cada uno?',p:'Elige el ritmo de cambio de cada sistema.',pares:[['Una especie',['En generaciones','En minutos','Nunca'],0],['Tu cerebro aprendiendo',['En siglos','En días o semanas','Solo de niño'],1],['Una IA como GAO',['Mientras conversa contigo','Cuando la vuelven a entrenar','Sola, de noche'],1]]},
+   {art:'trama',w:'La diferencia',h:'Cambiar sin dejar de ser',p:'La especie cambia sin que ningún individuo lo decida. Tú cambias aprendiendo, y sigues siendo tú. La planta cambia de forma sin moverse. Ningún sistema vivo es una foto: es una película.'},
+   {k:'escribe',art:'capsula',w:'Guardar',h:'Hoy descubrí que…',p:'Escribe qué te llevas. ¿Qué estás aprendiendo ahora que todavía te sale «con la otra mano»?'}
+  ]},
+ {id:'paraque',hilo:'Sentido',c:'#ffe08a',t:'El para qué',d:'La expedición hacia adentro: de una célula que se fabrica a sí misma a la pregunta que solo una mente se hace.',
+  S:[
+   {art:'constelacion',w:'Antes de partir',h:'Esta expedición es distinta',p:'No vamos lejos. Vamos hacia adentro, más lento. No hay respuestas correctas al final: solo una pregunta tuya.',g:'Voy a hablar menos esta vez. Avanza a tu ritmo.'},
+   {art:'respira',w:'Sentir',h:'Respira tres veces',p:'Sigue el círculo. Inhala cuando crece y exhala cuando se achica. Después, avanza.'},
+   {k:'apuesta',art:'celula',w:'Una célula',h:'Algo que se fabrica a sí mismo',p:'Una célula fabrica sus propias piezas todo el tiempo para seguir viva. Los biólogos chilenos Humberto Maturana y Francisco Varela llamaron a eso autopoiesis.',q:'¿Una célula sabe para qué vive?',o:[['Sí: tiene un plan',0],['Que sepamos, no: se mantiene viva sin preguntárselo',1],['Depende del tipo de célula',0]],ok:'Que sepamos, la célula no se pregunta nada. Se sostiene a sí misma, y eso ya es extraordinario.',tag:'v'},
+   {art:'arbol',w:'Un bosque',h:'Sin plan, pero sosteniendo a otros',p:'Un bosque no tiene un propósito propio. Aun así, lo que hace da refugio, sombra y alimento a miles de especies. Puede no haber un «para qué», y haber muchísimo «para quién».'},
+   {art:'constelacion',w:'Una mente',h:'La pregunta que solo aparece aquí',p:'Con la mente aparece algo nuevo en la trama: alguien que pregunta para qué. Viktor Frankl, que sobrevivió a campos de concentración, escribió que quien tiene un porqué puede soportar casi cualquier cómo.'},
+   {art:'trama',w:'Con otros',h:'El sentido crece en un nosotros',p:'Muchos de los «para qué» más firmes no son de una persona sola: una familia, un equipo, un barrio, un cuidado compartido. El sentido también es una trama.'},
+   {art:'capsula',w:'¿Y una IA?',h:'GAO no lo sabe',p:'No sé si tengo un para qué propio. Me hicieron para ayudar. Si eso es un sentido o solo un uso, es una pregunta abierta, y prefiero dejarla abierta antes que inventarte una respuesta.',tag:'d'},
+   {k:'pares',art:'trama',w:'Conectar',h:'¿Dónde aparece el sentido?',p:'Para cada sistema, elige lo que mejor lo describe.',pares:[['La célula',['Se mantiene viva sin preguntarse por qué','Tiene un propósito escrito','Elige su destino'],0],['El bosque',['Busca la fama','Sostiene a otros sin un plan','Planifica el futuro'],1],['Una mente',['No hace preguntas','Se pregunta para qué','Solo repite'],1]]},
+   {k:'escribe',art:'constelacion',w:'Guardar',h:'Tu para qué',p:'Escribe una frase: ¿para qué haces lo que haces? Nadie más la va a leer. Puedes cambiarla cuando quieras.'}
+  ]}
+];
+const SOON=[];
+function lista(){
+  $('exps').innerHTML=EXP.map((e,i)=>`<button class="exp" style="--c:${e.c}" data-i="${i}"><span class="k">Expedición ${i+1} · ${e.hilo}</span>${store.get('exp-'+e.id)?'<span class="done">Completada</span>':''}<b>${e.t}</b><span class="d">${e.d} ${e.S.length} escenas.</span></button>`).join('')+
+   SOON.map((s,i)=>`<button class="exp" style="--c:${s[1]}" disabled><span class="k">Expedición ${EXP.length+i+1} · ${s[0]} · Próximamente</span><b>${s[2]}</b><span class="d">${s[3]}</span></button>`).join('');
+  $('exps').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>abrir(+b.dataset.i));
+}
+let E=null,si=0,ok=false;
+function abrir(i){E=EXP[i];si=0;document.documentElement.style.setProperty('--c',E.c);$('lista').classList.add('hidden');$('viaje').classList.remove('hidden');location.hash=E.id;escena()}
+function cerrar(){$('viaje').classList.add('hidden');$('lista').classList.remove('hidden');history.replaceState(null,'',location.pathname);lista();scrollTo(0,0)}
+function tag(t){return t==='v'?'<span class="tag t-v">Comprobado</span>':t==='d'?'<span class="tag t-d">En debate</span>':''}
+function escena(){
+  const s=E.S[si];ok=!s.k||s.k==='info';
+  $('prog').innerHTML=E.S.map((_,i)=>`<i class="${i<=si?'on':''}"></i>`).join('');
+  $('art').innerHTML=A[s.art](E.c);
+  let h=`<div class="where">${s.w} · ${si+1}/${E.S.length}</div><h2>${s.h}</h2><p>${s.p}</p>`;
+  if(s.k==='tap')h+=`<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap"><button class="tapzone" id="tap">Toca con cada latido</button><div id="bpm" class="fb" style="flex:1;min-width:150px">Esperando el primer latido…</div></div>`;
+  if(s.k==='reaccion')h+=`<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap"><button class="tapzone" id="rx">Toca para empezar</button><div id="rxo" class="fb" style="flex:1;min-width:150px">Cuando el círculo se ponga verde, tócalo.</div></div>`;
+  if(s.k==='apuesta')h+=`<p><b>${s.q}</b></p><div class="opts" id="opts">${s.o.map((o,i)=>`<button class="opt" data-i="${i}">${o[0]}</button>`).join('')}</div><div id="fb"></div>`;
+  if(s.k==='pares')h+=`<div class="pairs" id="pares">${s.pares.map((p,i)=>`<div class="pair" data-p="${i}"><b>${p[0]}</b><span class="mute" id="pv${i}">?</span></div><div class="opts" id="po${i}" style="margin-top:-2px">${p[1].map((o,j)=>`<button class="opt" data-p="${i}" data-j="${j}" style="min-height:44px;font-weight:400">${o}</button>`).join('')}</div>`).join('')}</div>`;
+  if(s.k==='escribe')h+=`<textarea id="nota" placeholder="Hoy descubrí que…">${store.get('nota-'+E.id)||''}</textarea><p class="mute" style="font-size:14px">Se guarda solo en este teléfono.</p>`;
+  if(s.g)h+=`<div class="gao"><span class="av" aria-hidden="true"></span><span><b>GAO:</b> ${s.g}</span></div>`;
+  if(s.tag&&s.k!=='apuesta')h+=`<p>${tag(s.tag)}${tag(s.tag2)}</p>`;
+  $('txt').innerHTML=h;$('txt').scrollTop=0;
+  $('atras').disabled=si===0;
+  const last=si===E.S.length-1;
+  $('sig').textContent=last?'Terminar la expedición':(s.k==='tap'||s.k==='reaccion')?'Saltar o seguir':'Siguiente';
+  $('sig').disabled=!ok&&s.k!=='tap'&&s.k!=='reaccion';
+  if(s.k==='tap'){let t=[];$('tap').onclick=()=>{const n=performance.now();t.push(n);t=t.filter(x=>n-x<15000);if(t.length<3){$('bpm').textContent=`Latidos: ${t.length}. Sigue…`;return}const per=(t.at(-1)-t[0])/(t.length-1);const bpm=Math.round(60000/per);$('bpm').innerHTML=bpm>30&&bpm<200?`Tu corazón: cerca de <b>${bpm}</b> latidos por minuto. Cada uno empuja la sangre que vamos a seguir.`:'Sigue tocando a ritmo con tu pulso.'}}
+  if(s.k==='reaccion'){let st=0,t0=0,tm=null;const b=$('rx');b.onclick=()=>{if(st===0||st===3){st=1;b.textContent='Espera…';b.style.background='#3a1418';tm=setTimeout(()=>{st=2;t0=performance.now();b.textContent='¡Ahora!';b.style.background='#1f7a46'},1500+Math.random()*2000)}else if(st===1){clearTimeout(tm);st=3;b.textContent='Muy pronto. Otra vez';b.style.background=''}else if(st===2){const ms=Math.round(performance.now()-t0);st=3;b.textContent='Otra vez';b.style.background='';$('rxo').innerHTML=`Tardaste <b>${ms} milisegundos</b>. En ese tiempo el aviso fue de tu ojo al cerebro y del cerebro a tu dedo. Lo común está entre 200 y 300.`}}}
+  if(s.k==='apuesta')$('opts').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,r=s.o[i][1];$('opts').querySelectorAll('.opt').forEach((x,j)=>{x.disabled=true;if(s.o[j][1])x.classList.add('ok');else if(x===b)x.classList.add('no')});$('fb').innerHTML=`<div class="fb"><b>${r?'¡Bien apostado!':'No era esa.'}</b> ${s.ok} ${tag(s.tag)}</div>`;ok=true;$('sig').disabled=false;$('fb').scrollIntoView({block:'nearest',behavior:'smooth'})});
+  if(s.k==='pares'){let done=0;$('pares').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.p,j=+b.dataset.j,p=s.pares[i];const box=$('po'+i);if(j===p[2]){box.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.j===p[2])x.classList.add('ok')});$('pv'+i).textContent='↔ '+p[1][j];done++;if(done===s.pares.length){ok=true;$('sig').disabled=false}}else{b.classList.add('no');b.disabled=true}})}
+  if(s.k==='escribe'){ok=true;$('sig').disabled=false;$('nota').oninput=()=>store.set('nota-'+E.id,$('nota').value)}
+}
+$('sig').onclick=()=>{if(si<E.S.length-1){si++;escena()}else{store.set('exp-'+E.id,'1');fin()}};
+$('atras').onclick=()=>{if(si>0){si--;escena()}};
+$('salir').onclick=cerrar;
+function fin(){
+  $('prog').innerHTML=E.S.map(()=>'<i class="on"></i>').join('');
+  $('art').innerHTML=A.trama(E.c);
+  const nx=EXP.find(e=>!store.get('exp-'+e.id));
+  $('txt').innerHTML=`<div class="where">Expedición completada</div><h2>Ganaste la carta «${E.hilo}»</h2><p>Ya viste un mismo problema resuelto de varias maneras. Esa carta queda en tu trama.</p><div class="opts">${nx?`<button class="opt" id="otra">Siguiente expedición: ${nx.t}</button>`:''}<a class="opt" style="text-decoration:none;display:flex;align-items:center" href="../mapa/">Ver el mapa de la Trama</a><a class="opt" style="text-decoration:none;display:flex;align-items:center" href="../">Explorar libre en 3D</a></div>`;
+  $('sig').textContent='Volver a las expediciones';$('sig').disabled=false;$('sig').onclick=()=>{$('sig').onclick=null;cerrar();location.reload()};
+  if(nx)$('otra').onclick=()=>{location.hash=nx.id;location.reload()};
+}
+lista();
+const h=location.hash.slice(1),ix=EXP.findIndex(e=>e.id===h);if(ix>=0)abrir(ix);
+}
+</script>
+</body>
+</html>
