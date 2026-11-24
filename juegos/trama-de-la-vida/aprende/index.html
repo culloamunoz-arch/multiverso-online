@@ -43,7 +43,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-of
 .card.on{border-color:var(--c);box-shadow:0 0 0 2px var(--c) inset}
 .note{font-size:14px;color:var(--mute)}
 .ideas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px;margin-top:18px}
-.ideas .card b{display:block;font-family:Sora;font-size:18px;margin-bottom:4px}
+.ideas .card b{display:block;font-family:Sora,system-ui,sans-serif;font-size:18px;margin-bottom:4px}
 .sim{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:28px;align-items:start}
 label{display:block;font-weight:700;margin:14px 0 4px}
 input[type=range]{width:100%;height:44px;accent-color:var(--acc)}
@@ -51,7 +51,7 @@ input[type=range]{width:100%;height:44px;accent-color:var(--acc)}
 .chart{position:relative;height:320px;background:var(--card);border:1px solid var(--line);border-radius:16px}
 .chart svg{position:absolute;inset:0;width:100%;height:100%}
 .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:15px;margin:10px 0}
-.verdict{font-family:Sora;font-size:20px;margin:12px 0 6px}
+.verdict{font-family:Sora,system-ui,sans-serif;font-size:20px;margin:12px 0 6px}
 .btn{min-height:44px;padding:10px 18px;border-radius:12px;border:0;background:var(--acc);color:#04060f;font-weight:700}
 .ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
 .quiz .opts{display:grid;gap:8px;margin-top:12px}
@@ -135,42 +135,42 @@ footer{color:var(--mute);font-size:14px}
 const U=[
  {k:'h',n:'Humano',c:'#ff8a6b'},{k:'t',n:'Tecnológico e IA',c:'#7fb8ff'},{k:'v',n:'Vegetal',c:'#7fd67a'},{k:'f',n:'Fungi',c:'#e8c27a'},{k:'c',n:'Conciencia',c:'#e9e3ff'}];
 const P=[
- {n:'Energía',c:'#ffb35c',q:'¿De dónde saca fuerza cada sistema?',
+ {n:'Energía',col:'#ffb35c',q:'¿De dónde saca fuerza cada sistema?',
   h:['Comer y respirar','Las mitocondrias queman glucosa con oxígeno y fabrican ATP, la "moneda" de energía de cada célula.','Pulmones, estómago, intestino'],
   t:['Electricidad','El auto guarda energía en la batería y la convierte en movimiento. La IA consume electricidad en chips que hacen billones de cálculos.','Batería, motor, centros de datos'],
   v:['Luz convertida en azúcar','La hoja captura luz y, con agua y CO₂, fabrica azúcar: la fotosíntesis. Es la puerta de entrada de energía a casi toda la vida.','Hojas, raíces'],
   f:['Descomponer y negociar','Los hongos no hacen fotosíntesis: digieren materia muerta por fuera de su cuerpo y reciben azúcar de las plantas a cambio de nutrientes.','Descomposición, micorrizas'],
   c:['Mantener el orden cuesta','Todo lo vivo es un flujo, no una cosa quieta: si deja de recibir energía, se desordena.','¿Qué es la vida?'],
   think:'Si dejas de "alimentar" un sistema —tu cuerpo, un equipo de trabajo, una huerta—, ¿qué se desordena primero?'},
- {n:'Distribución',c:'#ff6f91',q:'¿Cómo llega lo vital a cada parte?',
+ {n:'Distribución',col:'#ff6f91',q:'¿Cómo llega lo vital a cada parte?',
   h:['Corazón y vasos','El corazón empuja la sangre por una red de vasos que, puestos en fila, darían más de dos vueltas a la Tierra.','Corazón, arterias y venas'],
   t:['Cables y fluidos','El cableado lleva corriente y señales; la bomba mueve refrigerante para que nada se recaliente.','Líneas de fluidos, refrigeración'],
   v:['Xilema y floema','El xilema sube agua desde la raíz; el floema reparte el azúcar fabricado en las hojas hacia donde se necesita.','Xilema, floema'],
   f:['Micelio','Las hifas forman una red que transporta agua y nutrientes, y puede mover recursos entre plantas conectadas.','Micelio, hifas'],
   c:['Centro y periferia','Toda red decide quién recibe primero y quién al final. Mirar eso es mirar la equidad del sistema.','¿Qué es la cooperación?'],
   think:'En un territorio, ¿quién está "al final de la red" y recibe los recursos más tarde? ¿Qué conexión nueva lo cambiaría?'},
- {n:'Información',c:'#9ad7ff',q:'¿Quién le avisa a quién?',
+ {n:'Información',col:'#9ad7ff',q:'¿Quién le avisa a quién?',
   h:['Nervios y hormonas','Los nervios avisan rápido con electricidad; las hormonas avisan lento, por la sangre, a todo el cuerpo.','Cerebro, médula, glándulas'],
   t:['Sensores y atención','Sensores → computador (ECU) → acción. En la IA, el mecanismo de atención decide qué palabras influyen en cada respuesta.','Sensores, bus CAN, atención'],
   v:['Señales químicas','Una planta atacada libera compuestos que activan defensas en otras partes de sí misma y, a veces, en plantas vecinas.','Señalización'],
   f:['Mensajes en la red','Por el micelio viajan señales químicas. Cuánto se "comunica" el bosque así todavía se investiga y se discute.','Red simbiótica del bosque'],
   c:['Reconocer patrones','La información es una diferencia que produce una diferencia: un aviso solo sirve si alguien cambia algo al recibirlo.','Reconocer patrones'],
   think:'Piensa en un aviso que llega y no cambia nada. ¿Falló el mensaje, el canal o quien lo recibe?'},
- {n:'Protección',c:'#c9a3ff',q:'¿Cómo se defiende sin destruirse?',
+ {n:'Protección',col:'#c9a3ff',q:'¿Cómo se defiende sin destruirse?',
   h:['Sistema inmune','Piel, timo, médula ósea y bazo reconocen lo extraño. La microbiota ocupa espacio y deja menos lugar a los patógenos.','Timo, bazo, microbiota'],
   t:['Frenos y salvaguardas','ABS, fusibles y diagnóstico protegen la máquina. En la IA: evaluación, salvaguardas y una persona en el bucle.','Frenos, OBD, alineación'],
   v:['Corteza y química','Espinas, corteza y sustancias amargas o tóxicas que disuaden a quien quiera comérsela.','Defensas químicas'],
   f:['Antibióticos naturales','Los hongos compiten fabricando sustancias contra bacterias. La penicilina nació de un hongo.','Defensa ecológica'],
   c:['El costo de defenderse','Toda defensa cuesta energía. Demasiada protección también enferma: alergias, rigidez, desconfianza.','¿Cómo emerge el orden?'],
   think:'¿Dónde una protección exagerada termina dañando lo que quería cuidar?'},
- {n:'Adaptación',c:'#6fd3b8',q:'¿Cómo cambia sin dejar de ser?',
+ {n:'Adaptación',col:'#6fd3b8',q:'¿Cómo cambia sin dejar de ser?',
   h:['Aprender y fortalecerse','El músculo crece con el uso, el cerebro se reorganiza al aprender y la temperatura del cuerpo se mantiene estable aunque afuera cambie.','Músculos, cerebro'],
   t:['Actualizar','El software se actualiza; la IA se entrena y ajusta con nuevos datos, y se evalúa para ver si mejoró.','Actualización, ajuste fino'],
   v:['Crecer hacia la luz','Los tropismos dirigen el crecimiento hacia la luz y el agua. En sequía, algunas plantas sueltan hojas para sobrevivir.','Tropismos'],
   f:['Red plástica','El micelio refuerza los caminos que llevan a comida y abandona los que no sirven: una red que se rediseña sola.','Plasticidad del micelio'],
   c:['Innovar','Aprender es la forma más rápida de adaptarse: cambiar la conducta antes de que el entorno te obligue.','Innovar'],
   think:'¿Qué costumbre tuya era útil antes y hoy ya no lo es? ¿Qué la reemplazaría?'},
- {n:'Sentido',c:'#ffe08a',q:'¿Para qué existe todo esto?',
+ {n:'Sentido',col:'#ffe08a',q:'¿Para qué existe todo esto?',
   h:['Propósito','Las personas buscamos significado. Tener un propósito se asocia a mejor salud y a cuidar mejor de otros.','Corteza prefrontal'],
   t:['Propósito prestado','Una máquina tiene el propósito que le da quien la diseña. La IA no tiene deseos propios: sigue objetivos definidos por personas.','Lo que la IA no es'],
   v:['Continuar','Sin conciencia, la planta "apuesta" por el futuro: flor, fruto y semilla.','Flor, fruto, semilla'],
@@ -182,21 +182,21 @@ const $=id=>document.getElementById(id);
 let cur=0,sel=null;
 const POS=U.map((u,i)=>{const a=-Math.PI/2+i*2*Math.PI/5;return[300+205*Math.cos(a),300+205*Math.sin(a)]});
 function web(){
-  const p=P[cur];let s='<defs><radialGradient id="g"><stop offset="0" stop-color="'+p.c+'" stop-opacity=".35"/><stop offset="1" stop-color="'+p.c+'" stop-opacity="0"/></radialGradient></defs><circle cx="300" cy="300" r="260" fill="url(#g)"/>';
-  P.forEach((q,j)=>{if(j===cur)return;for(let a=0;a<5;a++)for(let b=a+1;b<5;b++){const[x1,y1]=POS[a],[x2,y2]=POS[b];s+=`<path d="M${x1} ${y1}Q${300+(j-2.5)*14} ${300+(j-2.5)*14} ${x2} ${y2}" stroke="${q.c}" stroke-opacity=".08" fill="none"/>`}});
-  for(let a=0;a<5;a++)for(let b=a+1;b<5;b++){const[x1,y1]=POS[a],[x2,y2]=POS[b];s+=`<path class="flow" d="M${x1} ${y1}Q300 300 ${x2} ${y2}" stroke="${p.c}" stroke-width="2.2" stroke-opacity=".75" fill="none"/>`}
-  s+=`<circle cx="300" cy="300" r="56" fill="#04060f" stroke="${p.c}" stroke-width="2"/><text x="300" y="296" text-anchor="middle" fill="${p.c}" font-family="Sora" font-weight="700" font-size="19">${p.n}</text><text x="300" y="320" text-anchor="middle" fill="#a9b0c8" font-size="13">el hilo</text>`;
-  U.forEach((u,i)=>{const[x,y]=POS[i],on=sel===i;s+=`<g class="nd" data-i="${i}" tabindex="0" role="button" aria-label="${u.n}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="${on?50:44}" fill="#0b1024" stroke="${u.c}" stroke-width="${on?4:2}"/><circle cx="${x-12}" cy="${y-14}" r="10" fill="${u.c}" opacity=".25"/><circle cx="${x}" cy="${y}" r="9" fill="${u.c}"/><text x="${x}" y="${y+(y>300?70:-58)}" text-anchor="middle" fill="#f3eee2" font-family="Sora" font-weight="700" font-size="18">${u.n.replace(' e IA','')}</text></g>`});
+  const p=P[cur];let s='<defs><radialGradient id="g"><stop offset="0" stop-color="'+p.col+'" stop-opacity=".35"/><stop offset="1" stop-color="'+p.col+'" stop-opacity="0"/></radialGradient></defs><circle cx="300" cy="300" r="260" fill="url(#g)"/>';
+  P.forEach((q,j)=>{if(j===cur)return;for(let a=0;a<5;a++)for(let b=a+1;b<5;b++){const[x1,y1]=POS[a],[x2,y2]=POS[b];s+=`<path d="M${x1} ${y1}Q${300+(j-2.5)*14} ${300+(j-2.5)*14} ${x2} ${y2}" stroke="${q.col}" stroke-opacity=".08" fill="none"/>`}});
+  for(let a=0;a<5;a++)for(let b=a+1;b<5;b++){const[x1,y1]=POS[a],[x2,y2]=POS[b];s+=`<path class="flow" d="M${x1} ${y1}Q300 300 ${x2} ${y2}" stroke="${p.col}" stroke-width="2.2" stroke-opacity=".75" fill="none"/>`}
+  s+=`<circle cx="300" cy="300" r="56" fill="#04060f" stroke="${p.col}" stroke-width="2"/><text x="300" y="296" text-anchor="middle" fill="${p.col}" font-family="Sora,system-ui,sans-serif" font-weight="700" font-size="19">${p.n}</text><text x="300" y="320" text-anchor="middle" fill="#a9b0c8" font-size="13">el hilo</text>`;
+  U.forEach((u,i)=>{const[x,y]=POS[i],on=sel===i;s+=`<g class="nd" data-i="${i}" tabindex="0" role="button" aria-label="${u.n}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="${on?50:44}" fill="#0b1024" stroke="${u.c}" stroke-width="${on?4:2}"/><circle cx="${x-12}" cy="${y-14}" r="10" fill="${u.c}" opacity=".25"/><circle cx="${x}" cy="${y}" r="9" fill="${u.c}"/><text x="${x}" y="${y+(y>300?70:-58)}" text-anchor="middle" fill="#f3eee2" font-family="Sora,system-ui,sans-serif" font-weight="700" font-size="18">${u.n.replace(' e IA','')}</text></g>`});
   $('web').innerHTML=s;
   $('web').querySelectorAll('.nd').forEach(g=>{const f=()=>{sel=+g.dataset.i;render();document.querySelector('.card.on')?.scrollIntoView({behavior:'smooth',block:'center'})};g.onclick=f;g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f()}}});
 }
 function render(){
   const p=P[cur];
-  $('chips').innerHTML=P.map((q,j)=>`<button class="chip" style="--c:${q.c}" aria-pressed="${j===cur}" data-j="${j}">${q.n}</button>`).join('');
+  $('chips').innerHTML=P.map((q,j)=>`<button class="chip" style="--c:${q.col}" aria-pressed="${j===cur}" data-j="${j}">${q.n}</button>`).join('');
   $('chips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{cur=+b.dataset.j;sel=null;render();try{localStorage.setItem('trama-hilo',cur)}catch(e){}});
   $('pt').textContent=(cur+1)+' de 6 · '+p.n;$('pq').textContent=p.q;
   $('cards').innerHTML=U.map((u,i)=>{const d=p[u.k];return`<div class="card${sel===i?' on':''}" style="--c:${u.c}"><div class="u"><span class="dot" style="background:${u.c}"></span>${u.n}</div><h3>${d[0]}</h3><p style="margin:0">${d[1]}</p><p class="ex">Búscalo en el 3D: ${d[2]}</p></div>`}).join('');
-  $('think').style.setProperty('--c',p.c);$('think').innerHTML='<b>Para pensar:</b> '+p.think;
+  $('think').style.setProperty('--c',p.col);$('think').innerHTML='<b>Para pensar:</b> '+p.think;
   web();
 }
 try{const v=+localStorage.getItem('trama-hilo');if(v>=0&&v<6)cur=v}catch(e){}
