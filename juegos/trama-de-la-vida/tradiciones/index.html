@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#04060f">
+<title>Los mapas simbólicos · La Trama de la Vida</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: un guía respetuoso con las tradiciones y estricto con la historia.
+   IDEA: las escuelas iniciáticas dibujaron mapas simbólicos del ser humano; aquí se leen junto a la Trama,
+   separando siempre historia documentada, leyenda y símbolo. Misma paleta que Aprende y La psique. */
+:root{color-scheme:dark;--bg:#04060f;--bg2:#0b1024;--card:#111833;--line:#25305a;--ink:#f3eee2;--mute:#a9b0c8;--acc:#ffb35c;--gold:#e8c27a}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;line-height:1.1;text-wrap:balance;margin:0 0 .4em}
+h1{font-size:clamp(32px,6vw,50px)}h2{font-size:clamp(25px,4vw,34px)}h3{font-size:19px}
+p{margin:0 0 .8em;max-width:68ch}
+.band{padding:clamp(28px,4vw,60px) max(5vw,16px)}
+.wrap{max-width:1000px;margin:0 auto}
+.alt{background:var(--bg2)}
+.lead{color:var(--mute);font-size:18px}
+.mute{color:var(--mute)}
+a{color:var(--acc)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.chip{min-height:44px;padding:8px 15px;border-radius:99px;border:1.5px solid var(--c,var(--line));background:transparent;font-weight:700}
+.chip[aria-pressed=true]{background:var(--c,var(--ink));color:#04060f}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:14px;margin-top:14px}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:10px 18px;border-radius:12px;border:0;background:var(--acc);color:#04060f;font-weight:700;text-decoration:none}
+.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.opt{display:block;width:100%;text-align:left;min-height:48px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg2);margin-top:8px}
+.opt.ok{border-color:#6fd39a;background:#123222}.opt.no{border-color:#ff7a7a;background:#3a1418}
+.fb{margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--bg2);border-left:4px solid var(--acc)}
+.tag{display:inline-block;font-size:13px;font-weight:700;padding:2px 10px;border-radius:99px;margin-right:6px}
+.t-h{background:#123222;color:#8fe3b0}.t-l{background:#3a1418;color:#ffa3a3}.t-s{background:#241b3d;color:#cdb8ff}.t-d{background:#3a2c10;color:#ffd27a}
+.trama{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:15px}
+.trama b{color:var(--c,var(--acc))}
+.note{border-left:4px solid var(--gold);padding:12px 16px;background:var(--card);border-radius:0 12px 12px 0;font-size:16px}
+.tree{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:760px){.tree{grid-template-columns:minmax(0,1fr)}}
+.tree svg{width:100%;max-width:380px;display:block;margin:0 auto}
+.sf{cursor:pointer}.sf circle{transition:fill .2s}
+.sf:focus{outline:none}.sf:focus circle{stroke:#ffb35c;stroke-width:4}
+.src{font-size:14px;color:var(--mute)}.src li{margin-bottom:6px}
+footer{color:var(--mute);font-size:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<section class="band"><div class="wrap">
+  <p class="mute" style="margin-bottom:6px"><a href="../">← La Trama de la Vida</a></p>
+  <h1>Los mapas simbólicos</h1>
+  <p class="lead">Masones, rosacruces, templarios, cabalistas y alquimistas no tenían microscopios. Dibujaron mapas del ser humano con símbolos: árboles, piedras, rosas, metales. Aquí los leemos junto a la Trama.</p>
+  <div class="note">Tres etiquetas para no perderse. <span class="tag t-h">Historia</span>lo que está documentado. <span class="tag t-l">Leyenda</span>lo que se repite sin pruebas. <span class="tag t-s">Símbolo</span>lo que no es ciencia, pero puede enseñar a mirar. Ninguna tradición de esta página es una ciencia, y todas son más antiguas y serias que sus caricaturas.</div>
+
+  <div class="card" id="pre" style="margin-top:18px">
+    <h3>Antes de empezar, apuesta</h3>
+    <p>La masonería moderna, como institución con una Gran Logia, nació…</p>
+    <div id="preopts"></div>
+    <div id="prefb"></div>
+  </div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>Cinco tradiciones, leídas con la Trama</h2>
+  <div class="chips" id="trad" role="group" aria-label="Tradiciones"></div>
+  <div id="tradbox"></div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>El Árbol de la Vida</h2>
+  <div class="tree">
+    <div>
+      <p>En la Kabbalah, el Árbol de la Vida tiene diez <i>sefirot</i> unidas por 22 senderos. No es un mapa de cosas: es un mapa de <b>relaciones</b>. Lo que importa de cada esfera es con qué se equilibra.</p>
+      <p>En eso se parece a esta app: cinco mundos unidos por seis hilos. Toca una esfera.</p>
+      <p class="mute" style="font-size:14px;margin-top:10px"><span class="tag t-s">Símbolo</span>La disposición de los 22 senderos que se muestra es una de varias usadas en la historia. Las «resonancias» con la Trama son una lectura de esta app, no de la tradición.</p>
+    </div>
+    <div>
+      <svg viewBox="0 0 300 520" id="treesvg" role="group" aria-label="Árbol de la Vida con diez sefirot"></svg>
+      <div class="card" id="sfbox" aria-live="polite" style="margin-top:12px"></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>Lo que todas comparten</h2>
+  <p>Más allá de sus diferencias, las escuelas iniciáticas enseñan casi igual. Y es lo mismo que la pedagogía moderna redescubrió.</p>
+  <div class="grid">
+    <div class="card"><h3>Grados</h3><p>Aprendiz, compañero, maestro. No se recibe todo de una vez: cada etapa prepara la siguiente.</p><div class="trama">Como Vygotsky: lo que hoy haces con ayuda, mañana lo harás solo. Hilo <b style="color:#6fd3b8">Adaptación</b>.</div></div>
+    <div class="card"><h3>El símbolo no se explica: se descubre</h3><p>Al iniciado se le muestra un símbolo y se le deja pensar. La respuesta no se entrega.</p><div class="trama">Lo que uno descubre se recuerda más que lo que le cuentan. Hilo <b style="color:#9ad7ff">Información</b>.</div></div>
+    <div class="card"><h3>Muerte simbólica y renacer</h3><p>La iniciación representa dejar una forma de ser para nacer a otra.</p><div class="trama">Como la oruga y la mariposa, o el árbol que pierde las hojas: cambiar sin dejar de ser. Hilo <b style="color:#6fd3b8">Adaptación</b>.</div></div>
+    <div class="card"><h3>Silencio y presencia</h3><p>Antes de hablar, se escucha. Muchas ceremonias empiezan con silencio.</p><div class="trama">La pausa deja que lo vivido se asiente, como la respiración de La psique. Hilo <b style="color:#ffe08a">Sentido</b>.</div></div>
+    <div class="card"><h3>Trabajar sobre uno mismo</h3><p>La piedra bruta que se pule, el plomo que se vuelve oro, el mundo que se repara: siempre el objeto es uno mismo.</p><div class="trama">Ningún hongo se pule a sí mismo. Es el hilo que la mente agrega. Hilo <b style="color:#ffe08a">Sentido</b>.</div></div>
+    <div class="card"><h3>Comunidad</h3><p>Nadie se inicia solo: hay una logia, una fraternidad, un maestro.</p><div class="trama">La mente se construye con otros, como una colonia. Hilo <b style="color:#ff6f91">Distribución</b>.</div></div>
+  </div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Reto: ¿historia o leyenda?</h2>
+  <p class="mute">Sobre estas tradiciones circula mucho. Separa lo documentado de lo inventado.</p>
+  <div class="card" id="quiz"></div>
+</div></section>
+
+<section class="band alt"><div class="wrap">
+  <h2>Lo que no son</h2>
+  <div class="grid">
+    <div class="card"><span class="tag t-l">Sin evidencia</span><p style="margin-top:8px"><b>Una conspiración que gobierna el mundo.</b> No hay pruebas de que masones, rosacruces o «illuminati» controlen gobiernos o la economía. Esas teorías han servido para perseguir a personas reales.</p></div>
+    <div class="card"><span class="tag t-l">Sin evidencia</span><p style="margin-top:8px"><b>Un saber oculto que la ciencia esconde.</b> Lo que hay es simbolismo, ética y tradición. Lo que la alquimia tenía de verificable se volvió química, y la química lo publicó.</p></div>
+    <div class="card"><span class="tag t-h">Historia</span><p style="margin-top:8px"><b>Tradiciones vivas.</b> La Kabbalah es parte del judaísmo y se estudia hasta hoy. La masonería existe en Chile desde el siglo XIX. Se las comprende mejor desde el respeto que desde el misterio.</p></div>
+  </div>
+  <p style="margin-top:22px">
+    <a class="btn" href="../psique/">La psique →</a>
+    <a class="btn ghost" href="../espejo/">Una IA mirando la Trama</a>
+    <a class="btn ghost" href="../aprende/">Los 6 hilos</a>
+  </p>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Fuentes</h2>
+  <ul class="src">
+    <li>Scholem G. <i>Las grandes tendencias de la mística judía</i> (1941). Idel M. <i>Kabbalah: New Perspectives</i> (1988). Fine L. <i>Physician of the Soul, Healer of the Cosmos: Isaac Luria and His Kabbalistic Fellowship</i> (2003).</li>
+    <li>Stevenson D. <i>The Origins of Freemasonry: Scotland's Century, 1590–1710</i> (1988). Anderson J. <i>The Constitutions of the Free-Masons</i> (1723). Jacob MC. <i>Living the Enlightenment: Freemasonry and Politics in Eighteenth-Century Europe</i> (1991).</li>
+    <li>Barber M. <i>The New Knighthood: A History of the Order of the Temple</i> (1994). Nicholson H. <i>The Knights Templar: A New History</i> (2001).</li>
+    <li><i>Fama Fraternitatis</i> (1614), <i>Confessio Fraternitatis</i> (1615), Andreae JV. <i>Las bodas químicas de Christian Rosenkreutz</i> (1616). Yates FA. <i>El iluminismo rosacruz</i> (1972).</li>
+    <li>Principe LM. <i>The Secrets of Alchemy</i> (2013). Dobbs BJT. <i>The Foundations of Newton's Alchemy</i> (1975). Boyle R. <i>The Sceptical Chymist</i> (1661). Jung CG. <i>Psicología y alquimia</i> (1944).</li>
+  </ul>
+  <footer>La Trama de la Vida · Universo Gao Yu · Los mapas simbólicos</footer>
+</div></section>
+
+<script>
+{
+const $=id=>document.getElementById(id);
+// Apuesta
+const PRE=[['En el antiguo Egipto, con los constructores de pirámides',0],['Con los templarios, hacia el año 1300',0],['En Londres, en 1717',1],['En la Revolución francesa, en 1789',0]];
+$('preopts').innerHTML=PRE.map((o,i)=>`<button class="opt" data-i="${i}">${o[0]}</button>`).join('');
+$('preopts').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+  $('preopts').querySelectorAll('.opt').forEach((x,j)=>{x.disabled=true;if(PRE[j][1])x.classList.add('ok');else if(x===b)x.classList.add('no')});
+  $('prefb').innerHTML=`<div class="fb"><b>${PRE[+b.dataset.i][1]?'¡Exacto!':'Fue en Londres, en 1717.'}</b> Ese año cuatro logias formaron la primera Gran Logia. Antes hubo gremios de canteros medievales y logias escocesas del siglo XVII. Egipto y los templarios aparecen en leyendas que la propia masonería del siglo XVIII contó sobre su origen, no en documentos.</div>`;
+});
+// Tradiciones
+const TR=[
+ {n:'Masonería',c:'#9ad7ff',
+  h:'Nace de los gremios de canteros que construían catedrales. En 1717, en Londres, se forma la primera Gran Logia; en 1723 se publican sus Constituciones. Hoy es una sociedad fraternal y filosófica con grados (aprendiz, compañero, maestro). En Chile, la Gran Logia se fundó en 1862, y varios presidentes fueron masones.',
+  s:'Sus símbolos son herramientas de construcción. La escuadra, rectitud. El compás, los límites. El nivel, la igualdad. La plomada, la verticalidad. La piedra bruta que se pule es el trabajo sobre uno mismo.',
+  t:[['#c9a3ff','Protección','El compás traza un límite: la membrana de la célula hace lo mismo.'],['#6fd3b8','Adaptación','La piedra bruta que se pule: aprender es darse forma.']],
+  l:'Que desciende de los templarios o de los constructores de las pirámides. Lo cuentan algunos rituales del siglo XVIII, pero no hay documentos que lo prueben.'},
+ {n:'Rosacruces',c:'#ff6f91',
+  h:'Entre 1614 y 1616 aparecieron en Alemania tres textos: la Fama, la Confessio y Las bodas químicas. Anunciaban una fraternidad secreta fundada por un tal Christian Rosenkreutz. Johann Valentin Andreae, autor de Las bodas químicas, la describió después como un juego literario.',
+  s:'La rosa sobre la cruz: lo que florece desde lo que pesa. Los manifiestos soñaban con unir ciencia, medicina y espiritualidad para reformar el saber.',
+  t:[['#ffe08a','Sentido','La rosa que florece en la cruz: encontrar un para qué en medio de lo difícil, como dijo Frankl.'],['#9ad7ff','Información','Querían una reforma del conocimiento. Varios científicos del siglo XVII se interesaron por ellos.']],
+  l:'Que existía en 1614 una orden secreta real que escribió los manifiestos. No hay pruebas. Las órdenes rosacruces actuales se fundaron siglos después.'},
+ {n:'Templarios',c:'#ffb35c',
+  h:'Orden militar fundada en Jerusalén hacia 1119 para proteger a los peregrinos. Fue aprobada en 1129 y suprimida en 1312 por el papa Clemente V, bajo presión del rey de Francia. Su último gran maestre, Jacques de Molay, murió en la hoguera en 1314.',
+  s:'Monjes y caballeros a la vez: la idea de que la fuerza debe estar al servicio de algo más alto.',
+  t:[['#c9a3ff','Protección','Nacieron para proteger caminos: un sistema inmune de rutas.'],['#ff6f91','Distribución','Un peregrino podía dejar dinero en una casa templaria y retirarlo en otra: una red temprana de transferencias.']],
+  l:'El Santo Grial, tesoros escondidos o una supervivencia secreta hasta hoy. Son leyendas populares, muchas del siglo XVIII en adelante.'},
+ {n:'Kabbalah',c:'#ffe08a',
+  h:'Tradición mística judía. El Sefer Yetzirá es antiguo (su fecha se discute). El Zohar circuló en la España del siglo XIII; la tradición lo atribuye a un sabio del siglo II y los historiadores, al círculo de Moisés de León. En el siglo XVI, en Safed, Isaac Luria enseñó la contracción divina (tzimtzum), la ruptura de los vasos y la reparación del mundo (tikún olam).',
+  s:'El Árbol de la Vida: diez esferas en equilibrio. A la derecha, la expansión; a la izquierda, el límite; al centro, la armonía.',
+  t:[['#ff6f91','Distribución','Jésed da y se expande; Guevurá pone límite. Un corazón que bombea y una válvula que cierra.'],['#ffe08a','Sentido','Tikún olam, reparar el mundo: cada acto pequeño ayuda a recomponer lo roto. Una idea que también ha inspirado el trabajo social y ecológico.']],
+  l:'Que es una técnica para hacer magia o predecir el futuro. La «cábala» hermética y ocultista de los siglos XIX y XX es una adaptación distinta de la Kabbalah judía.'},
+ {n:'Alquimia',c:'#6fd3b8',
+  h:'Une a varias de estas tradiciones. Buscaba transformar la materia y al alquimista. Robert Boyle, uno de los fundadores de la química, la practicó, e Isaac Newton dejó cientos de páginas de manuscritos alquímicos. De sus laboratorios salieron la destilación y muchas técnicas químicas.',
+  s:'Solve et coagula, disolver y coagular: deshacer para volver a formar. El plomo que se vuelve oro representa a una persona que se transforma.',
+  t:[['#ffb35c','Energía','Disolver y coagular es lo que hace tu metabolismo: romper moléculas para sacar energía (catabolismo) y construir otras (anabolismo).'],['#6fd3b8','Adaptación','Carl Jung leyó la alquimia como un mapa simbólico de la transformación psicológica. Su lectura es influyente y discutida.']],
+  l:'Que alguien convirtió plomo en oro con fórmulas secretas. La física nuclear sabe hacerlo hoy en aceleradores, átomo por átomo, a un costo enorme.'}];
+let ti=0;
+function trad(){
+  $('trad').innerHTML=TR.map((t,i)=>`<button class="chip" style="--c:${t.c}" aria-pressed="${i===ti}" data-i="${i}">${t.n}</button>`).join('');
+  const t=TR[ti];
+  $('tradbox').innerHTML=`<div class="grid"><div class="card"><span class="tag t-h">Historia</span><p style="margin-top:8px">${t.h}</p></div><div class="card"><span class="tag t-s">Símbolo</span><p style="margin-top:8px">${t.s}</p>${t.t.map(x=>`<div class="trama" style="--c:${x[0]}"><b>${x[1]}</b> · ${x[2]}</div>`).join('')}</div><div class="card"><span class="tag t-l">Leyenda</span><p style="margin-top:8px">${t.l}</p></div></div>`;
+  $('trad').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{ti=+b.dataset.i;trad()});
+}
+trad();
+// Árbol de la Vida
+const S=[
+ ['Kéter','Corona',150,40,'La voluntad primera, antes de toda forma.','La pregunta por el para qué. Hilo Sentido.','#ffe08a'],
+ ['Jojmá','Sabiduría',245,100,'El destello de una idea, todavía sin forma.','Una señal que aparece: un impulso nervioso, una espora que despierta. Hilo Información.','#9ad7ff'],
+ ['Biná','Entendimiento',55,100,'Lo que da forma y estructura al destello.','La red que organiza la señal: el cerebro, el micelio. Hilo Información.','#9ad7ff'],
+ ['Jésed','Bondad',245,200,'Dar, expandir, abrir.','El corazón que bombea, la raíz que reparte. Hilo Distribución.','#ff6f91'],
+ ['Guevurá','Rigor',55,200,'El límite, la fuerza que dice «hasta aquí».','La membrana y el sistema inmune. Hilo Protección.','#c9a3ff'],
+ ['Tiféret','Belleza',150,250,'La armonía entre dar y limitar.','La homeostasis: ni mucho ni poco. El término medio de Aristóteles.','#ffb35c'],
+ ['Nétsaj','Victoria',245,330,'Perseverar, el impulso que sigue.','El conatus de Spinoza: seguir siendo. Hilo Energía.','#ffb35c'],
+ ['Hod','Esplendor',55,330,'Reconocer, ordenar, agradecer.','Ajustarse a lo que pasa. Hilo Adaptación.','#6fd3b8'],
+ ['Yesod','Fundamento',150,400,'Donde todo se reúne antes de llegar al mundo.','La raíz y el micelio: la base que conecta. Hilo Distribución.','#ff6f91'],
+ ['Maljut','Reino',150,480,'La presencia en el mundo concreto.','El cuerpo, la tierra, lo que se toca: aquí la trama se vuelve vida.','#7fd67a']];
+const P=[[0,1],[0,2],[0,5],[1,2],[1,5],[1,3],[2,5],[2,4],[3,4],[3,5],[3,6],[4,5],[4,7],[5,6],[5,8],[5,7],[6,7],[6,8],[6,9],[7,8],[7,9],[8,9]];
+let si=5;
+function tree(){
+  let g=P.map(([a,b])=>`<line x1="${S[a][2]}" y1="${S[a][3]}" x2="${S[b][2]}" y2="${S[b][3]}" stroke="${a===si||b===si?S[si][6]:'#25305a'}" stroke-width="${a===si||b===si?3:2}"/>`).join('');
+  g+=S.map((s,i)=>`<g class="sf" data-i="${i}" tabindex="0" role="button" aria-label="${s[0]}, ${s[1]}" aria-pressed="${i===si}"><circle cx="${s[2]}" cy="${s[3]}" r="26" fill="${i===si?s[6]:'#111833'}" stroke="${s[6]}" stroke-width="2"/><text x="${s[2]}" y="${s[3]+4}" text-anchor="middle" font-size="12" font-weight="700" font-family="Sora,system-ui,sans-serif" fill="${i===si?'#04060f':'#f3eee2'}">${s[0]}</text></g>`).join('');
+  $('treesvg').innerHTML=g;
+  const s=S[si];
+  $('sfbox').innerHTML=`<h3 style="color:${s[6]}">${s[0]} · ${s[1]}</h3><p>${s[4]}</p><div class="trama"><b style="color:${s[6]}">Resonancia en la Trama</b> · ${s[5]}</div>`;
+  $('treesvg').querySelectorAll('.sf').forEach(e=>{const f=()=>{si=+e.dataset.i;tree();$('treesvg').querySelector(`[data-i="${si}"]`).focus()};e.onclick=f;e.onkeydown=k=>{if(k.key==='Enter'||k.key===' '){k.preventDefault();f()}}});
+}
+tree();
+// Reto
+const Q=[
+ ['Los templarios se fundaron en Jerusalén para proteger a los peregrinos.',1,'Historia. Hacia 1119, con aprobación formal en 1129.'],
+ ['La masonería moderna desciende directamente de los templarios.',0,'Leyenda. Esa conexión apareció en discursos y grados masónicos del siglo XVIII; no hay documentos que la prueben.'],
+ ['Entre 1614 y 1616 se publicaron los manifiestos rosacruces.',1,'Historia. La Fama, la Confessio y Las bodas químicas existen y se conservan.'],
+ ['Una orden rosacruz secreta real escribió esos manifiestos en 1614.',0,'Leyenda, o al menos sin evidencia. Uno de sus autores, Andreae, lo describió como un juego literario.'],
+ ['Isaac Newton dedicó años a la alquimia.',1,'Historia. Sus manuscritos alquímicos se conservan y hoy se estudian en universidades.'],
+ ['El Zohar fue escrito en el siglo II.',0,'Es lo que afirma la tradición. Los historiadores lo sitúan en la España del siglo XIII, en el círculo de Moisés de León.']];
+let qi=0,ok=0;
+function quiz(){
+  if(qi>=Q.length){$('quiz').innerHTML=`<h3>${ok} de ${Q.length}</h3><p>Separar historia de leyenda es el primer paso para que un símbolo enseñe algo verdadero.</p><button class="btn" id="re">Otra vez</button>`;$('re').onclick=()=>{qi=0;ok=0;quiz()};return}
+  const q=Q[qi];
+  $('quiz').innerHTML=`<p class="mute" style="margin:0">${qi+1} de ${Q.length}</p><h3>${q[0]}</h3><div class="chips"><button class="chip" style="--c:#8fe3b0" data-o="1">Historia</button><button class="chip" style="--c:#ffa3a3" data-o="0">Leyenda</button></div><div id="qf"></div>`;
+  $('quiz').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{
+    const r=+b.dataset.o===q[1];if(r)ok++;
+    $('quiz').querySelectorAll('[data-o]').forEach(x=>{x.disabled=true;if(+x.dataset.o===q[1])x.setAttribute('aria-pressed','true')});
+    $('qf').innerHTML=`<div class="fb"><b>${r?'¡Bien!':'No exactamente.'}</b> ${q[2]}</div><p style="margin-top:12px"><button class="btn" id="nx">Siguiente</button></p>`;
+    $('nx').onclick=()=>{qi++;quiz()};
+  });
+}
+quiz();
+}
+</script>
+</body>
+</html>
