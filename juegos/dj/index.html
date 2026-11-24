@@ -206,6 +206,7 @@ canvas.plat{display:block;width:100%;max-width:min(100%,52vh);aspect-ratio:1;tou
 }
 @media (max-width:380px){.knob .dial{width:32px;height:32px}}
 </style>
+<link rel="stylesheet" href="pulse.css">
 <link rel="manifest" href="../../manifest.webmanifest"><link rel="apple-touch-icon" href="../../icons/apple-touch-icon.png"><meta name="theme-color" content="#120624"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Multiverso"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="../../visit.js" data-game="dj" defer></script></head>
 <body>
 <header>
@@ -330,7 +331,7 @@ const SEC_PER_REV=1.8; // 33 1/3 RPM
 const DPR=()=>Math.min(window.devicePixelRatio||1,2);
 let ctx,workletOK=false,masterG,limiter,outNormal,splitG,monoM,cueBus,masterAn;
 let A,B; const decks={};
-const EV={}; const ev=k=>{EV[k]=(EV[k]||0)+1}; const E=k=>EV[k]||0;
+const EV={}; const ev=k=>{EV[k]=(EV[k]||0)+1;if(window.PULSE)PULSE.ev(k)}; const E=k=>EV[k]||0;
 const HOLD={}; let FDT=0.016;
 const wrapPh=x=>x-Math.round(x);
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
@@ -569,7 +570,7 @@ class Deck{
   if(meta.bpm){this.bpm=meta.bpm;this.firstBeat=meta.firstBeat||0;}
   else{this.bpm=0;this.analyzing=true;this.ui();await new Promise(r=>setTimeout(r,30));const r=detectBPM(this.peaks,buf.sampleRate);this.bpm=r.bpm;this.firstBeat=r.firstBeat;this.analyzing=false;}
   this.cue=this.firstBeat*this.sr;this.seek(this.cue);
-  this.buildVinyl();this.renderOv();this.ui();ev('load'+this.id);
+  this.buildVinyl();this.renderOv();this.ui();ev('load'+this.id);if(window.PULSE)PULSE.onLoad(this);
  }
  seek(p){if(!this.loaded)return;p=clamp(p,0,this.len-2);this.send({t:'seek',v:p});this.pos=p;this.lastT=performance.now();}
  quantize(p){if(!this.bpm)return p;const bl=this.beatLen(),fb=this.firstBeat*this.sr,k=Math.round((p-fb)/bl),q=fb+k*bl;return Math.abs(q-p)<bl*0.2&&q>=0?q:p;}
@@ -908,7 +909,7 @@ async function loadFile(d,f){
  if(!ctx)return;toast(`<span class="spinner"></span> Abriendo ${f.name}…`,20000);
  try{const ab=await f.arrayBuffer();const buf=await new Promise((res,rej)=>{const p=ctx.decodeAudioData(ab,res,rej);if(p&&p.then)p.then(res,rej);});
   toast(`<span class="spinner"></span> Analizando BPM…`,20000);
-  await d.loadBuffer(buf,{id:'file',title:f.name.replace(/\.[^.]+$/,''),artist:'Archivo local',bpm:0,col:d.id==='A'?'#ffb26b':'#7fd3ff'});
+  await d.loadBuffer(buf,{file:f,id:'file',title:f.name.replace(/\.[^.]+$/,''),artist:'Archivo local',bpm:0,col:d.id==='A'?'#ffb26b':'#7fd3ff'});
   toast(`Cargado en ${d.id} · ${d.bpm.toFixed(1)} BPM (detectado)`,2200);
  }catch(e){toast('No pude abrir ese archivo. Prueba con MP3, WAV o M4A.',3000);}
 }
@@ -1128,7 +1129,7 @@ let lastF=0,lastTxt=0;
 function frame(t){
  FDT=Math.min(0.1,(t-lastF)/1000||0.016);lastF=t;
  A.tick();B.tick();
- drawWaves();drawPhase();A.drawPlatter();B.drawPlatter();A.drawOv();B.drawOv();meters();lessonTick();
+ drawWaves();drawPhase();A.drawPlatter();B.drawPlatter();A.drawOv();B.drawOv();meters();lessonTick();if(window.PULSE)try{PULSE.tick()}catch(e){console.warn(e)}
  if(t-lastTxt>90){lastTxt=t;fxTime();A.uiText();B.uiText();const c=coachText();if(c!==coachLast){coachLast=c;$('#coachTxt').innerHTML=c;}}
  requestAnimationFrame(frame);
 }
@@ -1144,5 +1145,6 @@ $('#startBtn').addEventListener('click',async()=>{
  try{await loadDemo(A,'d2');await loadDemo(B,'d3');toast('Listo: “Valparaíso” en A y “Atacama” en B. Abre 🎓 Academia para empezar.',3500);}catch(e){}
 });
 </script>
+<script src="pulse.js"></script>
 </body>
 </html>
