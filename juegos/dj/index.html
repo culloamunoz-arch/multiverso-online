@@ -51,7 +51,14 @@ canvas.plat{display:block;width:100%;max-width:min(100%,52vh);aspect-ratio:1;tou
 .pitchCol .fader{flex:1;min-height:130px}
 .rng{font-size:10px;padding:3px 0;width:40px;border-radius:5px;background:#222;border:1px solid #333;font-family:'JetBrains Mono',monospace}
 .dctrl{margin-top:8px;display:flex;flex-direction:column;gap:6px}
-.tr .b.shift{flex:.8}.tr .b.sync{flex:1}
+.tr .b.shift{flex:.8}
+.lpr{margin-top:8px}.lpr .b{padding:6px 0;font-size:11px;line-height:1.1}.lpr .b small{display:block;font-size:7.5px;letter-spacing:.05em;color:var(--mut);font-weight:700}.lpr .b.on small{color:inherit}
+.pitchCol .b.sync{flex:none;width:100%;padding:6px 0;font-size:8.5px;line-height:1.15;letter-spacing:.02em}
+.tlbl{font-size:8px;color:var(--mut);letter-spacing:.08em;font-weight:700}
+.pm .pmS{display:none}.deck.shifted .pm .pmM{display:none}.deck.shifted .pm .pmS{display:inline;color:var(--warn)}
+.aux .b{padding:7px 0;font-size:11px}
+.lpr .b{overflow:hidden;white-space:nowrap}.fxs .knob span{white-space:nowrap;font-size:8px}
+@media (max-width:860px){.lpr .cl small{display:none}.lpr .b{font-size:10px}.lpr .l4 small{font-size:6.5px}}
 .row{display:flex;gap:6px}
 .b{flex:1;background:linear-gradient(#26272c,#1d1e22);border:1px solid #35363d;border-radius:8px;padding:9px 0;font-size:12px;font-weight:700;letter-spacing:.04em;min-width:0;touch-action:manipulation;transition:background .1s}
 .b:active{filter:brightness(1.3)}
@@ -265,15 +272,17 @@ canvas.plat{display:block;width:100%;max-width:min(100%,52vh);aspect-ratio:1;tou
  <b>CUE:</b> en pausa, marca el punto de inicio. Sonando, vuelve al punto y se detiene. Mantenerlo apretado en el punto lo reproduce mientras lo sostienes.<br>
  <b>SYNC:</b> iguala tempo y fase con el otro deck (una vez).<br>
  <b>◀ ▶:</b> empujan el tema mientras los mantienes (nudge).<br>
+ <b>Distribución de la DDJ-FLX4:</b> arriba la sección de loop (IN, OUT, 4 BEAT/EXIT y CUE/LOOP ◁ ▷, que salta entre cues o reduce/duplica el loop), BEAT SYNC sobre el fader de TEMPO, luego los modos de pad, los 8 pads y abajo SHIFT, CUE y PLAY. En el mezclador: TRIM, HI/MID/LOW, CFX, CUE de audífonos y BEAT FX (◁ BEAT ▷, CH 1/CH 2, LEVEL/DEPTH, ON/OFF).<br>
  <b>Pads (8) con 4 modos</b>, como en la DDJ-FLX4:<br>
  • <b>HOT CUE:</b> toca para guardar/saltar; SHIFT + pad (o mantener 1 s) borra.<br>
- • <b>BEAT LOOP:</b> repite 1/4, 1/2, 1, 2, 4, 8, 16 o 32 beats; toca de nuevo para salir.<br>
+ • <b>PAD FX:</b> efectos mientras mantienes el pad: roll de 1/4, 1/2, 1 y 2 beats, eco, reverb, flanger y filtro.<br>
+ • <b>BEAT LOOP</b> (SHIFT + BEAT JUMP): repite 1/4, 1/2, 1, 2, 4, 8, 16 o 32 beats; toca de nuevo para salir.<br>
  • <b>BEAT JUMP:</b> salta atrás/adelante 1, 2, 4 u 8 beats.<br>
  • <b>SAMPLER:</b> 8 sonidos (bombo, caja, clap, hat, bocina, sirena, láser, subida).<br>
  <b>SHIFT</b> (mantener): SHIFT + CUE = ir al inicio del tema · SHIFT + PLAY = volver al cue y detener · SHIFT + tocar el disco = búsqueda rápida.<br>
  <b>El disco (jog):</b> en VINYL, el centro hace scratch y el <b>aro exterior</b> acelera/frena (pitch bend). En JOG todo el disco es pitch bend. El anillo de luces marca la posición (1 vuelta = 1,8 s).</p>
  <h3>El mezclador</h3>
- <p><b>TRIM</b> nivela el volumen de entrada. <b>HI/MID/LOW</b> son agudos, medios y graves (todo a la izquierda = “kill”). <b>FILTER</b>: izquierda pasa-bajos, derecha pasa-altos. El <b>fader</b> del canal y el <b>crossfader</b> deciden qué escucha el público. <b>BEAT FX</b>: elige ECO, REVERB o FLANGER, el tiempo (en beats), a qué canal (CH A / CH B), el nivel y pulsa ON. <b>HP MIX / HP VOL</b>: mezcla y volumen de audífonos (con “Audífonos divididos”). <b>TAP</b>: tócalo al ritmo para medir el BPM. <b>SUAVE/CORTE</b> cambia la curva del crossfader (CORTE es para scratch).<br>
+ <p><b>TRIM</b> nivela el volumen de entrada. <b>HI/MID/LOW</b> son agudos, medios y graves (todo a la izquierda = “kill”). <b>CFX</b> (filtro): izquierda pasa-bajos, derecha pasa-altos. El <b>fader</b> del canal y el <b>crossfader</b> deciden qué escucha el público. <b>BEAT FX</b>: elige ECO, REVERB o FLANGER, el tiempo (en beats), a qué canal (CH A / CH B), el nivel y pulsa ON. <b>HP MIX / HP VOL</b>: mezcla y volumen de audífonos (con “Audífonos divididos”). <b>TAP</b>: tócalo al ritmo para medir el BPM. <b>SUAVE/CORTE</b> cambia la curva del crossfader (CORTE es para scratch).<br>
  Controles giratorios: arrastra arriba/abajo (o rueda del mouse). Doble toque = valor por defecto.</p>
  <h3>Teclado (computador)</h3>
  <p>Q = play A · W = cue A · P = play B · O = cue B · Z / X = crossfader a A / B · S = sync B</p>
@@ -347,7 +356,8 @@ const LOOPSZ=[0.25,0.5,1,2,4,8,16,32];
 const JUMPSZ=[-1,-2,-4,-8,1,2,4,8];
 const SAMPCOL=['#ff5a5a','#ffb347','#ffd23f','#7be0ff','#ff6ad5','#a98bff','#4dffb8','#c8ff3c'];
 const SAMPN=['BOMBO','CAJA','CLAP','HAT','BOCINA','SIRENA','LÁSER','SUBIDA'];
-const PADM={hot:'HOT CUE',loop:'BEAT LOOP',jump:'BEAT JUMP',samp:'SAMPLER'};
+const PADM={hot:['HOT CUE','KEYBOARD'],padfx:['PAD FX','PAD FX 2'],jump:['BEAT JUMP','BEAT LOOP'],samp:['SAMPLER','KEY SHIFT']};
+const PFXN=['ROLL 1/4','ROLL 1/2','ROLL 1','ROLL 2','ECO','REVERB','FLANGER','FILTRO'];
 let SHIFT={A:false,B:false};
 
 function toast(msg,ms=2200){const t=$('#toast');t.innerHTML=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),ms);}
@@ -610,6 +620,25 @@ class Deck{
   const bl=this.beatLen(),fb=this.firstBeat*this.sr,p=this.posEst();let k=Math.floor((p-fb)/bl+1e-6);let s=fb+k*bl;if(s<0)s+=bl;
   this.loop={n,s,e:s+n*bl};this.send({t:'loop',s:this.loop.s,e:this.loop.e});ev('loop'+n);this.ui();
  }
+ loopIn(){if(!this.loaded)return;const p=this.quantize(this.posEst());this.lin=p;if(this.loop){this.loop.s=p;if(this.loop.e<=p)this.loop.e=p+(this.bpm?this.beatLen():this.sr);this.send({t:'loop',s:this.loop.s,e:this.loop.e});}ev('loopIn');toast('Loop IN marcado: ahora toca OUT',1200);this.ui();}
+ loopOut(){if(!this.loaded)return;const p=this.quantize(this.posEst());const s0=this.lin!=null?this.lin:(this.loop?this.loop.s:null);if(s0==null||p<=s0+this.sr*0.05)return toast('Primero marca IN',1200);this.loop={n:this.bpm?Math.round((p-s0)/this.beatLen()*100)/100:0,s:s0,e:p};this.lin=null;this.send({t:'loop',s:s0,e:p});ev('loopManual');this.ui();}
+ loop4(){if(!this.loaded)return;if(this.loop){this.loop=null;this.lin=null;this.send({t:'loop',s:-1,e:-1});ev('loopExit');this.ui();return;}this.loopPress(4);}
+ cueLoopCall(dir){if(!this.loaded)return;
+  if(this.loop){const L=this.loop,len=(L.e-L.s)*(dir>0?2:0.5);if(len<this.sr*0.02)return;L.e=L.s+len;if(L.n)L.n=L.n*(dir>0?2:0.5);this.send({t:'loop',s:L.s,e:L.e});toast(dir>0?'Loop ×2':'Loop ÷2',600);this.ui();return;}
+  const p=this.posEst(),pts=this.hot.filter(h=>h!=null).concat([this.cue]).sort((a,b)=>a-b);let t=null;
+  if(dir>0)t=pts.find(h=>h>p+this.sr*0.05);else{for(const h of pts)if(h<p-this.sr*0.5)t=h;}
+  if(t==null)return toast('No hay más puntos de cue',900);this.seek(t);ev('cueCall');}
+ pfxDown(i){if(!ctx||!this.loaded)return;const a=this.pfxActive={i};
+  if(i<4){if(!this.bpm)return;const n=[0.25,0.5,1,2][i],bl=this.beatLen(),fb=this.firstBeat*this.sr,p=this.posEst(),k=Math.floor((p-fb)/(bl*n)+1e-6),s0=Math.max(0,fb+k*bl*n);
+   a.roll={p0:p,t0:performance.now(),prev:this.loop};this.loop={n,s:s0,e:s0+n*bl,roll:true};this.send({t:'loop',s:s0,e:s0+n*bl});ev('roll');}
+  else if(i<7){a.fx={sel:FX.sel,on:FX.on,asg:{...FX.asg}};FX.sel=i-4;FX.asg={A:false,B:false};FX.asg[this.id]=true;FX.on=true;applyFx();ev('padFx');}
+  else{a.filt=MX[this.id].filter||0;this.setFilter(-0.7);ev('padFx');}
+  this.ui();}
+ pfxUp(i){const a=this.pfxActive;if(!a||a.i!==i)return;this.pfxActive=null;
+  if(a.roll){const el=(performance.now()-a.roll.t0)/1000*this.sr*this.tempo();this.loop=a.roll.prev||null;this.send(this.loop?{t:'loop',s:this.loop.s,e:this.loop.e}:{t:'loop',s:-1,e:-1});if(this.playing)this.seek(a.roll.p0+el);}
+  if(a.fx){FX.sel=a.fx.sel;FX.on=a.fx.on;FX.asg=a.fx.asg;applyFx();}
+  if(a.filt!=null)this.setFilter(a.filt);
+  this.ui();}
  /* ---------- UI ---------- */
  bindUI(){
   const el=this.el,id=this.id;
@@ -617,11 +646,13 @@ class Deck{
   sh.addEventListener('pointerdown',e=>{e.preventDefault();sh.setPointerCapture(e.pointerId);shSet(true);});
   sh.addEventListener('pointerup',()=>shSet(false));sh.addEventListener('pointercancel',()=>shSet(false));
   this.shSet=shSet;
-  $$('.pm',el).forEach(b=>b.addEventListener('click',()=>{this.padMode=b.dataset.m;ev('padMode'+b.dataset.m);this.ui();}));
+  $$('.pm',el).forEach(b=>b.addEventListener('click',()=>{let m=b.dataset.m;if(SHIFT[id]){if(m==='jump')m='loop';else return toast(PADM[m][1]+': no disponible en DECKS',1400);}this.padMode=m;ev('padMode'+m);this.ui();}));
   $('.play',el).addEventListener('pointerdown',e=>{e.preventDefault();resumeCtx();if(SHIFT[id]&&this.loaded){this.playing=false;this.send({t:'play',v:false,hard:true});this.seek(this.cue);this.ui();return;}this.togglePlay();});
   const cue=$('.cue',el);cue.addEventListener('pointerdown',e=>{e.preventDefault();resumeCtx();cue.setPointerCapture(e.pointerId);if(SHIFT[id]&&this.loaded){this.playing=false;this.send({t:'play',v:false,hard:true});this.cue=0;this.seek(0);ev('toStart');toast('Inicio del tema',900);this.ui();this.cueSkip=true;return;}this.cueDown();});
   cue.addEventListener('pointerup',()=>{if(this.cueSkip){this.cueSkip=false;return;}this.cueUp();});cue.addEventListener('pointercancel',()=>{this.cueSkip=false;this.cueUp();});
   $('.sync',el).addEventListener('click',()=>this.sync());
+  $('.lin',el).addEventListener('click',()=>this.loopIn());$('.lout',el).addEventListener('click',()=>this.loopOut());$('.l4',el).addEventListener('click',()=>this.loop4());
+  $$('.cl',el).forEach(b=>b.addEventListener('click',()=>this.cueLoopCall(+b.dataset.d)));
   $('.mode',el).addEventListener('click',()=>{this.mode=this.mode==='vinyl'?'jog':'vinyl';ev('mode'+id);this.ui();});
   $('.load',el).addEventListener('click',()=>openLoader(this));
   $('.rng',el).addEventListener('click',()=>{const p=this.pct();this.range=RANGES[(RANGES.indexOf(this.range)+1)%RANGES.length];this.setPct(clamp(p,-this.range,this.range));});
@@ -629,7 +660,8 @@ class Deck{
    b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);this.bend=0.04*n;this.send({t:'bend',v:this.bend});ev((n>0?'nudgeP':'nudgeM')+id);b.classList.add('on');});
    const up=()=>{this.bend=0;this.send({t:'bend',v:0});b.classList.remove('on');};b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);});
   $$('.pad',el).forEach(pad=>{const i=+pad.dataset.i;
-   pad.addEventListener('pointerdown',e=>{e.preventDefault();resumeCtx();pad.setPointerCapture(e.pointerId);let long=false;const tm=setTimeout(()=>{long=true;if(this.padMode==='hot'&&this.hot[i]!=null){this.hot[i]=null;ev('hotDel');toast(`Hot cue ${i+1} borrado`,1000);this.ui();}},650);
+   pad.addEventListener('pointerdown',e=>{e.preventDefault();resumeCtx();pad.setPointerCapture(e.pointerId);
+    if(this.padMode==='padfx'){pad.classList.add('hit');this.pfxDown(i);const u=()=>{pad.classList.remove('hit');pad.removeEventListener('pointerup',u);pad.removeEventListener('pointercancel',u);this.pfxUp(i);};pad.addEventListener('pointerup',u);pad.addEventListener('pointercancel',u);return;}let long=false;const tm=setTimeout(()=>{long=true;if(this.padMode==='hot'&&this.hot[i]!=null){this.hot[i]=null;ev('hotDel');toast(`Hot cue ${i+1} borrado`,1000);this.ui();}},650);
     pad.classList.add('hit');
     const up=()=>{clearTimeout(tm);pad.classList.remove('hit');pad.removeEventListener('pointerup',up);pad.removeEventListener('pointercancel',cn);if(!long)this.padPress(i);};
     const cn=()=>{clearTimeout(tm);pad.classList.remove('hit');pad.removeEventListener('pointerup',up);pad.removeEventListener('pointercancel',cn);};
@@ -673,11 +705,14 @@ class Deck{
   $('.cue',el).classList.toggle('on',this.loaded&&(!this.playing||this.cuePrev));
   $('.mode',el).textContent=this.mode==='vinyl'?'VINYL':'JOG';$('.mode',el).classList.toggle('on',this.mode==='vinyl');
   $('.rng',el).textContent='±'+this.range+'%';
-  $$('.pm',el).forEach(b=>b.classList.toggle('on',b.dataset.m===this.padMode));
+  $$('.pm',el).forEach(b=>b.classList.toggle('on',b.dataset.m===this.padMode||(b.dataset.m==='jump'&&this.padMode==='loop')));
+  $('.pm[data-m=jump] .pmM',el).textContent=this.padMode==='loop'?'BEAT LOOP':'BEAT JUMP';
+  $('.l4',el).classList.toggle('on',!!this.loop);$('.lin',el).classList.toggle('on',this.lin!=null);
   $$('.pad',el).forEach((p,i)=>{const m=this.padMode;let lab,col='',on=false;
    if(m==='hot'){on=this.hot[i]!=null;lab=on?'':String(i+1);col=on?HOTC[i]:'';}
    else if(m==='loop'){const n=LOOPSZ[i];lab=n<1?'1/'+Math.round(1/n):String(n);on=!!this.loop&&this.loop.n===n;col=on?'#b8ff3c':'';}
    else if(m==='jump'){const n=JUMPSZ[i];lab=(n>0?'+':'−')+Math.abs(n);}
+   else if(m==='padfx'){lab=PFXN[i];on=!!this.pfxActive&&this.pfxActive.i===i;col=on?'#b8ff3c':'';}
    else{lab=SAMPN[i];col=SAMPCOL[i];on=true;}
    p.textContent=lab;p.classList.toggle('set',on);p.dataset.m=m;p.style.background=(on&&col)?col:'';p.style.setProperty('--pc',col||HOTC[i]);});
  }
@@ -763,26 +798,28 @@ function deckHTML(id){return `
 <div class="dhead"><div class="dl">${id}</div><div class="dtitle"><b class="tt">Deck vacío</b><small class="ta">Toca CARGAR o el disco</small></div><div class="dbpm"><b class="bpm">---</b><small class="pct">+0.00%</small></div></div>
 <div class="dsub"><span class="cnt">—</span><span class="key"></span><span class="time">0:00</span></div>
 <canvas class="ov"></canvas>
+<div class="row lpr"><button class="b lin">IN</button><button class="b lout">OUT</button><button class="b l4">4 BEAT<small>EXIT</small></button><button class="b cl" data-d="-1">◁<small>CUE/LOOP</small></button><button class="b cl" data-d="1">▷<small>CUE/LOOP</small></button></div>
 <div class="dbody"><div class="platWrap"><canvas class="plat"></canvas></div>
-<div class="pitchCol"><small>−</small><div class="fader v pitch"><div class="track"></div><div class="zero"></div><div class="cap"></div></div><small>+</small><button class="rng">±10%</button></div></div>
+<div class="pitchCol"><button class="b sync">BEAT<br>SYNC</button><small>−</small><div class="fader v pitch"><div class="track"></div><div class="zero"></div><div class="cap"></div></div><small>+</small><button class="rng">±10%</button><span class="tlbl">TEMPO</span></div></div>
 <div class="dctrl">
-<div class="row tr"><button class="b shift">SHIFT</button><button class="b cue">CUE</button><button class="b play">▶ ❚❚</button><button class="b sync">SYNC</button></div>
-<div class="row"><button class="b mode" title="Modo del jog">VINYL</button><button class="b nud" data-n="-1">◀</button><button class="b nud" data-n="1">▶</button><button class="b load">⏏ LOAD</button></div>
-<div class="row pmodes">${Object.keys(PADM).map(k=>`<button class="b pm" data-m="${k}">${PADM[k]}</button>`).join('')}</div>
+<div class="row aux"><button class="b mode" title="Modo del jog">VINYL</button><button class="b nud" data-n="-1">◀</button><button class="b nud" data-n="1">▶</button><button class="b load">⏏ LOAD</button></div>
+<div class="row pmodes">${Object.keys(PADM).map(k=>`<button class="b pm" data-m="${k}"><span class="pmM">${PADM[k][0]}</span><span class="pmS">${PADM[k][1]}</span></button>`).join('')}</div>
 <div class="pads">${[0,1,2,3,4,5,6,7].map(i=>`<button class="pad" data-i="${i}">${i+1}</button>`).join('')}</div>
+<div class="row tr"><button class="b shift">SHIFT</button><button class="b cue">CUE</button><button class="b play">▶ ❚❚</button></div>
 </div>`}
 
 /* ================= MIXER ================= */
 const MX={A:{},B:{},xf:0,curve:'smooth',master:0.85};
 const knob=(k,l)=>`<div class="knob" data-k="${k}"><div class="dial"><i></i></div><span>${l}</span></div>`;
-function chHTML(id){return `<div class="ch" data-id="${id}"><div class="chl">CH ${id==='A'?1:2} · ${id}</div><div class="knobs">${knob('gain','TRIM')}${knob('hi','HI')}${knob('mid','MID')}${knob('low','LOW')}${knob('filter','FILTER')}<button class="pfl" aria-label="Pre-escucha">🎧 CUE</button></div>
+function chHTML(id){return `<div class="ch" data-id="${id}"><div class="chl">CH ${id==='A'?1:2} · ${id}</div><div class="knobs">${knob('gain','TRIM')}${knob('hi','HI')}${knob('mid','MID')}${knob('low','LOW')}${knob('filter','CFX')}<button class="pfl" aria-label="Pre-escucha">🎧 CUE</button></div>
 <div class="chf"><div class="vu"><div class="fill"></div></div><div class="fader v chfader"><div class="track"></div><div class="cap"></div></div></div></div>`}
 const FXN=['ECO','REVERB','FLANGER'],FXDIV=[0.25,0.5,1,2],FXDL=['1/4','1/2','1','2'];
 const FX={sel:0,div:1,on:false,asg:{A:true,B:true},lvl:0.5};
 function buildMixer(){
  $('#mixer').innerHTML=`<div class="fxs"><div class="fxh">BEAT FX</div>
   <div class="fxrow">${FXN.map((n,i)=>`<button class="fxb" data-fx="${i}">${n}</button>`).join('')}</div>
-  <div class="fxrow"><button class="fxb" id="fxTime">⏱ 1/2</button><button class="fxb asg" data-a="A">CH A</button><button class="fxb asg" data-a="B">CH B</button>${knob('fxlvl','NIVEL')}<button class="fxb fxon" id="fxOn">ON</button></div></div>
+  <div class="fxrow"><button class="fxb" id="fxBm">◁ BEAT</button><button class="fxb" id="fxTime">⏱ 1/2</button><button class="fxb" id="fxBp">BEAT ▷</button></div>
+  <div class="fxrow"><button class="fxb asg" data-a="A">CH 1</button><button class="fxb asg" data-a="B">CH 2</button>${knob('fxlvl','LEVEL/DEPTH')}<button class="fxb fxon" id="fxOn">ON/OFF</button></div></div>
  <div class="mx">${chHTML('A')}<div class="mc">${knob('master','MASTER')}<div class="vu" id="mvu"><div class="fill"></div></div>${knob('hpmix','HP MIX')}${knob('hpvol','HP VOL')}<button class="mbtn" id="tap">TAP</button><span id="tapv">-- BPM</span><button class="mbtn" id="curve">SUAVE</button></div>${chHTML('B')}</div>
  <div class="xf"><span>A</span><div class="fader h" id="xfader"><div class="track"></div><div class="zero" style="left:50%;top:6px;bottom:6px;width:2px;height:auto;right:auto"></div><div class="cap"></div></div><span>B</span></div>`;
  const eqdB=v=>v<0?v*40:v*6;
@@ -803,6 +840,7 @@ function buildMixer(){
  makeKnob($('[data-k=fxlvl]'),{min:0,max:1,value:FX.lvl,def:0.5,onChange:v=>{FX.lvl=v;applyFx();ev('fxLvl');}});
  $$('.fxb[data-fx]').forEach(b=>b.addEventListener('click',()=>{FX.sel=+b.dataset.fx;applyFx();ev('fxSel');}));
  $('#fxTime').addEventListener('click',()=>{FX.div=(FX.div+1)%FXDIV.length;applyFx();});
+ $('#fxBm').addEventListener('click',()=>{FX.div=Math.max(0,FX.div-1);applyFx();});$('#fxBp').addEventListener('click',()=>{FX.div=Math.min(FXDIV.length-1,FX.div+1);applyFx();});
  $$('.asg').forEach(b=>b.addEventListener('click',()=>{FX.asg[b.dataset.a]=!FX.asg[b.dataset.a];applyFx();}));
  $('#fxOn').addEventListener('click',()=>{FX.on=!FX.on;applyFx();if(FX.on)ev('fxOn');});
  XF=makeFader($('#xfader'),{vertical:false,min:-1,max:1,value:0,def:0,onChange:v=>{MX.xf=v;applyXF();if(v<-0.9)ev('xfL');if(v>0.9)ev('xfR');}});
@@ -992,7 +1030,7 @@ const LESSONS=[
   steps:[
    {t:'Con A sonando, gira LOW (graves) del canal A totalmente a la izquierda: el bombo desaparece. Eso es un “kill”.',ok:()=>A.playing&&E('lowKillA')>0},
    {t:'Vuelve el LOW al centro (doble toque).',ok:()=>Math.abs(MX.A.low)<0.08},
-   {t:'Gira FILTER a la izquierda (suena “bajo el agua”)…',ok:()=>E('filtLA')>0},
+   {t:'Gira CFX (filtro) a la izquierda (suena “bajo el agua”)…',ok:()=>E('filtLA')>0},
    {t:'…y luego a la derecha (suena “por radio”). Después déjalo al centro.',ok:()=>E('filtRA')>0&&Math.abs(MX.A.filter)<0.08},
    {t:'Toca TRIM y ajústalo mirando el vúmetro: que llegue al amarillo sin quedarse en rojo.',ok:()=>E('gainA')>0},
    {t:'Mueve el crossfader de lado a lado: izquierda = A, derecha = B.',ok:()=>E('xfL')>0&&E('xfR')>0},
@@ -1042,7 +1080,7 @@ const LESSONS=[
   steps:[
    {t:'En el modo HOT CUE de cualquier deck, toca un pad vacío para guardar un hot cue.',ok:()=>E('hotSet')>0},
    {t:'Deja avanzar el tema y toca ese pad otra vez para saltar.',ok:()=>E('hotJump')>0},
-   {t:'Cambia los pads a BEAT LOOP y toca el pad “4” (un loop de 4 beats).',ok:()=>E('loop4')>0},
+   {t:'Toca 4 BEAT/EXIT (arriba del disco), o mantén SHIFT + BEAT JUMP para pasar a BEAT LOOP y toca el pad “4”.',ok:()=>E('loop4')>0},
    {t:'Sal del loop tocando el mismo pad.',ok:()=>E('loopExit')>0},
    {t:'Vuelve a HOT CUE y borra un hot cue: mantén el pad 1 segundo (o SHIFT + pad).',ok:()=>E('hotDel')>0},
   ],tip:'Uso típico: si el tema que sale se acaba antes de que el nuevo esté listo, pon un loop de 8 en el que sale y tómate tu tiempo.'},

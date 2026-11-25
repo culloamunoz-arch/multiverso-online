@@ -713,7 +713,7 @@ function generateExercises(){
  const pk=L.filter(i=>i.energy>=7);
  if(pk.length>=2){const a=pk[0],b=pk[1];out.push({id:'gpk',t:'Peak Time',d:`${a.title} → ${b.title}: mantén la energía arriba (E7 o más) y la fase limpia.`,par:200,prep:()=>prepPair(a,b,{xf:-1}),goals:[{t:'Completa la transición con 60% en fase.',ok:()=>transSince().some(x=>x.phRatio>=0.6)},{t:'Mantén el flujo 16 beats más en fase o con un solo tema sonando.',ok:()=>S.streak>=16||(transSince().length>0&&!(A.playing&&B.playing))}]});}
  const cl=L.slice().sort((a,b)=>a.energy-b.energy);
- if(cl.length>=2){const a=cl[1],b=cl[0];out.push({id:'gcl',t:'Closing',d:`${a.title} → ${b.title}: cierra con el tema más tranquilo y termina con un “echo-out” de filtro.`,par:240,prep:()=>prepPair(a,b,{xf:-1}),goals:[{t:'Completa la transición al tema de cierre.',ok:()=>transSince().length>0},{t:'Gira el FILTER de B a la izquierda y baja su fader hasta cero.',ok:()=>MX.B.filter<-0.6&&(MX.B.fader<0.05||!B.playing)}]});}
+ if(cl.length>=2){const a=cl[1],b=cl[0];out.push({id:'gcl',t:'Closing',d:`${a.title} → ${b.title}: cierra con el tema más tranquilo y termina con un “echo-out” de filtro.`,par:240,prep:()=>prepPair(a,b,{xf:-1}),goals:[{t:'Completa la transición al tema de cierre.',ok:()=>transSince().length>0},{t:'Gira el CFX de B a la izquierda y baja su fader hasta cero.',ok:()=>MX.B.filter<-0.6&&(MX.B.fader<0.05||!B.playing)}]});}
  GEN=shuffle(out).slice(0,6);
 }
 
