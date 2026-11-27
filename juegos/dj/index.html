@@ -359,6 +359,7 @@ const SAMPN=['BOMBO','CAJA','CLAP','HAT','BOCINA','SIRENA','LÁSER','SUBIDA'];
 const PADM={hot:['HOT CUE','KEYBOARD'],padfx:['PAD FX','PAD FX 2'],jump:['BEAT JUMP','BEAT LOOP'],samp:['SAMPLER','KEY SHIFT']};
 const PFXN=['ROLL 1/4','ROLL 1/2','ROLL 1','ROLL 2','ECO','REVERB','FLANGER','FILTRO'];
 let SHIFT={A:false,B:false};
+const CTL={A:{},B:{}};
 
 function toast(msg,ms=2200){const t=$('#toast');t.innerHTML=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),ms);}
 const fmt=s=>{s=Math.max(0,s);const m=Math.floor(s/60),r=Math.floor(s%60);return m+':'+String(r).padStart(2,'0')};
@@ -824,20 +825,20 @@ function buildMixer(){
  <div class="xf"><span>A</span><div class="fader h" id="xfader"><div class="track"></div><div class="zero" style="left:50%;top:6px;bottom:6px;width:2px;height:auto;right:auto"></div><div class="cap"></div></div><span>B</span></div>`;
  const eqdB=v=>v<0?v*40:v*6;
  ['A','B'].forEach(id=>{const ch=$(`.ch[data-id=${id}]`),d=decks[id];
-  const mk=(k,fn,def=0,min=-1,max=1)=>{MX[id][k]=def;makeKnob($(`[data-k=${k}]`,ch),{min,max,value:def,def,onChange:v=>{MX[id][k]=v;fn(v);}});};
+  const mk=(k,fn,def=0,min=-1,max=1)=>{MX[id][k]=def;CTL[id][k]=makeKnob($(`[data-k=${k}]`,ch),{min,max,value:def,def,onChange:v=>{MX[id][k]=v;fn(v);}});};
   mk('gain',v=>{d.trim.gain.value=Math.pow(10,v*12/20);ev('gain'+id);});
   mk('hi',v=>{d.eqH.gain.value=eqdB(v);});
   mk('mid',v=>{d.eqM.gain.value=eqdB(v);});
   mk('low',v=>{d.eqL.gain.value=eqdB(v);if(v<-0.85)ev('lowKill'+id);});
   mk('filter',v=>{d.setFilter(v);if(v<-0.5)ev('filtL'+id);if(v>0.5)ev('filtR'+id);});
-  MX[id].fader=0.85;makeFader($('.chfader',ch),{min:0,max:1,value:0.85,def:0.85,onChange:v=>{MX[id].fader=v;d.fader.gain.value=Math.pow(v,1.6);}});
+  MX[id].fader=0.85;CTL[id].fader=makeFader($('.chfader',ch),{min:0,max:1,value:0.85,def:0.85,onChange:v=>{MX[id].fader=v;d.fader.gain.value=Math.pow(v,1.6);}});
   d.fader.gain.value=Math.pow(0.85,1.6);
   const pf=$('.pfl',ch);pf.addEventListener('click',()=>{d.pfl=!d.pfl;pf.classList.toggle('on',d.pfl);d.cueG.gain.value=d.pfl?1:0;if(d.pfl&&!SET.split)toast('🎧 Activa “Audífonos divididos” en Ajustes para pre-escuchar',2600);});
  });
- makeKnob($('[data-k=master]'),{min:0,max:1,value:0.85,def:0.85,onChange:v=>{MX.master=v;masterG.gain.value=v*1.1;}});
- makeKnob($('[data-k=hpmix]'),{min:0,max:1,value:0.5,def:0.5,onChange:v=>{HP.mix=v;applySplit();}});
- makeKnob($('[data-k=hpvol]'),{min:0,max:1,value:0.7,def:0.7,onChange:v=>{HP.vol=v;applySplit();}});
- makeKnob($('[data-k=fxlvl]'),{min:0,max:1,value:FX.lvl,def:0.5,onChange:v=>{FX.lvl=v;applyFx();ev('fxLvl');}});
+ CTL.master=makeKnob($('[data-k=master]'),{min:0,max:1,value:0.85,def:0.85,onChange:v=>{MX.master=v;masterG.gain.value=v*1.1;}});
+ CTL.hpmix=makeKnob($('[data-k=hpmix]'),{min:0,max:1,value:0.5,def:0.5,onChange:v=>{HP.mix=v;applySplit();}});
+ CTL.hpvol=makeKnob($('[data-k=hpvol]'),{min:0,max:1,value:0.7,def:0.7,onChange:v=>{HP.vol=v;applySplit();}});
+ CTL.fxlvl=makeKnob($('[data-k=fxlvl]'),{min:0,max:1,value:FX.lvl,def:0.5,onChange:v=>{FX.lvl=v;applyFx();ev('fxLvl');}});
  $$('.fxb[data-fx]').forEach(b=>b.addEventListener('click',()=>{FX.sel=+b.dataset.fx;applyFx();ev('fxSel');}));
  $('#fxTime').addEventListener('click',()=>{FX.div=(FX.div+1)%FXDIV.length;applyFx();});
  $('#fxBm').addEventListener('click',()=>{FX.div=Math.max(0,FX.div-1);applyFx();});$('#fxBp').addEventListener('click',()=>{FX.div=Math.min(FXDIV.length-1,FX.div+1);applyFx();});

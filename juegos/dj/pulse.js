@@ -275,7 +275,7 @@ function onLoad(d){
   if(d.pa){
    if(DEMOS.find(x=>x.id===meta.id)){DEMO_AN[meta.id]={energy:d.pa.energy,diff:d.pa.diff};LS.set('dj_demo_an',DEMO_AN);}
    if(meta.file)addUserFile(meta.file,{bpm:d.bpm,fb:d.firstBeat,an:d.pa});
-   else if(meta.libId)updUser(meta.libId,{bpm:d.bpm,fb:d.firstBeat,cam:d.pa.cam,energy:d.pa.energy,diff:d.pa.diff});
+   else if(meta.libId)updUser(meta.libId,{bpm:d.bpm,fb:d.firstBeat,cam:d.pa.cam,energy:d.pa.energy,diff:d.pa.diff,dur:Math.round(d.len/d.sr)});
   }
   renderBar(true);if(HUB.open&&HUB.tab==='coach')renderTab();
  },60);
@@ -319,6 +319,7 @@ function tick(){
  obsTick();
  if(t-barT>0.3){barT=t;renderBar(false);if(HUB.open&&(HUB.tab!=='coach'||t-S.hubT>1)){S.hubT=t;liveHub();}}
  if(HUB.open&&HUB.tab==='pista')drawCrowd();
+ rbTick();midiTick();
 }
 function endStreak(){if(S.streak>=8)S.streaks.push([T(),S.streak]);if(S.streaks.length>60)S.streaks.shift();S.streak=0;S.mile=0;S.grace=0;}
 function pollControls(t){
@@ -450,7 +451,7 @@ async function idbPut(o){const db=await idb();if(!db)return;return new Promise(r
 async function idbDel(id){const db=await idb();if(!db)return;return new Promise(res=>{try{const tx=db.transaction('tracks','readwrite');tx.objectStore('tracks').delete(id);tx.oncomplete=()=>res();tx.onerror=()=>res();}catch(e){res();}});}
 idbAll().then(r=>{USER=r;if(HUB.open)renderTab();renderLoaderLib();});
 function estEnergy(b){return clamp(Math.round(1+(0.5*clamp((b-95)/40,0,1)+0.25)*9),1,10);}
-function demoItem(d){const an=DEMO_AN[d.id]||{};return{id:d.id,demo:true,title:d.title,artist:d.artist,genre:d.genre,bpm:d.bpm,cam:parseCam(d.key),energy:an.energy||estEnergy(d.bpm),diff:an.diff||(d.bpm<115||d.bpm>132?3:2),license:'Demo DECKS · sintetizado en tu navegador',hasAudio:true,col:d.col};}
+function demoItem(d){const an=DEMO_AN[d.id]||{};return{id:d.id,demo:true,title:d.title,artist:d.artist,genre:d.genre,bpm:d.bpm,cam:parseCam(d.key),energy:an.energy||estEnergy(d.bpm),diff:an.diff||(d.bpm<115||d.bpm>132?3:2),license:'Demo DECKS · sintetizado en tu navegador',hasAudio:true,col:d.col,dur:Math.round(64*4*60/d.bpm)};}
 function LIB(){return DEMOS.map(demoItem).concat(USER);}
 function slugT(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\.[a-z0-9]{2,4}$/,'').replace(/[^a-z0-9]+/g,' ').trim();}
 function saveRec(rec){return idbPut(rec.mem?{...rec,blob:undefined,hasAudio:false}:rec);}
@@ -484,7 +485,7 @@ async function analyzeItem(rec){
    res=await new Promise(r=>{AWcb[id]=r;w.postMessage({id,sr:buf.sampleRate,ch,meta},ch.map(c=>c.buffer));});if(res.err)res=null;}
   if(!res){const pk=computePeaks(buf),b=detectBPM(pk,buf.sampleRate);res={b,an:analyzeBuf(buf,pk,b.bpm,b.firstBeat,meta)};}
   const b=res.b,an=res.an;
-  Object.assign(rec,{bpm:b.bpm,fb:b.firstBeat,cam:rec.cam||an.cam,energy:an.energy,diff:an.diff,genre:rec.genre||an.genre});await saveRec(rec);return true;
+  Object.assign(rec,{bpm:b.bpm,fb:b.firstBeat,cam:rec.cam||an.cam,energy:an.energy,diff:an.diff,genre:rec.genre||an.genre,dur:Math.round(buf.length/buf.sampleRate)});await saveRec(rec);return true;
  }catch(e){rec.bad=true;return false;}
 }
 function decode(ab){const c=ctx||decode.oc||(decode.oc=new (window.OfflineAudioContext||window.webkitOfflineAudioContext)(2,44100,44100));return new Promise((res,rej)=>{const p=c.decodeAudioData(ab,res,rej);if(p&&p.then)p.then(res,rej);});}
@@ -998,6 +999,7 @@ function renderQuiz(){
  if($('#qzN'))$('#qzN').onclick=()=>{newQuestion();renderTab();};
 }
 function renderLoaderLib(){
+ if(typeof RB!=='undefined'&&RB.on){rbCompute();const c=$('#rbCount');if(c)c.textContent=RB.rows.length+' temas';const tr=$('#rbTree');if(tr&&!AQ.run&&!(document.activeElement&&document.activeElement.id==='rbQ')){rbRender();}else rbDrawRows();}
  const el=$('#demoList');if(!el)return;const L=LIB(),f=HUB.ldf||'Todas',cr=HUB.ldc||'',q=(HUB.ldq||'').toLowerCase(),cats=['Todas',...GENRES.filter(g=>L.some(i=>i.genre===g))];
  let list=f==='Todas'?L:L.filter(i=>i.genre===f);if(cr)list=list.filter(i=>i.crate===cr);if(q)list=list.filter(i=>((i.title||'')+' '+(i.artist||'')+' '+(i.crate||'')).toLowerCase().includes(q));
  const total=list.length;list=list.slice(0,120);
@@ -1010,13 +1012,220 @@ function renderLoaderLib(){
  $$('[data-li]',el).forEach(b=>b.onclick=()=>{$('#mLoad').classList.remove('open');libLoad(loadTarget,LIB().find(i=>i.id===b.dataset.li));});
 }
 
+/* ---------- VISTA REKORDBOX: NAVEGADOR DE MÚSICA ---------- */
+const RB={on:false,node:'all',sel:0,rows:[],sort:{k:null,dir:1},focus:'list',open:LS.get('dj_rb_open',{}),mx:LS.get('dj_rb_mx','compact'),q:''};
+const RB_ROWH=28;
+const CAMCOL={1:'#56e2b5',2:'#6de38a',3:'#a6e05c',4:'#e3d84f',5:'#f5b14c',6:'#f58a4f',7:'#f2646a',8:'#ec5fa0',9:'#c865d8',10:'#9a6ee8',11:'#6f8cf0',12:'#4fc0ec'};
+const fmtDur=s=>s?Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0'):'';
+function rbWanted(){const v=LS.get('dj_view',null);return v?v==='rb':innerWidth>=1000;}
+function rbApply(){
+ RB.on=rbWanted();document.body.classList.toggle('rb',RB.on);
+ document.body.classList.toggle('mx-compact',RB.on&&RB.mx==='compact');document.body.classList.toggle('mx-hidden',RB.on&&RB.mx==='hidden');
+ const vb=$('#btnView');if(vb)vb.textContent=RB.on?'🗂 Rekordbox':'🎛 Clásica';
+ if(RB.on){rbRender();setTimeout(rbSize,50);}
+ [A,B].forEach(d=>{try{d.resize();}catch(e){}});
+}
+function rbSize(){const el=$('#rbBrowser');if(!el||!RB.on)return;const top=el.getBoundingClientRect().top+scrollY;el.style.height=Math.max(320,innerHeight-top-6)+'px';rbDrawRows();}
+function rbFolders(){const cl=crateList();const root={c:{},n:0};
+ for(const c of cl){const parts=c.lbl.split('/');let nd=root;let acc=c.k.slice(0,c.k.length-c.lbl.length);
+  parts.forEach((p,i)=>{acc+=(i?'/':'')+p;nd.c[p]=nd.c[p]||{c:{},n:0,k:acc};nd=nd.c[p];nd.n+=c.n;});}
+ return root;}
+function rbNodeFilter(node){
+ if(node==='all')return()=>true;if(node==='demos')return i=>i.demo;if(node==='mine')return i=>!i.demo;
+ if(node.startsWith('g:')){const g=node.slice(2);return i=>i.genre===g;}
+ if(node.startsWith('c:')){const k=node.slice(2);return i=>i.crate===k||(i.crate&&i.crate.startsWith(k+'/'));}
+ if(node==='hist'){const t=new Set(SETLOG.map(x=>x.title));return i=>t.has(i.title);}
+ if(node==='compat'){const ref=[A,B].find(d=>d.playing&&d.pa)||[A,B].find(d=>d.pa);if(!ref)return()=>false;return i=>i.cam&&camScore(ref.pa.cam,i.cam).s>=85&&i.bpm&&Math.abs(i.bpm-ref.effBpm())/ref.effBpm()<0.06;}
+ return()=>true;}
+function rbCompute(){
+ let L=LIB().filter(rbNodeFilter(RB.node));const q=RB.q.toLowerCase();
+ if(q)L=L.filter(i=>((i.title||'')+' '+(i.artist||'')+' '+(i.genre||'')+' '+(i.crate||'')).toLowerCase().includes(q));
+ const k=RB.sort.k,dir=RB.sort.dir;
+ if(k)L.sort((a,b)=>{let x=a[k],y=b[k];if(k==='cam'){x=x?parseInt(x)*2+(x.slice(-1)==='B'?1:0):99;y=y?parseInt(y)*2+(y.slice(-1)==='B'?1:0):99;}
+  if(x==null||x==='')return 1;if(y==null||y==='')return -1;return (typeof x==='string'?x.localeCompare(y,'es'):x-y)*dir;});
+ RB.rows=L;if(RB.sel>=L.length)RB.sel=Math.max(0,L.length-1);
+}
+function rbTreeHTML(){
+ const L=LIB(),cnt=f=>L.filter(f).length,root=rbFolders(),gens=GENRES.filter(g=>L.some(i=>i.genre===g));
+ const item=(node,label,n,depth=0,hasKids=false)=>`<div class="rbN ${RB.node===node?'on':''}${RB.focus==='tree'&&RB.node===node?' foc':''}" data-n="${esc(node)}" style="padding-left:${8+depth*14}px">${hasKids?`<span class="tw" data-t="${esc(node)}">${RB.open[node]?'▾':'▸'}</span>`:'<span class="tw"></span>'}${label}<small>${n}</small></div>`;
+ let h=item('all','🎵 Colección',L.length)+item('demos','🎛 Demos DECKS',cnt(i=>i.demo))+(USER.length?item('mine','💾 Mis temas',USER.length):'');
+ const walk=(nd,depth)=>{for(const name of Object.keys(nd.c).sort((a,b)=>a.localeCompare(b,'es'))){const ch=nd.c[name],node='c:'+ch.k,kids=Object.keys(ch.c).length>0;h+=item(node,'📂 '+esc(name),ch.n,depth,kids);if(kids&&RB.open[node])walk(ch,depth+1);}};
+ if(Object.keys(root.c).length){h+='<div class="rbS">CARPETAS</div>';walk(root,0);}
+ h+='<div class="rbS">INTELIGENTE</div>'+item('compat','✨ Compatibles con lo que suena',cnt(rbNodeFilter('compat')))+item('hist','🕘 Historial de esta sesión',cnt(rbNodeFilter('hist')));
+ if(gens.length){h+='<div class="rbS">GÉNEROS</div>';gens.forEach(g=>h+=item('g:'+g,'🏷 '+esc(g),cnt(i=>i.genre===g)));}
+ return h;}
+function rbRender(){
+ const el=$('#rbBrowser');if(!el)return;rbCompute();
+ el.innerHTML=`<aside class="rbTree" id="rbTree">${rbTreeHTML()}</aside>
+ <div class="rbMain"><div class="rbBar"><input class="in" id="rbQ" placeholder="🔎 Buscar" value="${esc(RB.q)}"><span class="mut" id="rbCount">${RB.rows.length} temas</span>
+  <label class="btn sm" id="rbDirL">📂 Agregar carpeta</label><button class="btn sm" id="rbMx">Mixer: ${RB.mx==='full'?'completo':RB.mx==='compact'?'compacto':'oculto'}</button></div>
+  <div class="rbHead"><span></span>${[['title','Título'],['artist','Artista'],['bpm','BPM'],['cam','Tono'],['energy','Energía'],['dur','Tiempo'],['genre','Género'],['crate','Carpeta']].map(c=>`<span data-s="${c[0]}" class="${RB.sort.k===c[0]?'on':''}">${c[1]}${RB.sort.k===c[0]?(RB.sort.dir>0?' ▲':' ▼'):''}</span>`).join('')}<span></span></div>
+  <div class="rbList" id="rbList"><div class="rbSp" id="rbSp"></div></div></div>`;
+ $('#rbDirL').appendChild(dirInput());
+ $('#rbMx').onclick=()=>{RB.mx=RB.mx==='compact'?'full':RB.mx==='full'?'hidden':'compact';LS.set('dj_rb_mx',RB.mx);rbApply();};
+ {const qi=$('#rbQ');qi.oninput=()=>{RB.q=qi.value;RB.sel=0;rbCompute();$('#rbCount').textContent=RB.rows.length+' temas';$('#rbList').scrollTop=0;rbDrawRows();};}
+ $$('.rbHead [data-s]').forEach(h=>h.onclick=()=>{const k=h.dataset.s;if(RB.sort.k===k)RB.sort.dir=-RB.sort.dir;else{RB.sort.k=k;RB.sort.dir=1;}rbRender();});
+ $$('#rbTree .rbN').forEach(n=>n.onclick=e=>{if(e.target.classList.contains('tw')&&e.target.dataset.t){const t=e.target.dataset.t;RB.open[t]=!RB.open[t];LS.set('dj_rb_open',RB.open);rbRender();return;}RB.node=n.dataset.n;RB.sel=0;RB.focus='list';rbRender();});
+ const list=$('#rbList');list.onscroll=rbDrawRows;
+ list.addEventListener('dragover',e=>e.preventDefault());list.addEventListener('drop',async e=>{e.preventDefault();if(e.dataTransfer.files&&e.dataTransfer.files.length)importFiles(await filesFromDrop(e.dataTransfer));});
+ rbSize();
+}
+function rbDrawRows(){
+ const list=$('#rbList'),sp=$('#rbSp');if(!list||!sp)return;const n=RB.rows.length;sp.style.height=(n*RB_ROWH)+'px';
+ const top=list.scrollTop,h=list.clientHeight,i0=Math.max(0,Math.floor(top/RB_ROWH)-5),i1=Math.min(n,Math.ceil((top+h)/RB_ROWH)+5);
+ const ref=[A,B].find(d=>d.playing&&d.pa)||[A,B].find(d=>d.pa);let html='';
+ for(let i=i0;i<i1;i++){const it=RB.rows[i],onA=A.meta&&(A.meta.libId===it.id||A.meta.id===it.id),onB=B.meta&&(B.meta.libId===it.id||B.meta.id===it.id);
+  const cs=ref&&it.cam?camScore(ref.pa.cam,it.cam).s:0,cn=it.cam?parseInt(it.cam):0;
+  html+=`<div class="rbR${i===RB.sel?' sel':''}${RB.focus==='list'&&i===RB.sel?' foc':''}" data-i="${i}" draggable="true" style="top:${i*RB_ROWH}px"><span class="ld2">${onA?'<b class="la">A</b>':''}${onB?'<b class="lb">B</b>':''}</span><span class="t">${esc(it.title)}</span><span>${esc(it.demo?'DECKS':(it.artist||''))}</span><span class="num">${it.bpm?it.bpm.toFixed(1):'—'}</span><span class="num"><b style="color:${cn?CAMCOL[cn]:'#777'}">${esc(it.cam||'—')}</b>${cs>=85?' ✓':''}</span><span class="en">${it.energy?`<i style="width:${it.energy*5}px"></i>`:''}<em>${it.energy||''}</em></span><span class="num">${fmtDur(it.dur)}</span><span>${esc(it.genre||'')}</span><span class="cr">${esc(it.crate?it.crate.split('/').slice(-1)[0]:'')}</span><span class="ab"><button data-l="A">A</button><button data-l="B">B</button></span></div>`;}
+ [...list.querySelectorAll('.rbR')].forEach(r=>r.remove());list.insertAdjacentHTML('beforeend',html);
+ list.querySelectorAll('.rbR').forEach(r=>{const i=+r.dataset.i;
+  r.onclick=e=>{if(e.target.dataset.l){rbLoad(e.target.dataset.l==='A'?A:B,i);return;}RB.sel=i;RB.focus='list';rbDrawRows();};
+  r.ondblclick=()=>rbLoad(!A.playing?A:!B.playing?B:A,i);
+  r.ondragstart=e=>{e.dataTransfer.setData('text/decks-id',RB.rows[i].id);e.dataTransfer.effectAllowed='copy';};});
+}
+function rbLoad(d,i){if(!RB.rows.length)rbCompute();const it=RB.rows[i!=null?i:RB.sel];if(!it)return;if(d.playing&&audible(d)>0.1){toast(`Deck ${d.id} está sonando al aire: detenlo antes de cargar otro tema`,2200);return;}libLoad(d,it);setTimeout(rbDrawRows,1500);}
+function rbBrowse(delta){
+ if(!RB.on)return;
+ if(RB.focus==='tree'){const ns=[...document.querySelectorAll('#rbTree .rbN')].map(n=>n.dataset.n);let k=ns.indexOf(RB.node);k=clamp(k+delta,0,ns.length-1);RB.node=ns[k];RB.sel=0;rbRender();return;}
+ RB.sel=clamp(RB.sel+delta,0,Math.max(0,RB.rows.length-1));const list=$('#rbList');if(list){const y=RB.sel*RB_ROWH;if(y<list.scrollTop)list.scrollTop=y;else if(y+RB_ROWH>list.scrollTop+list.clientHeight)list.scrollTop=y+RB_ROWH-list.clientHeight;}rbDrawRows();}
+function rbToggleFocus(){if(!RB.on)return;RB.focus=RB.focus==='list'?'tree':'list';rbRender();}
+function rbMount(){
+ const sec=document.createElement('section');sec.id='rbBrowser';$('#stage').after(sec);
+ const vb=document.createElement('button');vb.className='hb';vb.id='btnView';vb.title='Cambiar vista';vb.onclick=()=>{LS.set('dj_view',RB.on?'classic':'rb');rbApply();};$('.hbtns').prepend(vb);
+ [A,B].forEach(d=>{d.el.addEventListener('dragover',e=>e.preventDefault());d.el.addEventListener('drop',e=>{const id=e.dataTransfer.getData('text/decks-id');if(id){e.preventDefault();const it=LIB().find(x=>x.id===id);if(it)libLoad(d,it);}});});
+ addEventListener('resize',()=>{const w=rbWanted();if(w!==RB.on)rbApply();else rbSize();});
+ document.addEventListener('keydown',e=>{if(!RB.on||/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)||$('.modal.open'))return;
+  if(e.key==='ArrowDown'){e.preventDefault();rbBrowse(1);}else if(e.key==='ArrowUp'){e.preventDefault();rbBrowse(-1);}
+  else if(e.key==='ArrowLeft'&&e.shiftKey){rbLoad(A);}else if(e.key==='ArrowRight'&&e.shiftKey){rbLoad(B);}});
+ rbApply();
+}
+let rbT=0;function rbTick(){if(!RB.on)return;const t=T();if(t-rbT>2){rbT=t;if(RB.node==='compat'||RB.node==='hist'){rbCompute();const c=$('#rbCount');if(c)c.textContent=RB.rows.length+' temas';}rbDrawRows();}}
+
+/* ---------- PIONEER DDJ-FLX4 (Web MIDI) ---------- */
+const MIDI={acc:null,ins:[],outs:[],status:'Sin conectar',log:[],msb:{},inv:LS.get('dj_midi_inv',false),led:{}};
+async function midiInit(manual){
+ if(!navigator.requestMIDIAccess){MIDI.status='Este navegador no permite controladoras MIDI. Usa Chrome o Edge en el computador.';midiUI();return;}
+ try{MIDI.acc=await navigator.requestMIDIAccess({sysex:false});}
+ catch(e){MIDI.status=window.self!==window.top?'Aquí no se puede usar la controladora (la página está dentro de claude.ai). Usa el instalador para Windows, el sitio o el archivo HTML.':'No diste permiso para usar dispositivos MIDI.';midiUI();if(manual)toast(MIDI.status,3500);return;}
+ MIDI.acc.onstatechange=midiBind;midiBind();
+}
+function midiBind(){
+ if(!MIDI.acc)return;const all=[...MIDI.acc.inputs.values()],outs=[...MIDI.acc.outputs.values()];
+ const pick=l=>{const f=l.filter(p=>/flx4|ddj/i.test(p.name||''));return f.length?f:l;};
+ MIDI.ins.forEach(i=>{i.onmidimessage=null;});MIDI.ins=pick(all);MIDI.outs=pick(outs);
+ MIDI.ins.forEach(i=>{i.onmidimessage=onMidi;});
+ const flx=all.some(p=>/flx4|ddj/i.test(p.name||''));
+ MIDI.status=flx?'DDJ-FLX4 conectada':all.length?'MIDI activo: '+all.map(p=>p.name).join(', '):'No encuentro la controladora: conéctala por USB.';
+ if(flx&&!MIDI.hello){MIDI.hello=1;toast('🎛 DDJ-FLX4 conectada: el mezclador físico controla DECKS',2800);}
+ MIDI.led={};midiUI();
+}
+function midiUI(){const c=$('#pbM');if(c){c.textContent='🎛 '+(/conectada/.test(MIDI.status)?'FLX4 ✓':MIDI.acc?'FLX4 —':'Conectar FLX4');c.classList.toggle('c-ex',/conectada/.test(MIDI.status));}const st=$('#mdSt');if(st)st.textContent=MIDI.status;}
+function midiSend(a,b,c){for(const o of MIDI.outs){try{o.send([a,b,c]);}catch(e){}}}
+function midiLed(key,a,b,on){const v=on?0x7F:0;if(MIDI.led[key]===v)return;MIDI.led[key]=v;midiSend(a,b,v);}
+let mdT=0;function midiTick(){if(!MIDI.outs.length)return;const t=T();if(t-mdT<0.12)return;mdT=t;
+ [A,B].forEach((d,ch)=>{midiLed('p'+ch,0x90+ch,0x0B,d.playing&&!d.cuePrev);midiLed('c'+ch,0x90+ch,0x0C,d.loaded&&(!d.playing||d.cuePrev));
+  midiLed('l'+ch,0x90+ch,0x4D,!!d.loop);for(let i=0;i<8;i++)midiLed('h'+ch+i,0x97+ch*2,i,d.hot&&d.hot[i]!=null);});}
+const v7=v=>v/127,c7=v=>clamp((v-64)/63,-1,1);
+function hiRes(key,msb,lsb){return lsb==null?msb/127:((msb<<7)|lsb)/16383;}
+function setShift(d,v){SHIFT[d.id]=v;const sh=$('.shift',d.el);if(sh)sh.classList.toggle('on',v);d.el.classList.toggle('shifted',v);}
+function jogTicks(d,t,mode){
+ if(!d.loaded)return;const sr=d.sr;
+ if(mode==='scratch'&&d.scratching){d.scrTarget+=t/720*SEC_PER_REV*sr;return;}
+ if(mode==='search'){d.seek(d.posEst()+t*sr*0.04);return;}
+ if(!d.playing){d.seek(d.posEst()+t/720*SEC_PER_REV*sr);return;}
+ d.bend=clamp(t*0.012,-0.3,0.3);d.send({t:'bend',v:d.bend});ev((t>0?'nudgeP':'nudgeM')+d.id);
+ clearTimeout(d._mb);d._mb=setTimeout(()=>{d.bend=0;d.send({t:'bend',v:0});},90);}
+function onMidi(e){
+ const [st,d1,d2=0]=e.data;const type=st&0xF0,ch=st&0x0F;let val=d2;if(type===0x80)val=0;
+ MIDI.log.unshift([st.toString(16),d1.toString(16),d2]);if(MIDI.log.length>12)MIDI.log.length=12;const lg=$('#mdLog');if(lg)lg.textContent=MIDI.log.map(x=>x.join(' ')).join('\n');
+ if(!ready())return;resumeCtx();
+ const press=val>0;
+ if(type===0x90||type===0x80){
+  if(ch<=1){const d=ch?B:A;
+   switch(d1){
+    case 0x3F:setShift(d,press);break;
+    case 0x0B:if(press){if(SHIFT[d.id])return;d.togglePlay();}break;
+    case 0x0E:break;
+    case 0x0C:if(press)d.cueDown();else d.cueUp();break;
+    case 0x48:if(press&&d.loaded){d.playing=false;d.send({t:'play',v:false,hard:true});d.seek(d.cue);d.ui();}break;
+    case 0x36:case 0x67:if(!d.loaded)break;if(press){d.touching=true;if(d.mode==='vinyl'){d.scratching=true;d.scrTarget=d.posEst();d.send({t:'scr',on:true,r:0});}ev('touch'+d.id);}else{d.touching=false;if(d.scratching){d.scratching=false;d.send({t:'scr',on:false});}}break;
+    case 0x58:if(press)d.sync();break;
+    case 0x60:if(press){const r=$('.rng',d.el);if(r)r.click();}break;
+    case 0x10:if(press)d.loopIn();break;
+    case 0x11:if(press)d.loopOut();break;
+    case 0x4D:if(press)d.loop4();break;
+    case 0x51:if(press)d.cueLoopCall(-1);break;
+    case 0x53:if(press)d.cueLoopCall(1);break;
+    case 0x3E:if(press&&d.bpm)d.seek(d.posEst()-16*d.beatLen());break;
+    case 0x3D:if(press&&d.bpm)d.seek(d.posEst()+16*d.beatLen());break;
+    case 0x54:if(press){const p=$(`.ch[data-id=${d.id}] .pfl`);if(p)p.click();}break;
+   }
+   return;}
+  if(ch>=7&&ch<=10){const d=ch<=8?A:B,sh=(ch===8||ch===10),grp=d1&0x70,i=d1&0x07;
+   if(grp===0x10||grp===0x50){if(press){d.padMode='padfx';d.ui();d.pfxDown(i);}else d.pfxUp(i);return;}
+   if(!press)return;
+   if(grp===0x00){d.padMode='hot';if(sh){if(d.hot[i]!=null){d.hot[i]=null;ev('hotDel');d.ui();}}else d.hotPress(i);d.ui();return;}
+   if(grp===0x20){d.padMode='jump';d.padPress(i);d.ui();return;}
+   if(grp===0x60){d.padMode='loop';d.padPress(i);d.ui();return;}
+   if(grp===0x30){if(typeof playSample==='function')playSample(i,d);return;}
+   toast('KEYBOARD y KEY SHIFT no están disponibles en DECKS',1500);return;}
+  if(ch===6){if(!press)return;
+   if(d1===0x46)rbLoad(A);else if(d1===0x47)rbLoad(B);else if(d1===0x41||d1===0x42)rbToggleFocus();return;}
+  if(ch===4||ch===5){
+   if(d1===0x10||d1===0x11){FX.asg[ch===4?'A':'B']=press;applyFx();return;}
+   if(!press)return;
+   if(d1===0x63){FX.sel=(FX.sel+1)%3;applyFx();}else if(d1===0x64){FX.sel=(FX.sel+2)%3;applyFx();}
+   else if(d1===0x4A){FX.div=Math.max(0,FX.div-1);applyFx();}else if(d1===0x4B){FX.div=Math.min(FXDIV.length-1,FX.div+1);applyFx();}
+   else if(d1===0x47){FX.on=!FX.on;applyFx();if(FX.on)ev('fxOn');}else if(d1===0x43){FX.on=false;applyFx();}
+   return;}
+  return;}
+ if(type===0xB0){
+  const lsb=d1>=0x20&&d1<0x40,base=lsb?d1-0x20:d1,key=ch+':'+base;
+  if(!lsb&&d1<0x20)MIDI.msb[key]=val;
+  const msb=MIDI.msb[key]!=null?MIDI.msb[key]:val,v=lsb?hiRes(key,msb,val):val/127;
+  if(ch<=1){const d=ch?B:A,C=CTL[d.id];
+   if(d1===0x22){jogTicks(d,val-64,'scratch');return;}
+   if(d1===0x23||d1===0x21){jogTicks(d,val-64,'bend');return;}
+   if(d1===0x29){jogTicks(d,val-64,'search');return;}
+   if(base===0x00){if(lsb||d1===0x00){let pv=v*2-1;if(MIDI.inv)pv=-pv;d.pitchF.set(clamp(pv,-1,1));}return;}
+   if(base===0x13){C.fader&&C.fader.set(v);return;}
+   const cv=clamp(v*2-1,-1,1),cen=Math.abs(cv)<0.025?0:cv;
+   if(base===0x04){C.gain&&C.gain.set(cen);return;}
+   if(base===0x07){C.hi&&C.hi.set(cen);return;}
+   if(base===0x0B){C.mid&&C.mid.set(cen);return;}
+   if(base===0x0F){C.low&&C.low.set(cen);return;}
+   return;}
+  if(ch===6){
+   if(d1===0x40){rbBrowse(val<64?val:val-128);return;}
+   if(base===0x1F){XF&&XF.set(clamp(v*2-1,-1,1));return;}
+   const cv=clamp(v*2-1,-1,1),cen=Math.abs(cv)<0.025?0:cv;
+   if(base===0x17){CTL.A.filter&&CTL.A.filter.set(cen);return;}
+   if(base===0x18){CTL.B.filter&&CTL.B.filter.set(cen);return;}
+   if(base===0x0C){CTL.hpmix&&CTL.hpmix.set(v);return;}
+   return;}
+  if(ch===4&&base===0x02){CTL.fxlvl&&CTL.fxlvl.set(v);return;}
+ }
+}
+function midiModal(){
+ let m=$('#mMidi');if(!m){m=document.createElement('div');m.className='modal';m.id='mMidi';document.body.appendChild(m);m.addEventListener('click',e=>{if(e.target===m||e.target.hasAttribute('data-close'))m.classList.remove('open');});}
+ m.innerHTML=`<div class="mbox"><h2>🎛 Controladora DDJ-FLX4<button class="x" data-close>✕</button></h2>
+ <p id="mdSt" style="font-weight:700">${esc(MIDI.status)}</p>
+ <p style="font-size:13.5px;line-height:1.5">Conecta la FLX4 por USB y toca <b>Conectar</b>. El navegador te pedirá permiso para usar dispositivos MIDI. Funciona en Chrome o Edge en el computador: en el instalador de Windows, en el sitio o en el archivo HTML. Dentro de claude.ai no está disponible.</p>
+ <p style="font-size:13px;line-height:1.5" class="mut">Responden: PLAY, CUE, SHIFT, BEAT SYNC, jog (scratch con la parte de arriba, pitch bend con el borde y búsqueda con SHIFT), TEMPO, la sección de loop, los 8 pads (HOT CUE, PAD FX, BEAT JUMP, BEAT LOOP y SAMPLER), TRIM, EQ, CFX, faders de canal, crossfader, CUE de audífonos, BEAT FX y el navegador (perilla BROWSE y LOAD 1/LOAD 2). Las luces de PLAY, CUE, loop y hot cues se encienden según DECKS.</p>
+ <div class="brow"><button class="btn acc" id="mdGo">Conectar</button><label class="btn"><input type="checkbox" id="mdInv" ${MIDI.inv?'checked':''}> Invertir TEMPO</label></div>
+ <h3>Últimas señales</h3><pre class="aiout" id="mdLog" style="font-size:12px;min-height:40px">${esc(MIDI.log.map(x=>x.join(' ')).join('\n'))||'Mueve un control de la FLX4…'}</pre>
+ <p class="mut" style="font-size:12px">El audio sale por la tarjeta de sonido de Windows. Para escuchar por la FLX4, elígela como salida de sonido en Configuración de Windows → Sistema → Sonido. Si el TEMPO va al revés (arriba más rápido), marca “Invertir TEMPO”.</p></div>`;
+ m.classList.add('open');$('#mdGo').onclick=()=>midiInit(true);$('#mdInv').onchange=e=>{MIDI.inv=e.target.checked;LS.set('dj_midi_inv',MIDI.inv);};
+}
+
 /* ---------- MONTAJE DEL DOM ---------- */
 function mount(){
  const bar=document.createElement('section');bar.id='pulseBar';
- bar.innerHTML=`<div class="pbRow"><button class="pbChip" id="pbA" data-d="A"></button><button class="pbChip" id="pbC"></button><button class="pbChip" id="pbB" data-d="B"></button><button class="pbChip" id="pbP" hidden></button><button class="pbChip" id="pbSp">🟢 Spotify</button><button class="pbChip" id="pbX"></button><button class="pbChip pbS" id="pbS"></button></div><div id="pbDet" hidden></div><div id="pbObs"></div>`;
+ bar.innerHTML=`<div class="pbRow"><button class="pbChip" id="pbA" data-d="A"></button><button class="pbChip" id="pbC"></button><button class="pbChip" id="pbB" data-d="B"></button><button class="pbChip" id="pbP" hidden></button><button class="pbChip" id="pbM">🎛 Conectar FLX4</button><button class="pbChip" id="pbSp">🟢 Spotify</button><button class="pbChip" id="pbX"></button><button class="pbChip pbS" id="pbS"></button></div><div id="pbDet" hidden></div><div id="pbObs"></div>`;
  $('#coach').after(bar);
  const tg=()=>{S.detOpen=!S.detOpen;$('#pbDet').hidden=!S.detOpen;renderDet();};
- $('#pbA').onclick=tg;$('#pbB').onclick=tg;$('#pbC').onclick=tg;$('#pbX').onclick=()=>openHub('progreso');$('#pbSp').onclick=()=>openHub('playlist');$('#pbP').onclick=()=>openHub('pista');
+ $('#pbA').onclick=tg;$('#pbB').onclick=tg;$('#pbC').onclick=tg;$('#pbX').onclick=()=>openHub('progreso');$('#pbSp').onclick=()=>openHub('playlist');$('#pbM').onclick=()=>midiModal();
+ {const sb=$('#startBtn');if(sb)sb.addEventListener('click',()=>{if(window.self===window.top&&navigator.requestMIDIAccess)setTimeout(()=>midiInit(false),400);});}$('#pbP').onclick=()=>openHub('pista');
  $('#pbS').onclick=()=>{if(SES.active)endSession();else startSession();};
  const hb=document.createElement('button');hb.className='hb';hb.id='btnPulse';hb.textContent='🧠 Pulse';hb.onclick=()=>openHub();$('.hbtns').prepend(hb);
  const ap=document.createElement('button');ap.className='acadPulse';ap.innerHTML='🧠 Pulse AI Coach<small>Análisis de temas, prácticas guiadas, pista virtual, criterio musical y tu progreso.</small>';ap.onclick=()=>{$('#mAcad').classList.remove('open');openHub();};
@@ -1040,9 +1249,9 @@ function mount(){
  const lc=$('#lessonCard');new MutationObserver(()=>{if(!lc.hidden&&RUN){pc.hidden=true;RUN=null;}}).observe(lc,{attributes:true,attributeFilter:['hidden']});
  {const fb=$('#mLoad .filebtn');if(fb){const l=document.createElement('label');l.className='filebtn';l.style.marginTop='8px';l.textContent='📂 Cargar carpeta completa a la biblioteca';l.appendChild(dirInput());fb.after(l);const pm=document.createElement('p');pm.id='ldMsg';pm.className='mut';pm.style.fontSize='12px';l.after(pm);}
   const mb=$('#mLoad .mbox');if(mb){mb.addEventListener('dragover',e=>e.preventDefault());mb.addEventListener('drop',async e=>{e.preventDefault();importFiles(await filesFromDrop(e.dataTransfer));});}}
- renderLoaderLib();renderBar(true);
+ renderLoaderLib();renderBar(true);rbMount();
 }
 mount();
 ['keydown','keyup'].forEach(t=>document.addEventListener(t,e=>{if(/^(TEXTAREA|SELECT|INPUT)$/.test(e.target.tagName))e.stopImmediatePropagation();},true));
-window.PULSE={ev:onEv,onLoad,tick,openHub,analyzeBuf,compat,camScore,parsePlaylist,analyzePlaylist,_C:C,_S:S};
+window.PULSE={_midi:d=>onMidi({data:d}),_rb:RB,ev:onEv,onLoad,tick,openHub,analyzeBuf,compat,camScore,parsePlaylist,analyzePlaylist,_C:C,_S:S};
 })();

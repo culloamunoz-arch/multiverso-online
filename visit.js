@@ -24,7 +24,7 @@
 })();
 
 /* Modo sin internet + autoarreglo: si el sitio publicado es más nuevo que lo que tiene este teléfono, limpia la copia guardada y recarga */
-(function(){ var BUILD='2026.11.27b'; window.MVO_BUILD=BUILD; var cs=document.currentScript, BASE=new URL('.',(cs&&cs.src)||location.href).href;
+(function(){ var BUILD='2026.11.27c'; window.MVO_BUILD=BUILD; var cs=document.currentScript, BASE=new URL('.',(cs&&cs.src)||location.href).href;
   function heal(){ try{ if(sessionStorage.getItem('mvo_heal')===BUILD) return; sessionStorage.setItem('mvo_heal',BUILD); }catch(e){}
     var jobs=[]; try{ if(window.caches) jobs.push(caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return caches.delete(k); })); })); }catch(e){}
     try{ if(navigator.serviceWorker) jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); })); }catch(e){}
