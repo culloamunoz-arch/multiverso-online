@@ -113,3 +113,54 @@ body:not(.has-ai) .ai{display:none!important}
 @media (prefers-reduced-motion:reduce){#lessonCard.win{animation:none}}
 
 .drop{border:2px dashed #3a3b42;border-radius:10px;padding:16px;text-align:center;color:var(--mut);font-size:13px;margin-top:8px}.drop.on{border-color:var(--acc);color:var(--acc);background:#1b2410}
+
+/* ===== VISTA REKORDBOX ===== */
+#rbBrowser{display:none}
+body.rb{padding-bottom:0}
+body.rb #rbBrowser{display:grid;grid-template-columns:230px minmax(0,1fr);margin:0 6px 6px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#121317;min-height:320px}
+body.rb #waves{height:150px}
+body.rb #stage{max-width:none;padding:6px;gap:6px;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:stretch}
+body.rb .deck{padding:8px}
+body.rb .dbody{max-height:150px;margin-top:6px}
+body.rb canvas.plat{max-width:150px}
+body.rb .pitchCol .fader{min-height:80px}
+body.rb .pads .pad{height:24px;font-size:10px}
+body.rb .b.cue,body.rb .b.play{padding:8px 0;font-size:12px}
+body.rb .row .b{padding:6px 0}
+body.rb .lpr{margin-top:6px}
+body.rb .dctrl{gap:4px;margin-top:6px}
+body.mx-compact #mixer{width:150px;padding:8px}
+body.mx-compact #mixer .knobs,body.mx-compact #mixer .fxs,body.mx-compact #mixer .mc,body.mx-compact #mixer .pfl{display:none}
+body.mx-compact #mixer .mx{grid-template-columns:1fr 1fr}
+body.mx-compact #mixer .chf{height:120px}
+body.mx-hidden #mixer{display:none}
+body.mx-hidden #stage{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.rbTree{overflow:auto;border-right:1px solid var(--line);padding:6px 0;font-size:13px;background:#0f1013;min-height:0}
+.rbN{display:flex;align-items:center;gap:4px;padding:5px 8px;cursor:pointer;white-space:nowrap;overflow:hidden}
+.rbN small{margin-left:auto;color:var(--mut);font-size:11px;padding-left:6px}
+.rbN:hover{background:#1a1b20}.rbN.on{background:#22301a;color:var(--acc)}.rbN.foc{outline:1px solid var(--acc);outline-offset:-1px}
+.rbN .tw{width:12px;flex:none;color:var(--mut);text-align:center}
+.rbS{font-size:10px;letter-spacing:.1em;color:var(--mut);padding:10px 10px 4px}
+.rbMain{display:flex;flex-direction:column;min-width:0;min-height:0}
+.rbBar{display:flex;gap:8px;align-items:center;padding:6px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.rbBar .in{max-width:320px;padding:6px 10px;font-size:14px}
+.rbBar .mut{font-size:12px;margin-right:auto}
+.rbHead,.rbR{display:grid;grid-template-columns:36px minmax(140px,2.2fr) minmax(90px,1.4fr) 62px 62px 76px 52px minmax(70px,.8fr) minmax(80px,1fr) 60px;align-items:center;gap:6px;padding:0 8px}
+.rbHead{font-size:11px;color:var(--mut);height:28px;border-bottom:1px solid var(--line);background:#16171b;flex:none}
+.rbHead span{cursor:pointer;white-space:nowrap;overflow:hidden}.rbHead span.on{color:var(--acc)}
+.rbList{position:relative;flex:1;overflow:auto;min-height:0}
+.rbSp{width:1px}
+.rbR{position:absolute;left:0;right:0;height:28px;font-size:13px;border-bottom:1px solid #1b1c21;cursor:default}
+.rbR span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rbR:hover{background:#1a1b20}.rbR.sel{background:#1f2a14}.rbR.foc{box-shadow:inset 3px 0 0 var(--acc)}
+.rbR .num{font-family:'JetBrains Mono',monospace;font-size:12px;text-align:right}
+.rbR .t{font-weight:600}
+.rbR .en{display:flex;align-items:center;gap:5px}.rbR .en i{display:block;height:6px;border-radius:3px;background:linear-gradient(90deg,#29b6ff,#b8ff3c,#ff7a1a);flex:none}.rbR .en em{font-style:normal;font-size:11px;color:var(--mut)}
+.rbR .ld2 b{display:inline-block;width:15px;height:15px;border-radius:3px;font-size:10px;text-align:center;line-height:15px;color:#111;margin-right:2px}.rbR .la{background:var(--A)}.rbR .lb{background:var(--B)}
+.rbR .ab{display:flex;gap:3px;opacity:0}.rbR:hover .ab,.rbR.sel .ab{opacity:1}
+.rbR .ab button{width:26px;height:20px;border-radius:4px;border:1px solid #35363d;background:#1a1b1f;font-size:10px;font-weight:700;padding:0}
+.rbR .ab button[data-l=A]{color:var(--A)}.rbR .ab button[data-l=B]{color:var(--B)}
+.rbR .cr{color:var(--mut);font-size:12px}
+.pbChip[hidden]{display:none}
+body.rb .pitchCol .rng,body.rb .pitchCol .tlbl,body.rb .pitchCol>small{display:none}
+body.rb .pitchCol .fader{min-height:96px}
