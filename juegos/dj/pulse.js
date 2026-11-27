@@ -453,21 +453,47 @@ function estEnergy(b){return clamp(Math.round(1+(0.5*clamp((b-95)/40,0,1)+0.25)*
 function demoItem(d){const an=DEMO_AN[d.id]||{};return{id:d.id,demo:true,title:d.title,artist:d.artist,genre:d.genre,bpm:d.bpm,cam:parseCam(d.key),energy:an.energy||estEnergy(d.bpm),diff:an.diff||(d.bpm<115||d.bpm>132?3:2),license:'Demo DECKS · sintetizado en tu navegador',hasAudio:true,col:d.col};}
 function LIB(){return DEMOS.map(demoItem).concat(USER);}
 function slugT(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\.[a-z0-9]{2,4}$/,'').replace(/[^a-z0-9]+/g,' ').trim();}
-async function addUserFile(file,info){
- const name=file.name.replace(/\.[^.]+$/,''),sl=slugT(name);
- let rec=USER.find(u=>!u.hasAudio&&(slugT(u.file)===sl||slugT(u.artist+' - '+u.title)===sl||slugT(u.title)===sl))||USER.find(u=>u.hasAudio&&u.fname===file.name&&u.size===file.size);
+function saveRec(rec){return idbPut(rec.mem?{...rec,blob:undefined,hasAudio:false}:rec);}
+async function addUserFile(file,info,opt){
+ opt=opt||{};const name=file.name.replace(/\.[^.]+$/,''),sl=slugT(name);
+ let rec=USER.find(u=>u.fname===file.name&&u.size===file.size)||USER.find(u=>!u.hasAudio&&(slugT(u.file)===sl||slugT(u.artist+' - '+u.title)===sl||slugT(u.title)===sl));
  if(!rec){const pts=name.split(/\s[-–]\s/);rec={id:'u'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:pts.length>1?pts.slice(1).join(' - '):name,artist:pts.length>1?pts[0]:'Archivo propio',genre:null,license:'Archivo propio (uso personal)',source:'Tu dispositivo',col:'hsl('+Math.floor(Math.random()*360)+',70%,65%)'};USER.push(rec);}
- rec.blob=file;rec.hasAudio=true;rec.fname=file.name;rec.size=file.size;
+ rec.blob=file;rec.hasAudio=true;rec.fname=file.name;rec.size=file.size;if(opt.crate)rec.crate=opt.crate;rec.mem=opt.persist===false;
  if(info){rec.bpm=info.bpm;rec.fb=info.fb;if(info.an){rec.cam=rec.cam||info.an.cam;rec.energy=info.an.energy;rec.diff=info.an.diff;if(!rec.genre)rec.genre=info.an.genre;}}
- await idbPut(rec);if(HUB.open&&HUB.tab==='biblio')renderTab();renderLoaderLib();return rec;
+ await saveRec(rec);if(!opt.quiet){if(HUB.open&&HUB.tab==='biblio')renderTab();renderLoaderLib();}return rec;
 }
-async function updUser(id,o){const r=USER.find(u=>u.id===id);if(!r)return;Object.assign(r,o);if(!r.genre&&o.genre)r.genre=o.genre;await idbPut(r);}
+async function updUser(id,o){const r=USER.find(u=>u.id===id);if(!r)return;Object.assign(r,o);if(!r.genre&&o.genre)r.genre=o.genre;await saveRec(r);}
 async function analyzeItem(rec){
- if(!ctx||!rec.blob)return false;
+ if(!rec.blob)return false;
  try{const buf=await decode(await rec.blob.arrayBuffer());const pk=computePeaks(buf),b=detectBPM(pk,buf.sampleRate),an=analyzeBuf(buf,pk,b.bpm,b.firstBeat,{key:rec.cam,genre:rec.genre});
-  Object.assign(rec,{bpm:b.bpm,fb:b.firstBeat,cam:rec.cam||an.cam,energy:an.energy,diff:an.diff,genre:rec.genre||an.genre});await idbPut(rec);return true;}catch(e){return false;}
+  Object.assign(rec,{bpm:b.bpm,fb:b.firstBeat,cam:rec.cam||an.cam,energy:an.energy,diff:an.diff,genre:rec.genre||an.genre});await saveRec(rec);return true;}catch(e){rec.bad=true;return false;}
 }
-function decode(ab){return new Promise((res,rej)=>{const p=ctx.decodeAudioData(ab,res,rej);if(p&&p.then)p.then(res,rej);});}
+function decode(ab){const c=ctx||decode.oc||(decode.oc=new (window.OfflineAudioContext||window.webkitOfflineAudioContext)(2,44100,44100));return new Promise((res,rej)=>{const p=c.decodeAudioData(ab,res,rej);if(p&&p.then)p.then(res,rej);});}
+/* ---- carpetas ---- */
+const AUDIO_RE=/\.(mp3|wav|m4a|aac|ogg|oga|opus|flac|aif|aiff|webm)$/i;
+const AQ={run:false,list:[],done:0,total:0};
+function aqStatus(){const t=AQ.run?`Analizando ${AQ.done}/${AQ.total}…`:'';const m=$('#lbMsg');if(m&&AQ.run)m.textContent=t;const lm=$('#ldMsg');if(lm)lm.textContent=t;}
+async function runQueue(){if(AQ.run)return;AQ.run=true;
+ while(AQ.list.length){const r=AQ.list.shift();aqStatus();await analyzeItem(r);AQ.done++;if(AQ.done%6===0){renderLoaderLib();if(HUB.open&&HUB.tab==='biblio')renderTab();}await new Promise(z=>setTimeout(z,25));}
+ const n=AQ.total;AQ.run=false;AQ.done=0;AQ.total=0;GEN=[];aqStatus();renderLoaderLib();if(HUB.open&&HUB.tab==='biblio')renderTab();if(n)toast(`✔ Biblioteca lista: ${n} tema(s) analizados`,2600);}
+function enqueue(recs){const f=recs.filter(r=>r&&r.blob&&!r.bad&&(!r.bpm||!r.energy)&&!AQ.list.includes(r));AQ.list.push(...f);AQ.total+=f.length;runQueue();}
+async function importFiles(items){
+ const list=items.filter(x=>AUDIO_RE.test(x.file.name));
+ if(!list.length){toast('No encontré archivos de audio (MP3, WAV, M4A, FLAC…) ahí.',3000);return;}
+ const total=list.reduce((s,x)=>s+x.file.size,0),persist=total<=1.5e9;
+ toast(`<span class="spinner"></span> Agregando ${list.length} tema(s)…`,5000);
+ const recs=[];for(const x of list){const i=x.path.lastIndexOf('/');recs.push(await addUserFile(x.file,null,{crate:i>0?x.path.slice(0,i):null,persist,quiet:true}));}
+ if(!persist)toast(`Carpeta grande (${(total/1e9).toFixed(1)} GB): los temas se usan en esta sesión sin copiarse al navegador. La próxima vez vuelve a elegir la carpeta y se reconectan con su análisis.`,7000);
+ else toast(`📂 ${list.length} tema(s) agregados. Analizando BPM, tonalidad y energía…`,3000);
+ renderLoaderLib();if(HUB.open&&HUB.tab==='biblio')renderTab();enqueue(recs);}
+async function filesFromDrop(dt){
+ const ents=[...(dt.items||[])].map(i=>i.webkitGetAsEntry?i.webkitGetAsEntry():null).filter(Boolean);
+ if(!ents.length)return [...(dt.files||[])].map(f=>({file:f,path:f.name}));
+ const out=[];const walk=async(e,path)=>{if(out.length>5000)return;
+  if(e.isFile){const f=await new Promise((r,j)=>e.file(r,j)).catch(()=>null);if(f)out.push({file:f,path:path+f.name});}
+  else if(e.isDirectory){const rd=e.createReader();let es;do{es=await new Promise((r,j)=>rd.readEntries(r,j)).catch(()=>[]);for(const x of es)await walk(x,path+e.name+'/');}while(es.length);}};
+ for(const e of ents)await walk(e,'');return out;}
+function dirInput(){const i=document.createElement('input');i.type='file';i.multiple=true;i.hidden=true;i.setAttribute('webkitdirectory','');i.setAttribute('directory','');i.onchange=e=>{const fs=[...e.target.files];e.target.value='';importFiles(fs.map(f=>({file:f,path:f.webkitRelativePath||f.name})));};return i;}
 async function libLoad(d,it){
  if(!ctx){toast('Primero toca ENCENDER');return;}
  if(it.demo)return loadDemo(d,it.id);
@@ -853,13 +879,19 @@ function renderTab(){
   renderQuiz();
  }
  else if(t==='biblio'){
-  const L=LIB(),cats=['Todas',...GENRES],f=HUB.sub,list=f==='Todas'?L:L.filter(i=>i.genre===f);
-  b.innerHTML=`<div class="chips" id="lbC">${cats.map(c=>`<button data-c="${c}" class="${c===f?'on':''}">${c} <small>${c==='Todas'?L.length:L.filter(i=>i.genre===c).length}</small></button>`).join('')}</div>
-  <div class="card">${list.length?list.map(i=>`<div class="lrow"><span class="dot" style="--sw:${esc(i.col||'#888')}"></span><span class="ti"><b>${esc(i.title)}</b><small>${esc(i.artist||'')} · ${i.bpm?Math.round(i.bpm)+' BPM':'BPM ?'} · ${esc(i.cam||'?')} · E${i.energy||'?'} · <span class="diff">${'●'.repeat(i.diff||1)}${'○'.repeat(5-(i.diff||1))}</span>${i.hasAudio?'':' · <b style="color:var(--warn);display:inline">sin audio</b>'}</small><small>${esc(i.license||'')}${i.source?' · '+esc(i.source):''}</small></span>
+  const L=LIB(),cats=['Todas',...GENRES],f=HUB.sub,cr=HUB.crate||'',q=(HUB.q||'').toLowerCase(),crates=[...new Set(USER.map(u=>u.crate).filter(Boolean))].sort();
+  let list=f==='Todas'?L:L.filter(i=>i.genre===f);if(cr)list=list.filter(i=>i.crate===cr);if(q)list=list.filter(i=>((i.title||'')+' '+(i.artist||'')+' '+(i.crate||'')).toLowerCase().includes(q));
+  const shown=list.slice(0,200);
+  b.innerHTML=`<input class="in" id="lbQ" placeholder="🔎 Buscar tema, artista o carpeta" value="${esc(HUB.q||'')}" style="margin-bottom:8px">
+  ${crates.length?`<div class="chips" id="lbCr"><button data-cr="" class="${!cr?'on':''}">📂 Todas las carpetas</button>${crates.map(c=>`<button data-cr="${esc(c)}" class="${c===cr?'on':''}">📂 ${esc(c)} <small>${USER.filter(u=>u.crate===c).length}</small></button>`).join('')}${cr?`<button id="lbCrDel">✕ Quitar esta carpeta</button>`:''}</div>`:''}
+  <div class="chips" id="lbC">${cats.map(c=>`<button data-c="${c}" class="${c===f?'on':''}">${c} <small>${c==='Todas'?L.length:L.filter(i=>i.genre===c).length}</small></button>`).join('')}</div>
+  <div class="card">${list.length?shown.map(i=>`<div class="lrow"><span class="dot" style="--sw:${esc(i.col||'#888')}"></span><span class="ti"><b>${esc(i.title)}</b><small>${esc(i.artist||'')} · ${i.bpm?Math.round(i.bpm)+' BPM':'BPM ?'} · ${esc(i.cam||'?')} · E${i.energy||'?'} · <span class="diff">${'●'.repeat(i.diff||1)}${'○'.repeat(5-(i.diff||1))}</span>${i.crate?' · 📂 '+esc(i.crate):''}${i.hasAudio?'':' · <b style="color:var(--warn);display:inline">sin audio</b>'}</small><small>${esc(i.license||'')}${i.source?' · '+esc(i.source):''}</small></span>
    ${i.demo?'':`<select data-g="${esc(i.id)}"><option value="">Género…</option>${GENRES.map(g=>`<option ${g===i.genre?'selected':''}>${g}</option>`).join('')}</select>`}
-   <span class="ld"><button class="a" data-la="${esc(i.id)}">A</button><button class="b" data-lb="${esc(i.id)}">B</button>${i.demo?'':`<button data-del="${esc(i.id)}" aria-label="Quitar">✕</button>`}</span></div>`).join(''):`<p class="mut">No hay pistas en “${esc(f)}” todavía. Importa música libre o agrega tus archivos.</p>`}</div>
+   <span class="ld"><button class="a" data-la="${esc(i.id)}">A</button><button class="b" data-lb="${esc(i.id)}">B</button>${i.demo?'':`<button data-del="${esc(i.id)}" aria-label="Quitar">✕</button>`}</span></div>`).join('')+(list.length>shown.length?`<p class="mut" style="font-size:12px">Mostrando 200 de ${list.length}. Usa el buscador o elige una carpeta.</p>`:''):`<p class="mut">No hay pistas en “${esc(f)}” todavía. Importa música libre o agrega tus archivos.</p>`}</div>
   <div class="card"><h4>➕ Agregar tus archivos</h4><p class="mut" style="font-size:13px">Se guardan solo en este navegador (no salen de tu dispositivo). Se analizan BPM, Camelot, energía y dificultad.</p>
-  <div class="brow"><label class="btn acc">Elegir archivos de audio<input type="file" id="lbFiles" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac" multiple hidden></label><button class="btn" id="lbAn">Analizar pendientes</button></div><p class="mut" id="lbMsg" style="font-size:12px"></p></div>
+  <div class="brow"><label class="btn acc" id="lbDirL">📂 Elegir carpeta</label><label class="btn">Elegir archivos<input type="file" id="lbFiles" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.aif,.aiff,.opus" multiple hidden></label><button class="btn" id="lbAn">Analizar pendientes</button></div>
+  <div class="drop" id="lbDrop">o arrastra aquí una carpeta completa (con subcarpetas) o varios archivos</div>
+  <p class="mut" style="font-size:12px">Cada carpeta queda como una “caja” para filtrar. Elegir carpetas funciona en computador (Chrome o Edge); en el celular elige archivos.</p><p class="mut" id="lbMsg" style="font-size:12px"></p></div>
   <div class="card"><h4>🌐 Música libre y educativa</h4>
   <p style="font-size:13.5px;line-height:1.5">Usa solo música con licencia abierta (Creative Commons o dominio público). Fuentes recomendadas: <a href="https://www.jamendo.com" target="_blank" rel="noopener">Jamendo</a>, <a href="https://freemusicarchive.org" target="_blank" rel="noopener">Free Music Archive</a>, <a href="https://ccmixter.org" target="_blank" rel="noopener">ccMixter</a>, <a href="https://archive.org/details/audio" target="_blank" rel="noopener">Internet Archive</a> y <a href="https://musopen.org" target="_blank" rel="noopener">Musopen</a>.</p>
   <p class="mut" style="font-size:12.5px;line-height:1.5">Por seguridad del navegador, esta página no puede descargar desde esos sitios. El flujo es: 1) descargas los temas con licencia abierta, 2) importas un catálogo JSON con sus datos y licencias, 3) agregas los archivos: se emparejan por nombre, se analizan y quedan disponibles para la Academia y el generador de ejercicios. Las licencias que no sean CC o dominio público se rechazan.</p>
@@ -873,8 +905,14 @@ function renderTab(){
   $$('[data-lb]',b).forEach(x=>x.onclick=()=>{closeHub();libLoad(B,find(x.dataset.lb));});
   $$('[data-del]',b).forEach(x=>x.onclick=async()=>{if(x.dataset.c!=='1'){x.dataset.c='1';x.textContent='¿?';setTimeout(()=>{x.dataset.c='';x.textContent='✕';},2500);return;}USER=USER.filter(u=>u.id!==x.dataset.del);await idbDel(x.dataset.del);renderTab();renderLoaderLib();});
   $$('[data-g]',b).forEach(x=>x.onchange=()=>updUser(x.dataset.g,{genre:x.value||null}).then(()=>{renderTab();renderLoaderLib();}));
-  $('#lbFiles').onchange=async e=>{const fs=[...e.target.files];e.target.value='';const m=$('#lbMsg');let n=0;for(const f of fs){m.textContent=`Agregando ${++n}/${fs.length}: ${f.name}`;const r=await addUserFile(f,null);if(ctx){m.textContent=`Analizando ${n}/${fs.length}: ${f.name}`;await analyzeItem(r);}}m.textContent=ctx?`Listo: ${fs.length} pista(s) agregadas y analizadas.`:`Agregadas ${fs.length}. Toca ENCENDER y luego “Analizar pendientes”.`;GEN=[];renderTab();renderLoaderLib();};
-  $('#lbAn').onclick=async()=>{if(!ctx)return toast('Primero toca ENCENDER');const p=USER.filter(u=>u.hasAudio&&(!u.bpm||!u.energy));const m=$('#lbMsg');let n=0;for(const r of p){m.textContent=`Analizando ${++n}/${p.length}: ${r.title}`;await analyzeItem(r);}m.textContent=p.length?`Análisis listo (${p.length}).`:'No hay pistas pendientes.';GEN=[];renderTab();renderLoaderLib();};
+  $('#lbFiles').onchange=e=>{const fs=[...e.target.files];e.target.value='';importFiles(fs.map(f=>({file:f,path:f.name})));};
+  $('#lbDirL').appendChild(dirInput());
+  {const dz=$('#lbDrop');dz.ondragover=e=>{e.preventDefault();dz.classList.add('on');};dz.ondragleave=()=>dz.classList.remove('on');dz.ondrop=async e=>{e.preventDefault();dz.classList.remove('on');importFiles(await filesFromDrop(e.dataTransfer));};}
+  {const qi=$('#lbQ');qi.oninput=()=>{HUB.q=qi.value;const pos=qi.selectionStart;renderTab();const n=$('#lbQ');n.focus();try{n.setSelectionRange(pos,pos);}catch(e2){}};}
+  $$('#lbCr [data-cr]').forEach(x=>x.onclick=()=>{HUB.crate=x.dataset.cr||'';renderTab();});
+  if($('#lbCrDel'))$('#lbCrDel').onclick=async e=>{const x=e.target;if(x.dataset.c!=='1'){x.dataset.c='1';x.textContent='Toca de nuevo para confirmar';setTimeout(()=>{x.dataset.c='';x.textContent='✕ Quitar esta carpeta';},3000);return;}
+   const del=USER.filter(u=>u.crate===cr);USER=USER.filter(u=>u.crate!==cr);for(const u of del)await idbDel(u.id);HUB.crate='';renderTab();renderLoaderLib();toast(`Carpeta quitada (${del.length} temas). Tus archivos originales no se tocan.`,2500);};
+  $('#lbAn').onclick=()=>{const p=USER.filter(u=>u.hasAudio&&u.blob&&(!u.bpm||!u.energy));const nb=USER.filter(u=>!u.blob&&u.fname).length;if(p.length)enqueue(p);else $('#lbMsg').textContent=nb?`No hay pendientes. ${nb} tema(s) necesitan que vuelvas a elegir su carpeta.`:'No hay pistas pendientes.';};
   $('#lbCat').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const j=JSON.parse(await f.text());const arr=Array.isArray(j)?j:(j.tracks||[]);const r=await importCatalog(arr);toast(`Catálogo: ${r[0]} importadas, ${r[1]} rechazadas (sin licencia abierta o sin título)`,3500);renderTab();renderLoaderLib();}catch(err2){toast('El archivo no es un JSON válido.',2500);}};
   $('#lbExp').onclick=()=>copyText(JSON.stringify(USER.map(u=>({title:u.title,artist:u.artist,genre:u.genre,bpm:u.bpm,key:u.cam,energy:u.energy,difficulty:u.diff,license:u.license,licenseUrl:u.licenseUrl,source:u.source,url:u.url,file:u.file||u.fname})),null,2),$('#lbExp'));
  }
@@ -934,9 +972,10 @@ function renderQuiz(){
  if($('#qzN'))$('#qzN').onclick=()=>{newQuestion();renderTab();};
 }
 function renderLoaderLib(){
- const el=$('#demoList');if(!el)return;const L=LIB(),f=HUB.ldf||'Todas',cats=['Todas',...GENRES.filter(g=>L.some(i=>i.genre===g))],list=f==='Todas'?L:L.filter(i=>i.genre===f);
- el.innerHTML=`<div class="chips">${cats.map(c=>`<button data-lc="${c}" class="${c===f?'on':''}">${c}</button>`).join('')}</div>`+list.map(i=>`<button class="trk" data-li="${esc(i.id)}" style="--sw:${esc(i.col||'#888')}"><span class="sw"></span><span><b>${esc(i.title)}</b><small>${i.bpm?Math.round(i.bpm)+' BPM':'BPM ?'} · ${esc(i.cam||'?')} · E${i.energy||'?'} · ${esc(i.genre||'Sin género')}${i.hasAudio?'':' · sin audio'}</small></span></button>`).join('');
- $$('[data-lc]',el).forEach(b=>b.onclick=()=>{HUB.ldf=b.dataset.lc;renderLoaderLib();});
+ const el=$('#demoList');if(!el)return;const L=LIB(),f=HUB.ldf||'Todas',cr=HUB.ldc||'',crates=[...new Set(USER.map(u=>u.crate).filter(Boolean))].sort(),cats=['Todas',...GENRES.filter(g=>L.some(i=>i.genre===g))];
+ let list=f==='Todas'?L:L.filter(i=>i.genre===f);if(cr)list=list.filter(i=>i.crate===cr);const more=list.length>150;list=list.slice(0,150);
+ el.innerHTML=(crates.length?`<div class="chips"><button data-lcr="" class="${!cr?'on':''}">📂 Todo</button>${crates.map(c=>`<button data-lcr="${esc(c)}" class="${c===cr?'on':''}">📂 ${esc(c)}</button>`).join('')}</div>`:'')+`<div class="chips">${cats.map(c=>`<button data-lc="${c}" class="${c===f?'on':''}">${c}</button>`).join('')}</div>`+(more?'<p class="mut" style="font-size:12px">Mostrando 150. Filtra por carpeta o género, o busca en 🧠 Pulse → Biblioteca.</p>':'')+list.map(i=>`<button class="trk" data-li="${esc(i.id)}" style="--sw:${esc(i.col||'#888')}"><span class="sw"></span><span><b>${esc(i.title)}</b><small>${i.bpm?Math.round(i.bpm)+' BPM':'BPM ?'} · ${esc(i.cam||'?')} · E${i.energy||'?'} · ${esc(i.genre||'Sin género')}${i.hasAudio?'':' · sin audio'}</small></span></button>`).join('');
+ $$('[data-lc]',el).forEach(b=>b.onclick=()=>{HUB.ldf=b.dataset.lc;renderLoaderLib();});$$('[data-lcr]',el).forEach(b=>b.onclick=()=>{HUB.ldc=b.dataset.lcr;renderLoaderLib();});
  $$('[data-li]',el).forEach(b=>b.onclick=()=>{$('#mLoad').classList.remove('open');libLoad(loadTarget,L.find(i=>i.id===b.dataset.li));});
 }
 
@@ -968,6 +1007,8 @@ function mount(){
  $('#pcList').onclick=()=>openHub('practica');
  // ocultar práctica si se abre una lección
  const lc=$('#lessonCard');new MutationObserver(()=>{if(!lc.hidden&&RUN){pc.hidden=true;RUN=null;}}).observe(lc,{attributes:true,attributeFilter:['hidden']});
+ {const fb=$('#mLoad .filebtn');if(fb){const l=document.createElement('label');l.className='filebtn';l.style.marginTop='8px';l.textContent='📂 Cargar carpeta completa a la biblioteca';l.appendChild(dirInput());fb.after(l);const pm=document.createElement('p');pm.id='ldMsg';pm.className='mut';pm.style.fontSize='12px';l.after(pm);}
+  const mb=$('#mLoad .mbox');if(mb){mb.addEventListener('dragover',e=>e.preventDefault());mb.addEventListener('drop',async e=>{e.preventDefault();importFiles(await filesFromDrop(e.dataTransfer));});}}
  renderLoaderLib();renderBar(true);
 }
 mount();
