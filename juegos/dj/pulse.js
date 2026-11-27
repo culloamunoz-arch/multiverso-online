@@ -445,21 +445,45 @@ function drawCrowd(){
 
 /* ---------- BIBLIOTECA (IndexedDB) ---------- */
 let DEMO_AN=LS.get('dj_demo_an',{});let USER=[];let DBH=null;
-function idb(){return new Promise(res=>{if(DBH)return res(DBH);try{const r=indexedDB.open('decks_lib',1);r.onupgradeneeded=()=>{r.result.createObjectStore('tracks',{keyPath:'id'});};r.onsuccess=()=>{DBH=r.result;res(DBH);};r.onerror=()=>res(null);}catch(e){res(null);}});}
+function idb(){return new Promise(res=>{if(DBH)return res(DBH);try{const r=indexedDB.open('decks_lib',2);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains('tracks'))db.createObjectStore('tracks',{keyPath:'id'});if(!db.objectStoreNames.contains('dirs'))db.createObjectStore('dirs',{keyPath:'id'});};r.onsuccess=()=>{DBH=r.result;res(DBH);};r.onerror=()=>res(null);}catch(e){res(null);}});}
 async function idbAll(){const db=await idb();if(!db)return[];return new Promise(res=>{try{const q=db.transaction('tracks').objectStore('tracks').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>res([]);}catch(e){res([]);}});}
 async function idbPut(o){const db=await idb();if(!db)return;return new Promise(res=>{try{const tx=db.transaction('tracks','readwrite');tx.objectStore('tracks').put(o);tx.oncomplete=()=>res();tx.onerror=()=>res();}catch(e){res();}});}
 async function idbDel(id){const db=await idb();if(!db)return;return new Promise(res=>{try{const tx=db.transaction('tracks','readwrite');tx.objectStore('tracks').delete(id);tx.oncomplete=()=>res();tx.onerror=()=>res();}catch(e){res();}});}
-idbAll().then(r=>{USER=r;if(HUB.open)renderTab();renderLoaderLib();});
+async function dirsAll(){const db=await idb();if(!db)return[];return new Promise(res=>{try{const q=db.transaction('dirs').objectStore('dirs').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>res([]);}catch(e){res([]);}});}
+async function dirPut(o){const db=await idb();if(!db)return;return new Promise(res=>{try{const tx=db.transaction('dirs','readwrite');tx.objectStore('dirs').put(o);tx.oncomplete=()=>res();tx.onerror=()=>res();}catch(e){res();}});}
+const DIRS={};
+const FSOK=typeof window.showDirectoryPicker==='function'&&window.self===window.top;
+async function dirCheck(D){try{D.ok=(await D.handle.queryPermission({mode:'read'}))==='granted';}catch(e){D.ok=false;}return D.ok;}
+function dirsPending(){return Object.values(DIRS).filter(D=>!D.ok);}
+function dirChip(){const c=$('#pbDir');if(!c)return;const p=dirsPending();c.hidden=!p.length;if(p.length)c.textContent=`🔌 Reconectar música (${p.length})`;}
+async function dirReconnect(){const p=dirsPending();if(!p.length)return;const D=p[0];
+ try{D.ok=(await D.handle.requestPermission({mode:'read'}))==='granted';}catch(e){D.ok=false;}
+ dirChip();if(D.ok){toast(`🔌 “${esc(D.name)}” reconectada${dirsPending().length?' · toca otra vez para la siguiente carpeta':''}`,2500);const pend=USER.filter(u=>u.fs===D.id&&!u.bad&&(!u.bpm||!u.energy));if(pend.length)enqueue(pend);renderLoaderLib();}
+ else toast('Sin permiso no puedo leer esa carpeta.',2000);}
+Promise.all([idbAll(),dirsAll()]).then(async([r,ds])=>{USER=r;for(const d of ds){DIRS[d.id]=d;await dirCheck(d);}dirChip();if(HUB.open)renderTab();renderLoaderLib();
+ const pend=USER.filter(u=>u.fs&&DIRS[u.fs]&&DIRS[u.fs].ok&&!u.bad&&(!u.bpm||!u.energy));if(pend.length)enqueue(pend);});
+async function getBlob(rec){
+ if(rec.blob)return rec.blob;if(!rec.fs||!rec.path)return null;const D=DIRS[rec.fs];if(!D)return null;
+ if(!D.ok){await dirCheck(D);if(!D.ok&&navigator.userActivation&&navigator.userActivation.isActive){try{D.ok=(await D.handle.requestPermission({mode:'read'}))==='granted';}catch(e){}dirChip();}if(!D.ok)return null;}
+ try{let h=D.handle;const parts=rec.path.split('/').slice(1);for(let i=0;i<parts.length-1;i++)h=await h.getDirectoryHandle(parts[i]);return await (await h.getFileHandle(parts[parts.length-1])).getFile();}catch(e){return null;}}
+async function walkDir(h,prefix,out){for await(const [name,c] of h.entries()){if(c.kind==='file'){if(AUDIO_RE.test(name)){try{out.push({file:await c.getFile(),path:prefix+'/'+name});}catch(e){}if(out.length%250===0)toast(`<span class="spinner"></span> Leyendo carpeta… ${out.length} temas`,4000);}}else if(c.kind==='directory')await walkDir(c,prefix+'/'+name,out);}}
+async function pickDirFS(){let h;try{h=await window.showDirectoryPicker({id:'decks-musica',mode:'read'});}catch(e){return;}return useDir(h);}
+async function useDir(h){
+ let id=null;for(const D of Object.values(DIRS)){try{if(await D.handle.isSameEntry(h)){id=D.id;break;}}catch(e){}}
+ if(!id)id='d'+Date.now().toString(36);DIRS[id]={id,name:h.name,handle:h,ok:true};await dirPut({id,name:h.name,handle:h});dirChip();
+ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
+ toast(`<span class="spinner"></span> Leyendo “${esc(h.name)}”…`,6000);const items=[];await walkDir(h,h.name,items);importFiles(items,{fs:id});}
+function attachDirPicker(el){if(FSOK){el.addEventListener('click',e=>{e.preventDefault();pickDirFS();});}else el.appendChild(dirInput());}
 function estEnergy(b){return clamp(Math.round(1+(0.5*clamp((b-95)/40,0,1)+0.25)*9),1,10);}
 function demoItem(d){const an=DEMO_AN[d.id]||{};return{id:d.id,demo:true,title:d.title,artist:d.artist,genre:d.genre,bpm:d.bpm,cam:parseCam(d.key),energy:an.energy||estEnergy(d.bpm),diff:an.diff||(d.bpm<115||d.bpm>132?3:2),license:'Demo DECKS · sintetizado en tu navegador',hasAudio:true,col:d.col,dur:Math.round(64*4*60/d.bpm)};}
 function LIB(){return DEMOS.map(demoItem).concat(USER);}
 function slugT(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\.[a-z0-9]{2,4}$/,'').replace(/[^a-z0-9]+/g,' ').trim();}
-function saveRec(rec){return idbPut(rec.mem?{...rec,blob:undefined,hasAudio:false}:rec);}
+function saveRec(rec){return idbPut(rec.fs?{...rec,blob:undefined}:rec.mem?{...rec,blob:undefined,hasAudio:false}:rec);}
 async function addUserFile(file,info,opt){
  opt=opt||{};const name=file.name.replace(/\.[^.]+$/,''),sl=slugT(name);
  let rec=(opt.path?(USER.find(u=>u.path===opt.path&&u.size===file.size)||USER.find(u=>!u.path&&u.fname===file.name&&u.size===file.size&&u.crate===opt.crate)):USER.find(u=>!u.path&&u.fname===file.name&&u.size===file.size))||USER.find(u=>!u.hasAudio&&(slugT(u.file)===sl||slugT(u.artist+' - '+u.title)===sl||slugT(u.title)===sl));
  if(!rec){const pts=name.split(/\s[-–]\s/);rec={id:'u'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:pts.length>1?pts.slice(1).join(' - '):name,artist:pts.length>1?pts[0]:'Archivo propio',genre:null,license:'Archivo propio (uso personal)',source:'Tu dispositivo',col:'hsl('+Math.floor(Math.random()*360)+',70%,65%)'};USER.push(rec);}
- rec.blob=file;rec.hasAudio=true;rec.fname=file.name;rec.size=file.size;if(opt.crate)rec.crate=opt.crate;if(opt.path)rec.path=opt.path;rec.mem=opt.persist===false;
+ rec.blob=file;rec.hasAudio=true;rec.fname=file.name;rec.size=file.size;if(opt.crate)rec.crate=opt.crate;if(opt.path)rec.path=opt.path;rec.mem=opt.persist===false;if(opt.fs)rec.fs=opt.fs;
  if(info){rec.bpm=info.bpm;rec.fb=info.fb;if(info.an){rec.cam=rec.cam||info.an.cam;rec.energy=info.an.energy;rec.diff=info.an.diff;if(!rec.genre)rec.genre=info.an.genre;}}
  await saveRec(rec);if(!opt.quiet){if(HUB.open&&HUB.tab==='biblio')renderTab();renderLoaderLib();}return rec;
 }
@@ -477,9 +501,9 @@ function anWorker(){
  return AW;}
 function decodeLite(ab){const c=decodeLite.oc||(decodeLite.oc=new (window.OfflineAudioContext||window.webkitOfflineAudioContext)(1,22050,22050));return new Promise((res,rej)=>{const p=c.decodeAudioData(ab,res,rej);if(p&&p.then)p.then(res,rej);});}
 async function analyzeItem(rec){
- if(!rec.blob)return false;
+ const blob=await getBlob(rec);if(!blob)return false;
  try{
-  let buf;try{buf=await decodeLite(await rec.blob.arrayBuffer());}catch(e){buf=await decode(await rec.blob.arrayBuffer());}
+  let buf;try{buf=await decodeLite(await blob.arrayBuffer());}catch(e){buf=await decode(await blob.arrayBuffer());}
   const meta={key:rec.cam,genre:rec.genre};let res=null;const w=anWorker();
   if(w){const ch=[buf.getChannelData(0).slice()];if(buf.numberOfChannels>1)ch.push(buf.getChannelData(1).slice());const id=++AWn;
    res=await new Promise(r=>{AWcb[id]=r;w.postMessage({id,sr:buf.sampleRate,ch,meta},ch.map(c=>c.buffer));});if(res.err)res=null;}
@@ -498,15 +522,14 @@ async function runQueue(){if(AQ.run)return;AQ.run=true;
  while(AQ.list.length&&!AQ.paused){const r=AQ.list.shift();aqStatus();if(!r.bpm||!r.energy)await analyzeItem(r);AQ.done++;if(AQ.done%25===0){const ae=document.activeElement&&document.activeElement.id;if(!$('#mLoad').classList.contains('open')&&ae!=='ldQ')renderLoaderLib();if(HUB.open&&HUB.tab==='biblio'&&ae!=='lbQ')renderTab();}await new Promise(z=>setTimeout(z,15));}
  if(AQ.paused){AQ.run=false;aqStatus();return;}
  const n=AQ.total;AQ.run=false;AQ.done=0;AQ.total=0;GEN=[];aqStatus();renderLoaderLib();if(HUB.open&&HUB.tab==='biblio')renderTab();if(n)toast(`✔ Biblioteca lista: ${n} tema(s) analizados`,2600);}
-function enqueue(recs){const f=recs.filter(r=>r&&r.blob&&!r.bad&&(!r.bpm||!r.energy)&&!AQ.list.includes(r));AQ.list.push(...f);AQ.total+=f.length;runQueue();}
-async function importFiles(items){
+function enqueue(recs){const f=recs.filter(r=>r&&(r.blob||r.fs)&&!r.bad&&(!r.bpm||!r.energy)&&!AQ.list.includes(r));AQ.list.push(...f);AQ.total+=f.length;runQueue();}
+async function importFiles(items,o){o=o||{};
  const list=items.filter(x=>AUDIO_RE.test(x.file.name));
  if(!list.length){toast('No encontré archivos de audio (MP3, WAV, M4A, FLAC…) ahí.',3000);return;}
- const total=list.reduce((s,x)=>s+x.file.size,0),persist=total<=1.5e9;
+ const persist=true;if(!o.fs){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}}
  toast(`<span class="spinner"></span> Agregando ${list.length} tema(s)…`,5000);
- const recs=[];for(const x of list){const i=x.path.lastIndexOf('/');recs.push(await addUserFile(x.file,null,{crate:i>0?x.path.slice(0,i):null,path:i>0?x.path:null,persist,quiet:true}));}
- if(!persist)toast(`Carpeta grande (${(total/1e9).toFixed(1)} GB): los temas se usan en esta sesión sin copiarse al navegador. La próxima vez vuelve a elegir la carpeta y se reconectan con su análisis.`,7000);
- else toast(`📂 ${list.length} tema(s) agregados. Analizando BPM, tonalidad y energía…`,3000);
+ const recs=[];for(const x of list){const i=x.path.lastIndexOf('/');recs.push(await addUserFile(x.file,null,{crate:i>0?x.path.slice(0,i):null,path:i>0?x.path:null,persist,fs:o.fs||null,quiet:true}));}
+ toast(`📂 ${list.length} tema(s) agregados. Analizando BPM, tonalidad y energía…`,3000);
  renderLoaderLib();if(HUB.open&&HUB.tab==='biblio')renderTab();enqueue(recs);}
 async function filesFromDrop(dt){
  const ents=[...(dt.items||[])].map(i=>i.webkitGetAsEntry?i.webkitGetAsEntry():null).filter(Boolean);
@@ -523,9 +546,10 @@ function dirInput(){const i=document.createElement('input');i.type='file';i.mult
 async function libLoad(d,it){
  if(!ctx){toast('Primero toca ENCENDER');return;}
  if(it.demo)return loadDemo(d,it.id);
- if(!it.hasAudio||!it.blob){toast('Esta pista aún no tiene audio: agrega el archivo en 🧠 Pulse → Biblioteca.',3000);return;}
+ const blob=await getBlob(it);
+ if(!blob){toast(it.fs?'Esta carpeta necesita permiso: toca 🔌 Reconectar música.':'Este tema no tiene audio: vuelve a elegir su carpeta en 🧠 Pulse → Biblioteca.',3200);return;}
  toast(`<span class="spinner"></span> Cargando “${esc(it.title)}”…`,15000);
- try{const buf=await decode(await it.blob.arrayBuffer());
+ try{const buf=await decode(await blob.arrayBuffer());
   await d.loadBuffer(buf,{id:it.id,libId:it.id,title:it.title,artist:it.artist||'Biblioteca',bpm:it.bpm||0,firstBeat:it.fb||0,key:it.cam||'',genre:it.genre||null,col:it.col||(d.id==='A'?'#ffb26b':'#7fd3ff')});
   toast(`“${esc(it.title)}” cargado en ${d.id}`,1400);}catch(e){toast('No pude abrir esa pista.',2500);}
 }
@@ -917,7 +941,7 @@ function renderTab(){
   <div class="card"><h4>➕ Agregar tus archivos</h4><p class="mut" style="font-size:13px">Se guardan solo en este navegador (no salen de tu dispositivo). Se analizan BPM, Camelot, energía y dificultad.</p>
   <div class="brow"><label class="btn acc" id="lbDirL">📂 Elegir carpeta</label><label class="btn">Elegir archivos<input type="file" id="lbFiles" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.aif,.aiff,.opus" multiple hidden></label><button class="btn" id="lbAn">Analizar pendientes</button></div>
   <div class="drop" id="lbDrop">o arrastra aquí una carpeta completa (con subcarpetas) o varios archivos</div>
-  <p class="mut" style="font-size:12px">Cada carpeta queda como una “caja” para filtrar. Elegir carpetas funciona en computador (Chrome o Edge); en el celular elige archivos.</p><p class="mut" id="lbMsg" style="font-size:12px"></p></div>
+  <p class="mut" style="font-size:12px">Cada carpeta queda como una “caja” para filtrar. DECKS recuerda tus carpetas: la próxima vez, si aparece 🔌 Reconectar música, tócalo y acepta. Elegir carpetas funciona en computador (Chrome o Edge); en el celular elige archivos.</p><p class="mut" id="lbMsg" style="font-size:12px"></p></div>
   <div class="card"><h4>🌐 Música libre y educativa</h4>
   <p style="font-size:13.5px;line-height:1.5">Usa solo música con licencia abierta (Creative Commons o dominio público). Fuentes recomendadas: <a href="https://www.jamendo.com" target="_blank" rel="noopener">Jamendo</a>, <a href="https://freemusicarchive.org" target="_blank" rel="noopener">Free Music Archive</a>, <a href="https://ccmixter.org" target="_blank" rel="noopener">ccMixter</a>, <a href="https://archive.org/details/audio" target="_blank" rel="noopener">Internet Archive</a> y <a href="https://musopen.org" target="_blank" rel="noopener">Musopen</a>.</p>
   <p class="mut" style="font-size:12.5px;line-height:1.5">Por seguridad del navegador, esta página no puede descargar desde esos sitios. El flujo es: 1) descargas los temas con licencia abierta, 2) importas un catálogo JSON con sus datos y licencias, 3) agregas los archivos: se emparejan por nombre, se analizan y quedan disponibles para la Academia y el generador de ejercicios. Las licencias que no sean CC o dominio público se rechazan.</p>
@@ -932,14 +956,14 @@ function renderTab(){
   $$('[data-del]',b).forEach(x=>x.onclick=async()=>{if(x.dataset.c!=='1'){x.dataset.c='1';x.textContent='¿?';setTimeout(()=>{x.dataset.c='';x.textContent='✕';},2500);return;}USER=USER.filter(u=>u.id!==x.dataset.del);await idbDel(x.dataset.del);renderTab();renderLoaderLib();});
   $$('[data-g]',b).forEach(x=>x.onchange=()=>updUser(x.dataset.g,{genre:x.value||null}).then(()=>{renderTab();renderLoaderLib();}));
   $('#lbFiles').onchange=e=>{const fs=[...e.target.files];e.target.value='';importFiles(fs.map(f=>({file:f,path:f.name})));};
-  $('#lbDirL').appendChild(dirInput());
+  attachDirPicker($('#lbDirL'));
   {const dz=$('#lbDrop');dz.ondragover=e=>{e.preventDefault();dz.classList.add('on');};dz.ondragleave=()=>dz.classList.remove('on');dz.ondrop=async e=>{e.preventDefault();dz.classList.remove('on');importFiles(await filesFromDrop(e.dataTransfer));};}
   {const qi=$('#lbQ');qi.oninput=()=>{HUB.q=qi.value;const pos=qi.selectionStart;renderTab();const n=$('#lbQ');n.focus();try{n.setSelectionRange(pos,pos);}catch(e2){}};}
   aqStatus();
   if($('#lbCrS'))$('#lbCrS').onchange=e=>{HUB.crate=e.target.value;renderTab();};
   if($('#lbCrDel'))$('#lbCrDel').onclick=async e=>{const x=e.target;if(x.dataset.c!=='1'){x.dataset.c='1';x.textContent='Toca de nuevo para confirmar';setTimeout(()=>{x.dataset.c='';x.textContent='✕ Quitar';},3000);return;}
    const del=USER.filter(u=>u.crate===cr);USER=USER.filter(u=>u.crate!==cr);for(const u of del)await idbDel(u.id);HUB.crate='';renderTab();renderLoaderLib();toast(`Carpeta quitada (${del.length} temas). Tus archivos originales no se tocan.`,2500);};
-  $('#lbAn').onclick=()=>{const p=USER.filter(u=>u.hasAudio&&u.blob&&(!u.bpm||!u.energy));const nb=USER.filter(u=>!u.blob&&u.fname).length;if(p.length)enqueue(p);else $('#lbMsg').textContent=nb?`No hay pendientes. ${nb} tema(s) necesitan que vuelvas a elegir su carpeta.`:'No hay pistas pendientes.';};
+  $('#lbAn').onclick=()=>{const p=USER.filter(u=>(u.blob||(u.fs&&DIRS[u.fs]&&DIRS[u.fs].ok))&&(!u.bpm||!u.energy));const nb=USER.filter(u=>!u.blob&&!u.fs&&u.fname).length;if(p.length)enqueue(p);else $('#lbMsg').textContent=nb?`No hay pendientes. ${nb} tema(s) necesitan que vuelvas a elegir su carpeta.`:'No hay pistas pendientes.';};
   $('#lbCat').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const j=JSON.parse(await f.text());const arr=Array.isArray(j)?j:(j.tracks||[]);const r=await importCatalog(arr);toast(`Catálogo: ${r[0]} importadas, ${r[1]} rechazadas (sin licencia abierta o sin título)`,3500);renderTab();renderLoaderLib();}catch(err2){toast('El archivo no es un JSON válido.',2500);}};
   $('#lbExp').onclick=()=>copyText(JSON.stringify(USER.map(u=>({title:u.title,artist:u.artist,genre:u.genre,bpm:u.bpm,key:u.cam,energy:u.energy,difficulty:u.diff,license:u.license,licenseUrl:u.licenseUrl,source:u.source,url:u.url,file:u.file||u.fname})),null,2),$('#lbExp'));
  }
@@ -1061,7 +1085,7 @@ function rbRender(){
   <label class="btn sm" id="rbDirL">📂 Agregar carpeta</label><button class="btn sm" id="rbMx">Mixer: ${RB.mx==='full'?'completo':RB.mx==='compact'?'compacto':'oculto'}</button></div>
   <div class="rbHead"><span></span>${[['title','Título'],['artist','Artista'],['bpm','BPM'],['cam','Tono'],['energy','Energía'],['dur','Tiempo'],['genre','Género'],['crate','Carpeta']].map(c=>`<span data-s="${c[0]}" class="${RB.sort.k===c[0]?'on':''}">${c[1]}${RB.sort.k===c[0]?(RB.sort.dir>0?' ▲':' ▼'):''}</span>`).join('')}<span></span></div>
   <div class="rbList" id="rbList"><div class="rbSp" id="rbSp"></div></div></div>`;
- $('#rbDirL').appendChild(dirInput());
+ attachDirPicker($('#rbDirL'));
  $('#rbMx').onclick=()=>{RB.mx=RB.mx==='compact'?'full':RB.mx==='full'?'hidden':'compact';LS.set('dj_rb_mx',RB.mx);rbApply();};
  {const qi=$('#rbQ');qi.oninput=()=>{RB.q=qi.value;RB.sel=0;rbCompute();$('#rbCount').textContent=RB.rows.length+' temas';$('#rbList').scrollTop=0;rbDrawRows();};}
  $$('.rbHead [data-s]').forEach(h=>h.onclick=()=>{const k=h.dataset.s;if(RB.sort.k===k)RB.sort.dir=-RB.sort.dir;else{RB.sort.k=k;RB.sort.dir=1;}rbRender();});
@@ -1221,10 +1245,10 @@ function midiModal(){
 /* ---------- MONTAJE DEL DOM ---------- */
 function mount(){
  const bar=document.createElement('section');bar.id='pulseBar';
- bar.innerHTML=`<div class="pbRow"><button class="pbChip" id="pbA" data-d="A"></button><button class="pbChip" id="pbC"></button><button class="pbChip" id="pbB" data-d="B"></button><button class="pbChip" id="pbP" hidden></button><button class="pbChip" id="pbM">🎛 Conectar FLX4</button><button class="pbChip" id="pbSp">🟢 Spotify</button><button class="pbChip" id="pbX"></button><button class="pbChip pbS" id="pbS"></button></div><div id="pbDet" hidden></div><div id="pbObs"></div>`;
+ bar.innerHTML=`<div class="pbRow"><button class="pbChip" id="pbA" data-d="A"></button><button class="pbChip" id="pbC"></button><button class="pbChip" id="pbB" data-d="B"></button><button class="pbChip" id="pbP" hidden></button><button class="pbChip c-bu" id="pbDir" hidden>🔌 Reconectar música</button><button class="pbChip" id="pbM">🎛 Conectar FLX4</button><button class="pbChip" id="pbSp">🟢 Spotify</button><button class="pbChip" id="pbX"></button><button class="pbChip pbS" id="pbS"></button></div><div id="pbDet" hidden></div><div id="pbObs"></div>`;
  $('#coach').after(bar);
  const tg=()=>{S.detOpen=!S.detOpen;$('#pbDet').hidden=!S.detOpen;renderDet();};
- $('#pbA').onclick=tg;$('#pbB').onclick=tg;$('#pbC').onclick=tg;$('#pbX').onclick=()=>openHub('progreso');$('#pbSp').onclick=()=>openHub('playlist');$('#pbM').onclick=()=>midiModal();
+ $('#pbA').onclick=tg;$('#pbB').onclick=tg;$('#pbC').onclick=tg;$('#pbX').onclick=()=>openHub('progreso');$('#pbSp').onclick=()=>openHub('playlist');$('#pbM').onclick=()=>midiModal();$('#pbDir').onclick=()=>dirReconnect();dirChip();
  {const sb=$('#startBtn');if(sb)sb.addEventListener('click',()=>{if(window.self===window.top&&navigator.requestMIDIAccess)setTimeout(()=>midiInit(false),400);});}$('#pbP').onclick=()=>openHub('pista');
  $('#pbS').onclick=()=>{if(SES.active)endSession();else startSession();};
  const hb=document.createElement('button');hb.className='hb';hb.id='btnPulse';hb.textContent='🧠 Pulse';hb.onclick=()=>openHub();$('.hbtns').prepend(hb);
@@ -1247,11 +1271,11 @@ function mount(){
  $('#pcList').onclick=()=>openHub('practica');
  // ocultar práctica si se abre una lección
  const lc=$('#lessonCard');new MutationObserver(()=>{if(!lc.hidden&&RUN){pc.hidden=true;RUN=null;}}).observe(lc,{attributes:true,attributeFilter:['hidden']});
- {const fb=$('#mLoad .filebtn');if(fb){const l=document.createElement('label');l.className='filebtn';l.style.marginTop='8px';l.textContent='📂 Cargar carpeta completa a la biblioteca';l.appendChild(dirInput());fb.after(l);const pm=document.createElement('p');pm.id='ldMsg';pm.className='mut';pm.style.fontSize='12px';l.after(pm);}
+ {const fb=$('#mLoad .filebtn');if(fb){const l=document.createElement('label');l.className='filebtn';l.style.marginTop='8px';l.textContent='📂 Cargar carpeta completa a la biblioteca';attachDirPicker(l);fb.after(l);const pm=document.createElement('p');pm.id='ldMsg';pm.className='mut';pm.style.fontSize='12px';l.after(pm);}
   const mb=$('#mLoad .mbox');if(mb){mb.addEventListener('dragover',e=>e.preventDefault());mb.addEventListener('drop',async e=>{e.preventDefault();importFiles(await filesFromDrop(e.dataTransfer));});}}
  renderLoaderLib();renderBar(true);rbMount();
 }
 mount();
 ['keydown','keyup'].forEach(t=>document.addEventListener(t,e=>{if(/^(TEXTAREA|SELECT|INPUT)$/.test(e.target.tagName))e.stopImmediatePropagation();},true));
-window.PULSE={_midi:d=>onMidi({data:d}),_rb:RB,ev:onEv,onLoad,tick,openHub,analyzeBuf,compat,camScore,parsePlaylist,analyzePlaylist,_C:C,_S:S};
+window.PULSE={_useDir:h=>useDir(h),_user:()=>USER,_libLoad:(d,id)=>libLoad(d,USER.find(u=>u.id===id)),_midi:d=>onMidi({data:d}),_rb:RB,ev:onEv,onLoad,tick,openHub,analyzeBuf,compat,camScore,parsePlaylist,analyzePlaylist,_C:C,_S:S};
 })();
