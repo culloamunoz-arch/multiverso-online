@@ -111,3 +111,5 @@ body:not(.has-ai) .ai{display:none!important}
 @media (max-width:640px){.grid2{grid-template-columns:1fr}.sl{grid-template-columns:90px minmax(0,1fr) 46px}.ebar span{width:120px}}
 @media (max-width:420px){.hb{padding:7px 8px;font-size:12px}.ang{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (prefers-reduced-motion:reduce){#lessonCard.win{animation:none}}
+
+.drop{border:2px dashed #3a3b42;border-radius:10px;padding:16px;text-align:center;color:var(--mut);font-size:13px;margin-top:8px}.drop.on{border-color:var(--acc);color:var(--acc);background:#1b2410}
